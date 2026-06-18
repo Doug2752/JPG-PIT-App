@@ -1,67 +1,94 @@
-import React from 'react';
-import { GOLD, DARK, RED } from '../utils/constants';
-import { gbtn, inp, lbl, sel } from './styles';
+import React, { useState } from 'react';
 
-const LOGO_SRC = '/jpglogo.png';
+const VALID_CREDENTIALS = { Doug: 'JPG2026' };
 
-export default function LoginScreen({ loginId, setLI, loginPw, setLP, loginErr, onLogin }) {
+export default function Login({ onLogin }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const expected = VALID_CREDENTIALS[username.trim()];
+    if (!expected || password !== expected) {
+      setError('Invalid username or password.');
+      return;
+    }
+    setError('');
+    onLogin(username.trim());
+  }
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: `radial-gradient(ellipse at center, #d4a437 0%, ${GOLD} 55%, #8a6508 100%)`,
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', fontFamily: 'sans-serif', padding: 20,
+      background: '#B8860B',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif',
     }}>
-      <img src={LOGO_SRC} alt="Jones Performance Group" style={{ width: 260, display: 'block', marginBottom: 24 }} />
-
       <div style={{
-        background: '#fff', borderRadius: 12, padding: '36px 40px',
-        width: '100%', maxWidth: 380, boxShadow: '0 8px 40px rgba(0,0,0,0.25)', boxSizing: 'border-box',
+        background: '#ffffff',
+        borderRadius: '12px',
+        width: '420px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+        border: '2px solid #000000',
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{ fontSize: 46, fontWeight: 900, color: '#000', letterSpacing: 6, marginBottom: 6, lineHeight: 1 }}>PIT</div>
-          <div style={{ fontSize: 11, color: '#bbb', fontWeight: 600, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 4 }}>
-            Personal Investment Time
+        <div style={{ padding: '32px 40px 16px 40px' }}>
+          <img
+            src="/jpglogo.png"
+            style={{ width: '260px', display: 'block', marginLeft: 'auto', marginRight: 'auto', marginBottom: '0px', position: 'relative', left: '-14px' }}
+          />
+          <div style={{ fontSize: '42px', fontWeight: 900, letterSpacing: '0.08em', color: '#000000', textAlign: 'center', margin: 0, padding: 0, marginTop: '0px', marginLeft: '-28px' }}>
+            PIT
+          </div>
+          <div style={{ fontSize: '13px', letterSpacing: '0.15em', color: '#555555', textAlign: 'center', marginTop: '4px', marginBottom: '20px', marginLeft: '-28px' }}>
+            PERSONAL INVESTMENT TIME
+          </div>
+          <form onSubmit={handleSubmit}>
+            <label style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#000000', marginBottom: '4px', display: 'block' }}>
+              USER
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              autoComplete="username"
+              autoFocus
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #CCCCCC', background: '#F0F0F0', color: '#2A2A2A', fontSize: '14px', boxSizing: 'border-box' }}
+            />
+            <label style={{ fontSize: '11px', fontWeight: 'bold', letterSpacing: '0.1em', color: '#000000', marginTop: '16px', marginBottom: '4px', display: 'block' }}>
+              PASSWORD
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit(e)}
+              autoComplete="current-password"
+              style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #CCCCCC', background: '#F0F0F0', color: '#2A2A2A', fontSize: '14px', boxSizing: 'border-box' }}
+            />
+            {error && (
+              <div style={{ color: '#B02020', fontSize: '12px', textAlign: 'center', marginTop: '10px' }}>
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              style={{ width: '100%', padding: '12px', background: '#B8860B', color: '#000000', fontWeight: 'bold', fontSize: '14px', letterSpacing: '0.1em', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '20px' }}
+            >
+              ENTER
+            </button>
+          </form>
+          <div style={{ marginTop: '12px', textAlign: 'center', lineHeight: 1.8, fontSize: '11px', color: '#000000', letterSpacing: '0.08em' }}>
+            <div>JONES PERFORMANCE GROUP LLC</div>
+            <div>ACCESS BY AUTHORIZATION ONLY</div>
           </div>
         </div>
-
-        <div style={{ marginBottom: 12 }}>
-          <label style={{ ...lbl, color: DARK }}>Performer / User</label>
-          <select
-            style={{ ...sel, background: '#e8e8e8', color: DARK, border: '1px solid #bbb', fontWeight: 600 }}
-            value={loginId}
-            onChange={e => setLI(e.target.value)}
-          >
-            <option value="doug">Doug</option>
-            <option value="test">Test</option>
-          </select>
+        <div style={{ background: '#FFFFFF', borderTop: '1px solid #EEEEEE', height: '28px', lineHeight: '28px', textAlign: 'center', fontSize: '9px', color: '#888888', letterSpacing: '0.05em' }}>
+          © 2026 Jones Performance Group LLC · PIT · Confidential · All Rights Reserved
         </div>
-
-        <div style={{ marginBottom: 18 }}>
-          <label style={{ ...lbl, color: DARK }}>Password</label>
-          <input
-            style={{ ...inp, background: '#e8e8e8', color: DARK, border: '1px solid #bbb', fontWeight: 600 }}
-            type="password"
-            value={loginPw}
-            onChange={e => setLP(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && onLogin()}
-            placeholder="Enter password"
-          />
-        </div>
-
-        {loginErr && <div style={{ color: RED, fontSize: 11, marginBottom: 10 }}>{loginErr}</div>}
-
-        <button style={gbtn({ width: '100%', padding: 11, fontSize: 14 })} onClick={onLogin}>
-          Enter PIT
-        </button>
-
-        <div style={{ marginTop: 14, fontSize: 10, color: '#bbb', textAlign: 'center' }}>
-          Doug: jpg2026 &nbsp;|&nbsp; Test: test123
-        </div>
-      </div>
-
-      <div style={{ marginTop: 24, fontSize: 10, color: '#fff', opacity: 0.9, textAlign: 'center', letterSpacing: 0.5, fontWeight: 600 }}>
-        JPG-PIT-001-v9 · Jones Performance Group LLC · Personal Investment Time · CONFIDENTIAL
       </div>
     </div>
   );

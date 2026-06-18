@@ -37,9 +37,6 @@ const booksKey = (uid)    => `pit_books_${uid}`;
 
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(null);
-  const [loginId,        setLI]            = useState('doug');
-  const [loginPw,        setLP]            = useState('');
-  const [loginErr,       setLE]            = useState('');
   const [view,           setView]          = useState('form');
   const [fd,             setFd]            = useState(emptyForm());
   const [archive,        setArchive]       = useState([]);
@@ -224,15 +221,10 @@ export default function PITApp() {
 
   // ── Auth ──────────────────────────────────────────────────────────────────
 
-  function login() {
-    const u = DEFAULT_USERS[loginId];
-    if (!u || u.password !== loginPw) {
-      setLE('Incorrect credentials.');
-      return;
-    }
-    setCU({ ...u, id: loginId });
-    setLE('');
-    setLP('');
+  function login(username) {
+    const id = username.toLowerCase();
+    const u = DEFAULT_USERS[id];
+    if (u) setCU({ ...u, id });
   }
 
   // ── Coach / Submit ────────────────────────────────────────────────────────
@@ -371,12 +363,7 @@ export default function PITApp() {
 
   if (!currentUser) {
     return (
-      <LoginScreen
-        loginId={loginId} setLI={setLI}
-        loginPw={loginPw} setLP={setLP}
-        loginErr={loginErr}
-        onLogin={login}
-      />
+      <LoginScreen onLogin={login} />
     );
   }
 
