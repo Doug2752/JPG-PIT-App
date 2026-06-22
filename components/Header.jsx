@@ -11,7 +11,7 @@ function firstName(name) {
 export default function Header({
   view, setView, archiveMode, backToday,
   streak, complete, fd, completedBooks,
-  showHelp, setShowHelp,
+  showHelp, onHelpToggle,
   currentUser, setCU,
   coachMsg, replyText, setRT, sendReply, dismissMsg,
 }) {
@@ -81,9 +81,9 @@ export default function Header({
           )}
           <button
             style={{ padding: '6px 14px', borderRadius: 5, border: `1.5px solid ${GOLD}`, background: 'transparent', color: GOLD, fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, whiteSpace: 'nowrap' }}
-            onClick={() => setShowHelp(p => !p)}
+            onClick={onHelpToggle}
           >
-            {showHelp ? 'Close Help' : 'Guide / Help'}
+            {showHelp ? 'Close Help' : 'Set-Up and Instructions'}
           </button>
           <span style={{ color: '#aaa', fontSize: 12 }}>{firstName(currentUser.name)}</span>
           <button style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer', fontSize: 12 }} onClick={() => setCU(null)}>

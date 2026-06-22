@@ -13,7 +13,7 @@ export const ANTHROPIC_API_KEY = 'PASTE_YOUR_API_KEY_HERE';
 
 export const DEFAULT_USERS = {
   doug: { name: 'Doug Jones', password: 'jpg2026', role: 'admin' },
-  test: { name: 'Test User',  password: 'test123', role: 'admin' }
+  test: { name: 'Test User',  password: 'JPG2026', role: 'admin' }
 };
 
 export const LOCATIONS          = ['Home', 'Work', 'Travel - Personal', 'Travel - Work'];

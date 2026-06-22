@@ -81,6 +81,12 @@ export default function PITApp() {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    if (currentUser && !localStorage.getItem('pit_instructions_seen')) {
+      setShowHelp(true);
+    }
+  }, [currentUser]);
+
   // ── Data loaders ──────────────────────────────────────────────────────────
 
   async function loadToday() {
@@ -225,6 +231,13 @@ export default function PITApp() {
     setCompletedBooks(updated);
     await storage.set(booksKey(currentUser.id), JSON.stringify(updated));
     upd('bookCompleted', true);
+  }
+
+  function toggleHelp() {
+    setShowHelp(prev => {
+      if (prev) localStorage.setItem('pit_instructions_seen', '1');
+      return !prev;
+    });
   }
 
   // ── Auth ──────────────────────────────────────────────────────────────────
@@ -414,7 +427,7 @@ export default function PITApp() {
         complete={complete}
         fd={fd}
         completedBooks={completedBooks}
-        showHelp={showHelp} setShowHelp={setShowHelp}
+        showHelp={showHelp} onHelpToggle={toggleHelp}
         currentUser={currentUser} setCU={setCU}
         coachMsg={coachMsg}
         replyText={replyText} setRT={setRT}

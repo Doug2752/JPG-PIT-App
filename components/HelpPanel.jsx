@@ -5,7 +5,7 @@ export default function HelpPanel() {
   return (
     <div style={{ background: '#fff', border: `2px solid ${GOLD}`, borderRadius: 8, padding: '18px 20px', marginBottom: 14, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
       <div style={{ fontWeight: 800, fontSize: 13, color: DARK, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12, paddingBottom: 8, borderBottom: `2px solid ${GOLD}` }}>
-        PIT — Guide &amp; Help
+        PIT — Set-Up and Instructions
       </div>
       <p style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 8 }}>
         PIT stands for Personal Investment Time. Complete it daily — it is your structured time to track, reflect, plan, and study.

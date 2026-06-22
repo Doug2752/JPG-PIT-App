@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-const VALID_CREDENTIALS = { Doug: 'JPG2026' };
+import { DEFAULT_USERS } from '../utils/constants';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -9,9 +8,9 @@ export default function Login({ onLogin }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const key = Object.keys(VALID_CREDENTIALS).find(k => k.toLowerCase() === username.trim().toLowerCase());
-    const expected = key ? VALID_CREDENTIALS[key] : undefined;
-    if (!expected || password.toLowerCase() !== expected.toLowerCase()) {
+    const id = username.trim().toLowerCase();
+    const user = DEFAULT_USERS[id];
+    if (!user || password.trim().toLowerCase() !== user.password.toLowerCase()) {
       setError('Invalid username or password.');
       return;
     }
