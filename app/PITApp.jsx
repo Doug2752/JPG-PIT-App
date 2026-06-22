@@ -36,7 +36,15 @@ const sentKey  = (uid)    => `pit_sent_${uid}`;
 const booksKey = (uid)    => `pit_books_${uid}`;
 
 export default function PITApp() {
-  const [currentUser,    setCU]            = useState(null);
+  const [currentUser,    setCU]            = useState(() => {
+    const username = new URLSearchParams(window.location.search).get('hub_user');
+    if (username) {
+      const id = username.toLowerCase();
+      const u = DEFAULT_USERS[id];
+      return u ? { ...u, id } : null;
+    }
+    return null;
+  });
   const [view,           setView]          = useState('form');
   const [fd,             setFd]            = useState(emptyForm());
   const [archive,        setArchive]       = useState([]);
