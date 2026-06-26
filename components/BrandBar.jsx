@@ -14,17 +14,13 @@ export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker })
       <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
 
         {/* Logo */}
-        <img src={LOGO_SRC} alt="Jones Performance Group" style={{ height: 50, width: 'auto', display: 'block' }} />
+        <img src={LOGO_SRC} alt="Jones Performance Group" style={{ width: 260, height: 'auto', display: 'block' }} />
 
         {/* Center: PIT title + date picker */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 2, marginBottom: 8 }}>
-            <span style={{ fontSize: 38, fontWeight: 900, color: '#000', lineHeight: 1 }}>P</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.5, marginRight: 6 }}>ersonal</span>
-            <span style={{ fontSize: 38, fontWeight: 900, color: '#000', lineHeight: 1 }}>I</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.5, marginRight: 6 }}>nvestment</span>
-            <span style={{ fontSize: 38, fontWeight: 900, color: '#000', lineHeight: 1 }}>T</span>
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.5 }}>ime</span>
+          <div style={{ marginBottom: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 38, fontWeight: 900, color: '#000', lineHeight: 1 }}>PIT</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.5, marginTop: 3 }}>Personal Investment Time</div>
           </div>
 
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 10 }} onClick={e => e.stopPropagation()}>
@@ -54,9 +50,9 @@ export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker })
 
           {/* Never Twice */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, border: `1.5px solid ${GOLD}`, borderRadius: 5, padding: '5px 14px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, border: '1.5px solid #000', borderRadius: 5, padding: '5px 14px', background: '#B8860B' }}>
               <span style={{ fontSize: 15, fontWeight: 900, color: '#000', letterSpacing: 1, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Never Twice</span>
-              <span style={{ fontSize: 8, fontWeight: 600, color: GOLD, letterSpacing: 0.3, whiteSpace: 'nowrap' }}>Miss one — never miss the second.</span>
+              <span style={{ fontSize: 8, fontWeight: 600, color: '#000', letterSpacing: 0.3, whiteSpace: 'nowrap' }}>Miss one — never miss the second.</span>
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', fontSize: 10, fontWeight: 700, color: DARK, letterSpacing: 0.3, marginTop: 6, userSelect: 'none' }}>
               <input
