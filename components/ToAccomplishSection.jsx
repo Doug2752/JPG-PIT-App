@@ -59,17 +59,36 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
       {/* Future Tasks #4-6 */}
       <div>
         <div style={{ ...lbl, color: '#aaa', marginBottom: 8 }}>Future Tasks (4-6) — not tied to today</div>
-        {fd.tasks.slice(2).map((t, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
-            <input type="checkbox" checked={t.done}
-              onChange={e => updTask(i + 2, 'done', e.target.checked)}
-              style={{ width: 14, height: 14, cursor: 'pointer' }} />
-            <span style={{ fontSize: 11, color: '#aaa', minWidth: 22 }}>#{i + 4}</span>
-            <input style={{ ...inp, fontSize: 12 }} value={t.text}
-              onChange={e => updTask(i + 2, 'text', e.target.value)}
-              placeholder={`Future task ${i + 4}`} />
-          </div>
-        ))}
+        {(() => {
+          const visibleFuture = Math.max(
+            fd.futureTasksVisible ?? 1,
+            (fd.tasks[4]?.text || fd.tasks[4]?.done) ? 3 :
+            (fd.tasks[3]?.text || fd.tasks[3]?.done) ? 2 : 1
+          );
+          return (
+            <>
+              {fd.tasks.slice(2, 2 + visibleFuture).map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
+                  <input type="checkbox" checked={t.done}
+                    onChange={e => updTask(i + 2, 'done', e.target.checked)}
+                    style={{ width: 14, height: 14, cursor: 'pointer' }} />
+                  <span style={{ fontSize: 11, color: '#aaa', minWidth: 22 }}>#{i + 4}</span>
+                  <input style={{ ...inp, fontSize: 12 }} value={t.text}
+                    onChange={e => updTask(i + 2, 'text', e.target.value)}
+                    placeholder={`Future task ${i + 4}`} />
+                </div>
+              ))}
+              {visibleFuture < 3 && (
+                <button
+                  onClick={() => upd('futureTasksVisible', visibleFuture + 1)}
+                  style={{ width: '100%', padding: '9px', borderRadius: 5, border: `1.5px dashed ${GOLD}`, background: 'transparent', color: GOLD, fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}
+                >
+                  + Add Future Task
+                </button>
+              )}
+            </>
+          );
+        })()}
         <div style={{ marginTop: 10, padding: '8px 12px', background: GOLD_LIGHT, borderRadius: 5, fontSize: 11, color: MID }}>
           Three future tasks max. These are reference — not required today.
         </div>
