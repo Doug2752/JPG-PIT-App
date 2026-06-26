@@ -36,7 +36,7 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
         <div style={{ fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 }}>
           Required Fields *
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'start', marginBottom: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'end', marginBottom: 10 }}>
           <div>
             <label style={goldLbl}>* Wake Up Time</label>
             <select style={sel} value={fd.wakeTime} onChange={e => upd('wakeTime', e.target.value)}>
@@ -163,10 +163,10 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
         <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 }}>
           Additional Tracking
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'end' }}>
           <div>
             <label style={dimLbl}>
-              AM Workout
+              AM Fitness Today
               <span style={{ fontSize: '0.82em', fontWeight: 500, opacity: 0.9, display: 'block' }}>(non-negotiable)</span>
             </label>
             <select style={sel} value={fd.amWorkout} onChange={e => upd('amWorkout', e.target.value)}>
@@ -195,7 +195,7 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
             </select>
           </div>
           <div>
-            <label style={dimLbl}>Meditation</label>
+            <label style={dimLbl}>Meditation / Mental Alignment Today</label>
             <select style={sel} value={fd.meditation}
               onChange={e => updMulti([['meditation', e.target.value], ['meditationDuration', '']])}>
               <option value="">Select</option>
