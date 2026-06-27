@@ -19,7 +19,6 @@ export function emptyForm(date) {
     bookName: '', bookAuthor: '', bookPage: '', bookTopic: '',
     bookNotes: '', bookCompleted: false, bookAiQuery: '', bookAiResult: '',
     quotes: '', quotesInspirationQuery: '', quotesInspirationResult: '',
-    appointments: [{ title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '' }],
     futureTasksVisible: 1,
     aiSummary: '', sent: false, neverTwiceRead: false
   };

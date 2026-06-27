@@ -34,6 +34,7 @@ const sk       = (uid, d) => `pit_${uid}_${d}`;
 const ak       = (uid)    => `pit_arch_${uid}`;
 const sentKey  = (uid)    => `pit_sent_${uid}`;
 const booksKey = (uid)    => `pit_books_${uid}`;
+const apptKey  = (uid)    => `pit_appts_${uid}`;
 
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
@@ -59,12 +60,14 @@ export default function PITApp() {
   const [completedBooks, setCompletedBooks] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showHelp,       setShowHelp]      = useState(false);
+  const [appointments,   setAppointments]  = useState([]);
 
   useEffect(() => {
     if (currentUser) {
       loadToday();
       loadArchive();
       loadCompletedBooks();
+      loadAppointments();
     }
   }, [currentUser]);
 
@@ -114,6 +117,22 @@ export default function PITApp() {
     } catch {
       setCompletedBooks([]);
     }
+  }
+
+  async function loadAppointments() {
+    try {
+      const r = await storage.get(apptKey(currentUser.id));
+      setAppointments(r ? JSON.parse(r.value) : []);
+    } catch {
+      setAppointments([]);
+    }
+  }
+
+  async function saveAppointments(list) {
+    if (!currentUser) return;
+    try {
+      await storage.set(apptKey(currentUser.id), JSON.stringify(list));
+    } catch {}
   }
 
   async function getSentDates() {
@@ -203,25 +222,24 @@ export default function PITApp() {
     save(n);
   }
 
-  function updAppt(i, f, v) {
-    const appointments = fd.appointments.map((x, j) => j === i ? { ...x, [f]: v } : x);
-    const n = { ...fd, appointments };
-    setFd(n);
-    save(n);
+  function updAppt(id, f, v) {
+    const updated = appointments.map(a => a.id === id ? { ...a, [f]: v } : a);
+    setAppointments(updated);
+    saveAppointments(updated);
   }
 
   function addAppt() {
-    if (fd.appointments.length >= 5) return;
-    const n = { ...fd, appointments: [...fd.appointments, { title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '' }] };
-    setFd(n);
-    save(n);
+    const today = todayStr();
+    if (appointments.filter(a => a.date >= today).length >= 5) return;
+    const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '' }];
+    setAppointments(updated);
+    saveAppointments(updated);
   }
 
-  function removeAppt(idx) {
-    const remaining = fd.appointments.filter((_, j) => j !== idx);
-    const n = { ...fd, appointments: remaining.length ? remaining : [{ title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '' }] };
-    setFd(n);
-    save(n);
+  function removeAppt(id) {
+    const updated = appointments.filter(a => a.id !== id);
+    setAppointments(updated);
+    saveAppointments(updated);
   }
 
   async function markBookComplete() {
@@ -417,6 +435,9 @@ export default function PITApp() {
 
   // Main form view
   const complete = isDayComplete(fd);
+  const visibleAppointments = appointments
+    .filter(a => a.date >= todayStr())
+    .sort((a, b) => a.date.localeCompare(b.date));
 
   return (
     <div style={{ minHeight: '100vh', background: BG, fontFamily: 'sans-serif', overflowX: 'hidden' }}>
@@ -483,7 +504,7 @@ export default function PITApp() {
         />
 
         <AppointmentsSection
-          appointments={fd.appointments}
+          appointments={visibleAppointments}
           updAppt={updAppt}
           addAppt={addAppt}
           removeAppt={removeAppt}
