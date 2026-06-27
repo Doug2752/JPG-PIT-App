@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { GOLD, BORDER, MID } from '../utils/constants';
 import { SMS_TIMES } from '../utils/constants';
 import { card, secTitle, lbl, inp, sel } from './styles';
 
 export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt }) {
+  useEffect(() => {
+    if (appointments.length === 0) addAppt();
+  }, []);
+
   return (
     <div style={card}>
-      <div style={secTitle}>Today's Appointments</div>
+      <div style={secTitle}>Appointments</div>
       <div style={{ fontSize: 11, color: '#888', marginBottom: 12, fontStyle: 'italic' }}>
         SMS reminders send to the phone number in your client profile.
       </div>
