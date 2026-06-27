@@ -61,7 +61,7 @@ export default function Header({
           marginLeft: 120,
           marginRight: 16,
         }}>
-          {complete && !fd.sent ? 'Day Complete' : `${countComplete(fd)} of ${REQUIRED_TOTAL} Days Done`}
+          {complete && !fd.sent ? 'Day Complete' : `${countComplete(fd)} of ${REQUIRED_TOTAL} Fields Done`}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
