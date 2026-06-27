@@ -64,7 +64,7 @@ export default function HelpPanel({ onClose }) {
         <span style={{ color: GOLD, fontWeight: 700 }}>•</span> <strong>Today's Appointments</strong> — track up to 5 appointments, each with a title, time, duration, location, and prep needed. SMS reminders send to the phone number in your client profile. Use the Add button to create new ones.
       </p>
       <p style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 8 }}>
-        <span style={{ color: GOLD, fontWeight: 700 }}>•</span> <strong>AI Summary</strong> — generates a summary of today plus your last 3 archived days.
+        <span style={{ color: GOLD, fontWeight: 700 }}>•</span> <strong>AI Summary</strong> — generates a summary of today plus your last 7 archived days.
       </p>
       <p style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0 }}>
         <span style={{ color: GOLD, fontWeight: 700 }}>•</span> <strong>Submit to Coach</strong> — once you have 7 complete days in the week, the submit button unlocks. Use Partial Submit if you need to send fewer days.

@@ -351,7 +351,7 @@ export default function PITApp() {
     setAL(p => ({ ...p, aiSummary: true }));
     try {
       const dopUser  = currentUser.id.charAt(0).toUpperCase() + currentUser.id.slice(1);
-      const dates    = [fd.date, ...archive.filter(d => d !== fd.date)].slice(0, 4);
+      const dates    = [fd.date, ...archive.filter(d => d !== fd.date)].slice(0, 8);
       const entries  = await Promise.all(dates.map(async d => {
         try {
           const r    = await storage.get(sk(currentUser.id, d));
