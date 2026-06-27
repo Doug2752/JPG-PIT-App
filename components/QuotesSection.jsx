@@ -2,7 +2,7 @@ import React from 'react';
 import { GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn } from './styles';
 
-export default function QuotesSection({ fd, upd, fetchQuotesInspiration, aiLoadQuotes }) {
+export default function QuotesSection({ fd, upd, updMulti, fetchQuotesInspiration, aiLoadQuotes }) {
   return (
     <div style={card}>
       <div style={secTitle}>Quotes &amp; Inspiration</div>
@@ -20,7 +20,7 @@ export default function QuotesSection({ fd, upd, fetchQuotesInspiration, aiLoadQ
       {fd.quotesInspirationResult && (
         <div style={{ background: GOLD_LIGHT, borderRadius: 6, padding: 14, fontSize: 12, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: MID, marginBottom: 14, position: 'relative' }}>
           <button
-            onClick={() => { upd('quotesInspirationQuery', ''); upd('quotesInspirationResult', ''); }}
+            onClick={() => updMulti([['quotesInspirationQuery', ''], ['quotesInspirationResult', '']])}
             style={{ position: 'absolute', top: 6, right: 8, width: 22, height: 22, border: 'none', background: 'transparent', color: MID, fontSize: 18, lineHeight: 1, cursor: 'pointer', fontWeight: 700, padding: 0 }}
             title="Close"
           >×</button>

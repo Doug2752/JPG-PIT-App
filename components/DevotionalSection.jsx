@@ -2,7 +2,7 @@ import React from 'react';
 import { GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn, dbtn } from './styles';
 
-export default function DevotionalSection({ fd, upd, fetchScripture, aiLoadScripture }) {
+export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, aiLoadScripture }) {
   return (
     <div style={card}>
       <div style={secTitle}>Daily Devotional or Silence and Reflection</div>
@@ -58,7 +58,7 @@ export default function DevotionalSection({ fd, upd, fetchScripture, aiLoadScrip
         {fd.scriptureResult && (
           <div style={{ marginTop: 10, background: '#fff', borderRadius: 5, padding: 12, fontSize: 12, lineHeight: 1.7, whiteSpace: 'pre-wrap', color: MID, position: 'relative' }}>
             <button
-              onClick={() => { upd('scriptureQuery', ''); upd('scriptureResult', ''); }}
+              onClick={() => updMulti([['scriptureQuery', ''], ['scriptureResult', '']])}
               style={{ position: 'absolute', top: 6, right: 8, width: 22, height: 22, border: 'none', background: 'transparent', color: MID, fontSize: 18, lineHeight: 1, cursor: 'pointer', fontWeight: 700, padding: 0 }}
               title="Close"
             >×</button>

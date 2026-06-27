@@ -485,20 +485,20 @@ export default function PITApp() {
         <NotesSection nit={fd.nit} upd={upd} />
 
         <DevotionalSection
-          fd={fd} upd={upd}
+          fd={fd} upd={upd} updMulti={updMulti}
           fetchScripture={fetchScripture}
           aiLoadScripture={!!aiLoad.scriptureResult}
         />
 
         <BookSection
-          fd={fd} upd={upd}
+          fd={fd} upd={upd} updMulti={updMulti}
           markBookComplete={markBookComplete}
           fetchBookAI={fetchBookAI}
           aiLoadBook={!!aiLoad.bookAiResult}
         />
 
         <QuotesSection
-          fd={fd} upd={upd}
+          fd={fd} upd={upd} updMulti={updMulti}
           fetchQuotesInspiration={fetchQuotesInspiration}
           aiLoadQuotes={!!aiLoad.quotesInspirationResult}
         />

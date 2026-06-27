@@ -2,7 +2,7 @@ import React from 'react';
 import { GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn } from './styles';
 
-export default function BookSection({ fd, upd, markBookComplete, fetchBookAI, aiLoadBook }) {
+export default function BookSection({ fd, upd, updMulti, markBookComplete, fetchBookAI, aiLoadBook }) {
   return (
     <div style={card}>
       <div style={{ ...secTitle, marginBottom: 12 }}>Daily Book Study</div>
@@ -91,7 +91,7 @@ export default function BookSection({ fd, upd, markBookComplete, fetchBookAI, ai
         {fd.bookAiResult && (
           <div style={{ marginTop: 10, background: '#fff', borderRadius: 5, padding: 12, fontSize: 12, lineHeight: 1.7, whiteSpace: 'pre-wrap', color: MID, position: 'relative' }}>
             <button
-              onClick={() => { upd('bookAiQuery', ''); upd('bookAiResult', ''); }}
+              onClick={() => updMulti([['bookAiQuery', ''], ['bookAiResult', '']])}
               style={{ position: 'absolute', top: 6, right: 8, width: 22, height: 22, border: 'none', background: 'transparent', color: MID, fontSize: 18, lineHeight: 1, cursor: 'pointer', fontWeight: 700, padding: 0 }}
               title="Close"
             >×</button>
