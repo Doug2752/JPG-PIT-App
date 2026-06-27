@@ -20,6 +20,7 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
   const showOther           = showActivity && fd.fitnessActivity === 'Other';
 
   const goldLbl = { ...lbl, color: GOLD_LIGHT };
+  const reqLbl  = { ...goldLbl };
   const dimLbl  = { ...lbl, color: 'rgba(255,255,255,0.5)', display: 'block', minHeight: 30, lineHeight: 1.25 };
 
   return (
@@ -38,26 +39,26 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'end', marginBottom: 10 }}>
           <div>
-            <label style={goldLbl}>* Wake Up Time</label>
+            <label style={reqLbl}>* Wake Up Time</label>
             <select style={sel} value={fd.wakeTime} onChange={e => upd('wakeTime', e.target.value)}>
               <option value="">Select</option>
               {WAKE_TIMES.map(t => <option key={t}>{t}</option>)}
             </select>
           </div>
           <div>
-            <label style={goldLbl}>* Weight (lbs)</label>
+            <label style={reqLbl}>* Weight (lbs)</label>
             <input style={{ ...inp, height: 34 }} type="number" min="50" max="400" step="1"
               value={fd.weight} onChange={e => upd('weight', e.target.value)} placeholder="50–400 lbs" />
           </div>
           <div>
-            <label style={goldLbl}>* Work / Off</label>
+            <label style={reqLbl}>* Work / Off</label>
             <select style={sel} value={fd.workOff} onChange={e => upd('workOff', e.target.value)}>
               <option value="">Select</option>
               {WORK_OPTS.map(o => <option key={o}>{o}</option>)}
             </select>
           </div>
           <div>
-            <label style={goldLbl}>
+            <label style={reqLbl}>
               * Sleep Score
               <span style={{ fontSize: 9, fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, marginLeft: 4, fontStyle: 'italic' }}>last night</span>
             </label>
@@ -67,7 +68,7 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'start' }}>
           <div>
-            <label style={goldLbl}>* Fitness Yesterday</label>
+            <label style={reqLbl}>* Fitness Yesterday</label>
             <select style={sel} value={fd.fitnessYesterday}
               onChange={e => updMulti([
                 ['fitnessYesterday', e.target.value], ['fitnessActivity', ''], ['fitnessActivityOther', ''],

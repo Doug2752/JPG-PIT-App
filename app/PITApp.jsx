@@ -448,7 +448,7 @@ export default function PITApp() {
           submitMsg={submitMsg}
         />
 
-        {showHelp && <HelpPanel />}
+        {showHelp && <HelpPanel onClose={toggleHelp} />}
 
         <DOPBtn top />
 

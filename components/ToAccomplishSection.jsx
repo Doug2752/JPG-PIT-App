@@ -17,7 +17,7 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
             style={{ width: 18, height: 18, cursor: 'pointer', accentColor: RED }}
           />
           <span style={{ fontWeight: 900, fontSize: 13, color: RED, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            * #1 — The One Thing
+            * The One Thing
           </span>
         </div>
         <div style={{ fontSize: 10, color: '#999', fontStyle: 'italic', marginBottom: 8 }}>
@@ -48,7 +48,6 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
             <input type="checkbox" checked={fd.tasks[i].done}
               onChange={e => updTask(i, 'done', e.target.checked)}
               style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: GOLD, minWidth: 22 }}>#{i + 2}</span>
             <input style={inp} value={fd.tasks[i].text}
               onChange={e => updTask(i, 'text', e.target.value)}
               placeholder={`Daily task ${i + 2}`} />
@@ -72,7 +71,6 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
                   <input type="checkbox" checked={t.done}
                     onChange={e => updTask(i + 2, 'done', e.target.checked)}
                     style={{ width: 14, height: 14, cursor: 'pointer' }} />
-                  <span style={{ fontSize: 11, color: '#aaa', minWidth: 22 }}>#{i + 4}</span>
                   <input style={{ ...inp, fontSize: 12 }} value={t.text}
                     onChange={e => updTask(i + 2, 'text', e.target.value)}
                     placeholder={`Future task ${i + 4}`} />
