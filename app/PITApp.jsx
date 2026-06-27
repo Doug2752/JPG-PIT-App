@@ -373,7 +373,7 @@ export default function PITApp() {
     return (
       <button
         style={{ ...gbtn({ width: '100%', padding: '11px', fontSize: 13, background: GOLD }), marginBottom: top ? 14 : 0, marginTop: top ? 0 : 14 }}
-        onClick={() => alert('Daily Operational Process — coming in next build session.')}
+        onClick={() => window.open(`http://localhost:5174/?hub_user=${currentUser.id}`, '_blank')}
       >
         Open Daily Operational Process (DOP)
       </button>
