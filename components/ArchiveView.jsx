@@ -13,9 +13,9 @@ export default function ArchiveView({ archive, weekData, completedBooks, streak,
       <div style={{ background: '#111', borderBottom: `2px solid ${GOLD}`, padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 58 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button style={gbtn({ background: '#333', fontSize: 12 })} onClick={() => setView('form')}>Today</button>
-            <button style={gbtn({ background: GOLD, fontSize: 12 })}>Archive</button>
-            <button style={gbtn({ background: '#333', fontSize: 12 })} onClick={() => setView('books')}>
+            <button style={gbtn({ background: '#333', fontSize: 12, color: '#fff', border: 'none' })} onClick={() => setView('form')}>Today</button>
+            <button style={gbtn({ background: GOLD, fontSize: 12, color: '#fff', border: 'none' })}>Archive</button>
+            <button style={gbtn({ background: '#333', fontSize: 12, color: '#fff', border: 'none' })} onClick={() => setView('books')}>
               Book Log ({completedBooks.length})
             </button>
           </div>

@@ -1,4 +1,4 @@
-import { BORDER, GOLD, DARK, MID } from '../utils/constants';
+import { BORDER, GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
 
 export const inp = {
   width: '100%',
@@ -46,12 +46,12 @@ export const secTitle = {
 export const gbtn = (extra = {}) => ({
   padding: '8px 18px',
   borderRadius: 5,
-  border: 'none',
+  border: '1.5px solid #000',
   cursor: 'pointer',
   fontSize: 12,
   fontWeight: 700,
-  background: GOLD,
-  color: '#fff',
+  background: GOLD_LIGHT,
+  color: '#000',
   letterSpacing: 0.5,
   whiteSpace: 'nowrap',
   ...extra,
@@ -60,12 +60,12 @@ export const gbtn = (extra = {}) => ({
 export const dbtn = (extra = {}) => ({
   padding: '8px 18px',
   borderRadius: 5,
-  border: `2px solid ${GOLD}`,
+  border: '1.5px solid #000',
   cursor: 'pointer',
   fontSize: 12,
   fontWeight: 700,
-  background: 'transparent',
-  color: GOLD,
+  background: GOLD_LIGHT,
+  color: '#000',
   letterSpacing: 0.5,
   whiteSpace: 'nowrap',
   ...extra,

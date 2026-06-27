@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
+import { GOLD, DARK, MID } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn, dbtn } from './styles';
 
 export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, aiLoadScripture }) {
@@ -38,7 +38,7 @@ export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, a
       />
 
       {/* Scripture Search */}
-      <div style={{ marginTop: 14, padding: 14, background: GOLD_LIGHT, borderRadius: 6 }}>
+      <div style={{ marginTop: 14, padding: 14, background: GOLD, border: '1.5px solid #000', borderRadius: 6 }}>
         <div style={{ fontWeight: 800, fontSize: 12, color: DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
           Scripture Search / Reflection Search
         </div>

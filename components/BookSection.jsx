@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
+import { GOLD, DARK, MID } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn } from './styles';
 
 export default function BookSection({ fd, upd, updMulti, markBookComplete, fetchBookAI, aiLoadBook }) {
@@ -14,9 +14,9 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
       <label style={{
         display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14,
         padding: '10px 14px',
-        background: fd.bookCompleted ? '#f0f8f0' : GOLD_LIGHT,
+        background: fd.bookCompleted ? '#f0f8f0' : GOLD,
         borderRadius: 6,
-        border: `1px solid ${fd.bookCompleted ? '#2ecc71' : GOLD}`,
+        border: `1.5px solid ${fd.bookCompleted ? '#2ecc71' : '#000'}`,
         cursor: fd.bookName.trim() ? 'pointer' : 'not-allowed',
         opacity: (!fd.bookName.trim() && !fd.bookCompleted) ? 0.6 : 1,
       }}>
@@ -30,7 +30,7 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
           style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }}
           disabled={!fd.bookName.trim() && !fd.bookCompleted}
         />
-        <span style={{ fontSize: 12, fontWeight: 700, color: fd.bookCompleted ? '#2ecc71' : MID }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: fd.bookCompleted ? '#2ecc71' : '#000' }}>
           Finished book. Add to my log
         </span>
         {fd.bookCompleted && (
@@ -71,7 +71,7 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
       />
 
       {/* Book AI */}
-      <div style={{ padding: 14, background: GOLD_LIGHT, borderRadius: 6 }}>
+      <div style={{ padding: 14, background: GOLD, border: '1.5px solid #000', borderRadius: 6 }}>
         <div style={{ fontWeight: 800, fontSize: 12, color: DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
           Ask About This Book
         </div>

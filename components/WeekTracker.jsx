@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, GOLD_LIGHT, BORDER } from '../utils/constants';
+import { GOLD, BORDER } from '../utils/constants';
 import { gbtn } from './styles';
 
 export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg }) {
@@ -17,10 +17,10 @@ export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg 
       boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <span style={{ fontWeight: 800, fontSize: 13, color: canSend ? '#2ecc71' : GOLD_LIGHT, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+        <span style={{ fontWeight: 800, fontSize: 13, color: canSend ? '#2ecc71' : GOLD, textTransform: 'uppercase', letterSpacing: 1.5 }}>
           {canSend ? 'Week Complete — Ready to Submit' : 'Weekly Progress'}
         </span>
-        <span style={{ fontWeight: 700, fontSize: 14, color: canSend ? '#2ecc71' : GOLD_LIGHT }}>
+        <span style={{ fontWeight: 700, fontSize: 14, color: canSend ? '#2ecc71' : GOLD }}>
           {filled} / 7 days
         </span>
       </div>
@@ -35,7 +35,7 @@ export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg 
 
       {canSend && (
         <button
-          style={{ ...gbtn({ width: '100%', padding: '12px', fontSize: 14, background: '#2ecc71', letterSpacing: 1 }), boxShadow: '0 0 16px rgba(46,204,113,0.5)' }}
+          style={{ ...gbtn({ width: '100%', padding: '12px', fontSize: 14, background: '#2ecc71', letterSpacing: 1, color: '#fff', border: 'none' }), boxShadow: '0 0 16px rgba(46,204,113,0.5)' }}
           onClick={() => doSubmit(false)}
           disabled={submitting}
         >
@@ -50,7 +50,7 @@ export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg 
       )}
 
       {submitMsg && (
-        <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(255,255,255,0.1)', borderRadius: 5, fontSize: 12, color: GOLD_LIGHT, textAlign: 'center' }}>
+        <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(255,255,255,0.1)', borderRadius: 5, fontSize: 12, color: GOLD, textAlign: 'center' }}>
           {submitMsg}
         </div>
       )}

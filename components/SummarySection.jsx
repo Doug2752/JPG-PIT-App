@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, GOLD_LIGHT, MID, BORDER } from '../utils/constants';
+import { GOLD, MID, BORDER } from '../utils/constants';
 import { card, secTitle, gbtn } from './styles';
 
 export default function SummarySection({ fd, genSummary, aiLoadSummary, weekData, submitting, submitMsg, doSubmit, setSMsg }) {
@@ -16,7 +16,7 @@ export default function SummarySection({ fd, genSummary, aiLoadSummary, weekData
           <span style={{ fontSize: 11, color: '#888' }}>Pulls today + last 7 archived days automatically.</span>
         </div>
         {fd.aiSummary && (
-          <div style={{ background: GOLD_LIGHT, borderRadius: 6, padding: 14, fontSize: 12, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: MID }}>
+          <div style={{ background: GOLD, border: '1.5px solid #000', borderRadius: 6, padding: 14, fontSize: 12, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: '#000' }}>
             {fd.aiSummary}
           </div>
         )}

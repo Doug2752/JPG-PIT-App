@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DEFAULT_USERS } from '../utils/constants';
+import { DEFAULT_USERS, GOLD_LIGHT } from '../utils/constants';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -85,7 +85,7 @@ export default function Login({ onLogin }) {
             )}
             <button
               type="submit"
-              style={{ width: '100%', padding: '12px', background: '#B8860B', color: '#000000', fontWeight: 'bold', fontSize: '14px', letterSpacing: '0.1em', border: 'none', borderRadius: '6px', cursor: 'pointer', marginTop: '20px' }}
+              style={{ width: '100%', padding: '12px', background: GOLD_LIGHT, color: '#000000', fontWeight: 'bold', fontSize: '14px', letterSpacing: '0.1em', border: '1.5px solid #000', borderRadius: '6px', cursor: 'pointer', marginTop: '20px' }}
             >
               ENTER
             </button>

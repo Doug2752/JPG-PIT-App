@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, GOLD_LIGHT, DARK, MID } from '../utils/constants';
+import { GOLD, DARK, MID } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn } from './styles';
 
 export default function QuotesSection({ fd, upd, updMulti, fetchQuotesInspiration, aiLoadQuotes }) {
@@ -18,7 +18,7 @@ export default function QuotesSection({ fd, upd, updMulti, fetchQuotesInspiratio
       </div>
 
       {fd.quotesInspirationResult && (
-        <div style={{ background: GOLD_LIGHT, borderRadius: 6, padding: 14, fontSize: 12, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: MID, marginBottom: 14, position: 'relative' }}>
+        <div style={{ background: GOLD, border: '1.5px solid #000', borderRadius: 6, padding: 14, fontSize: 12, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: '#000', marginBottom: 14, position: 'relative' }}>
           <button
             onClick={() => updMulti([['quotesInspirationQuery', ''], ['quotesInspirationResult', '']])}
             style={{ position: 'absolute', top: 6, right: 8, width: 22, height: 22, border: 'none', background: 'transparent', color: MID, fontSize: 18, lineHeight: 1, cursor: 'pointer', fontWeight: 700, padding: 0 }}
@@ -28,7 +28,7 @@ export default function QuotesSection({ fd, upd, updMulti, fetchQuotesInspiratio
         </div>
       )}
 
-      <div style={{ padding: 14, background: GOLD_LIGHT, borderRadius: 6 }}>
+      <div style={{ padding: 14, background: GOLD, border: '1.5px solid #000', borderRadius: 6 }}>
         <div style={{ fontWeight: 800, fontSize: 12, color: DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
           Quote and Inspiration Research
         </div>

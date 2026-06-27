@@ -79,7 +79,7 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
               {visibleFuture < 3 && (
                 <button
                   onClick={() => upd('futureTasksVisible', visibleFuture + 1)}
-                  style={{ width: '100%', padding: '9px', borderRadius: 5, border: `1.5px dashed ${GOLD}`, background: 'transparent', color: GOLD, fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}
+                  style={{ width: '100%', padding: '9px', borderRadius: 5, border: '1.5px solid #000', background: GOLD_LIGHT, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}
                 >
                   + Add Future Task
                 </button>
@@ -87,7 +87,7 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
             </>
           );
         })()}
-        <div style={{ marginTop: 10, padding: '8px 12px', background: GOLD_LIGHT, borderRadius: 5, fontSize: 11, color: MID }}>
+        <div style={{ marginTop: 10, padding: '8px 12px', background: GOLD, border: '1.5px solid #000', borderRadius: 5, fontSize: 11, color: '#000' }}>
           Three future tasks max. These are reference — not required today.
         </div>
       </div>

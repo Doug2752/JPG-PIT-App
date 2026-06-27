@@ -34,15 +34,15 @@ export default function Header({
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
-              style={gbtn({ background: (!archiveMode && view === 'form') ? GOLD : '#333', fontSize: 12 })}
+              style={gbtn({ background: (!archiveMode && view === 'form') ? GOLD : '#333', fontSize: 12, color: '#fff', border: 'none' })}
               onClick={() => { if (archiveMode) backToday(); setView('form'); }}
             >Today</button>
             <button
-              style={gbtn({ background: view === 'archive' ? GOLD : '#333', fontSize: 12 })}
+              style={gbtn({ background: view === 'archive' ? GOLD : '#333', fontSize: 12, color: '#fff', border: 'none' })}
               onClick={() => setView('archive')}
             >Archive</button>
             <button
-              style={gbtn({ background: view === 'books' ? GOLD : '#333', fontSize: 12 })}
+              style={gbtn({ background: view === 'books' ? GOLD : '#333', fontSize: 12, color: '#fff', border: 'none' })}
               onClick={() => setView('books')}
             >Book Log ({completedBooks.length})</button>
           </div>
@@ -94,7 +94,7 @@ export default function Header({
 
       {/* Coach message banner */}
       {coachMsg.hasMessage && !coachMsg.dismissed && (
-        <div style={{ background: GOLD, padding: '14px 20px', borderBottom: `2px solid ${DARK}` }}>
+        <div style={{ background: GOLD, padding: '14px 20px', border: '1.5px solid #000' }}>
           <div style={{ maxWidth: 900, margin: '0 auto' }}>
             <div style={{ fontWeight: 800, fontSize: 12, color: DARK, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>
               Message from Coach
@@ -109,8 +109,8 @@ export default function Header({
                 onChange={e => setRT(e.target.value)}
                 placeholder="Reply to coach (optional)..."
               />
-              <button style={gbtn({ background: DARK })} onClick={sendReply}>Send Reply</button>
-              <button style={gbtn({ background: 'rgba(0,0,0,0.3)' })} onClick={dismissMsg}>Dismiss</button>
+              <button style={gbtn({ background: DARK, color: '#fff', border: 'none' })} onClick={sendReply}>Send Reply</button>
+              <button style={gbtn({ background: 'rgba(0,0,0,0.3)', color: '#fff', border: 'none' })} onClick={dismissMsg}>Dismiss</button>
             </div>
           </div>
         </div>

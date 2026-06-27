@@ -13,9 +13,9 @@ export default function BooksView({ completedBooks, streak, currentUser, setCU, 
       <div style={{ background: '#111', borderBottom: `2px solid ${GOLD}`, padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 58 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button style={gbtn({ background: '#333', fontSize: 12 })} onClick={() => setView('form')}>Today</button>
-            <button style={gbtn({ background: '#333', fontSize: 12 })} onClick={() => setView('archive')}>Archive</button>
-            <button style={gbtn({ background: GOLD, fontSize: 12 })}>Book Log ({completedBooks.length})</button>
+            <button style={gbtn({ background: '#333', fontSize: 12, color: '#fff', border: 'none' })} onClick={() => setView('form')}>Today</button>
+            <button style={gbtn({ background: '#333', fontSize: 12, color: '#fff', border: 'none' })} onClick={() => setView('archive')}>Archive</button>
+            <button style={gbtn({ background: GOLD, fontSize: 12, color: '#fff', border: 'none' })}>Book Log ({completedBooks.length})</button>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, GOLD_LIGHT } from '../utils/constants';
+import { GOLD } from '../utils/constants';
 import {
   LOCATIONS, PIT_TIMES, ACTIVITY_TYPES, DISTANCE_ACTIVITIES,
   TERRAIN_OPTIONS, YOGA_TYPES, SWIM_ENVIRONMENTS, SWIM_STROKES,
@@ -19,13 +19,13 @@ export default function DailyTrackingSection({ fd, upd, updMulti }) {
   const showSwim            = showActivity && fd.fitnessActivity === 'Swim';
   const showOther           = showActivity && fd.fitnessActivity === 'Other';
 
-  const goldLbl = { ...lbl, color: GOLD_LIGHT };
+  const goldLbl = { ...lbl, color: GOLD };
   const reqLbl  = { ...goldLbl };
   const dimLbl  = { ...lbl, color: 'rgba(255,255,255,0.5)', display: 'block', minHeight: 30, lineHeight: 1.25 };
 
   return (
     <div style={{ ...card, background: '#1a1a1a' }}>
-      <div style={{ ...secTitle, color: GOLD_LIGHT, borderBottomColor: GOLD }}>
+      <div style={{ ...secTitle, color: GOLD, borderBottomColor: GOLD }}>
         Daily Tracking
         <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontWeight: 400, marginLeft: 8, letterSpacing: 0 }}>
           * = required for day completion
