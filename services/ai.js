@@ -49,16 +49,49 @@ export async function fetchQuotesInspirationAI(query) {
   );
 }
 
-export async function generateSummaryAI(entries) {
+export async function generateSummaryAI(entries, appointments = []) {
   const fmt = (e) => {
-    const d = e.data;
+    const d   = e.data;
     const dop = e.dop;
     const morn = (dop && dop.morningEval != null) ? dop.morningEval : 'none';
     const even = (dop && dop.eveningEval != null) ? dop.eveningEval : 'none';
-    return `DATE: ${e.date}\nMORNING RATING (1-10): ${morn}\nEVENING RATING (1-10): ${even}\nONE THING: ${d.oneThing || 'none'} (${d.oneThingDone ? 'DONE' : 'NOT DONE'})\nNOTES: ${d.nit || 'none'}\nDEVOTIONAL NOTES: ${d.devotionalNotes || 'none'}\nTASKS:\n${d.tasks.map((t, i) => t.text ? `- #${i + 2}: ${t.text} (${t.done ? 'done' : 'pending'})` : '').filter(Boolean).join('\n') || 'none'}`;
+    const dailyTasks  = [0, 1]
+      .map(i => d.tasks[i]?.text ? `- ${d.tasks[i].text} (${d.tasks[i].done ? 'done' : 'pending'})` : '')
+      .filter(Boolean).join('\n') || 'none';
+    const futureTasks = [2, 3, 4]
+      .map(i => d.tasks[i]?.text ? `- ${d.tasks[i].text} (${d.tasks[i].done ? 'done' : 'pending'})` : '')
+      .filter(Boolean).join('\n') || 'none';
+    const book = d.bookName
+      ? [
+          `"${d.bookName}"`,
+          d.bookAuthor && `by ${d.bookAuthor}`,
+          d.bookPage   && `p.${d.bookPage}`,
+          d.bookTopic  && `topic: ${d.bookTopic}`,
+        ].filter(Boolean).join(', ')
+      : 'none';
+    return [
+      `DATE: ${e.date}`,
+      `MORNING RATING (1-10): ${morn}`,
+      `EVENING RATING (1-10): ${even}`,
+      `DAILY TRACKING: Wake Up: ${d.wakeTime || 'none'} | Weight: ${d.weight ? d.weight + ' lbs' : 'none'} | Work: ${d.workOff || 'none'} | Sleep Score: ${d.sleepScore || 'none'} | Fitness Yesterday: ${d.fitnessYesterday || 'none'}`,
+      `THANKFUL FOR: 1) ${d.thankful1 || 'none'}  2) ${d.thankful2 || 'none'}  3) ${d.thankful3 || 'none'}`,
+      `ONE THING: ${d.oneThing || 'none'} (${d.oneThingDone ? 'DONE' : 'NOT DONE'})`,
+      `DAILY TASKS:\n${dailyTasks}`,
+      `FUTURE TASKS:\n${futureTasks}`,
+      `NOTES: ${d.nit || 'none'}`,
+      `DEVOTIONAL NOTES: ${d.devotionalNotes || 'none'}`,
+      `BOOK STUDY: ${book}${d.bookNotes ? '\n  Book Notes: ' + d.bookNotes : ''}`,
+      `QUOTES: ${d.quotes || 'none'}`,
+    ].join('\n');
   };
-  return anthropic(
-    `Summarize PIT journal entries. TODAY first then prior days most recent to oldest. For each: Morning/Evening Ratings (call out trends), ONE THING, Key Notes, Devotional Notes (if present), Tasks. Bottom: UNFINISHED ONE THINGS with dates, plus rating trend across days. Concise and structured.\n\n${entries.filter(Boolean).map(fmt).join('\n\n---\n\n')}`,
-    1000
-  );
+
+  const apptLines = appointments.length
+    ? appointments.map(a =>
+        `- ${a.date}: ${a.title || '(untitled)'}${a.time ? ' at ' + a.time : ''}${a.location ? ' @ ' + a.location : ''}${a.prep ? ' (Prep: ' + a.prep + ')' : ''}`
+      ).join('\n')
+    : 'none';
+
+  const prompt = `Summarize PIT journal entries. TODAY first then prior days most recent to oldest. For each day cover: Morning/Evening Ratings (note trends), Daily Tracking stats, Thankful For, One Thing completion, Daily Tasks, Future Tasks, Notes, Devotional Notes, Book Study, and Quotes. At the bottom: UNFINISHED ONE THINGS with dates, open Future Tasks, rating trend across days, and Upcoming Appointments. Concise and structured.\n\nUPCOMING APPOINTMENTS:\n${apptLines}\n\n${entries.filter(Boolean).map(fmt).join('\n\n---\n\n')}`;
+  console.log('[AI Summary Prompt]', prompt);
+  return anthropic(prompt, 1500);
 }

@@ -359,7 +359,12 @@ export default function PITApp() {
           return r ? { date: d, data: JSON.parse(r.value), dop: rDop ? JSON.parse(rDop.value) : null } : null;
         } catch { return null; }
       }));
-      const result = await generateSummaryAI(entries);
+      const rAppts       = await storage.get(apptKey(currentUser.id)).catch(() => null);
+      const allAppts     = rAppts ? JSON.parse(rAppts.value) : [];
+      const upcomingAppts = allAppts
+        .filter(a => a.date >= todayStr())
+        .sort((a, b) => a.date.localeCompare(b.date));
+      const result = await generateSummaryAI(entries, upcomingAppts);
       upd('aiSummary', result);
     } catch (e) {
       upd('aiSummary', 'Error: ' + e.message);
