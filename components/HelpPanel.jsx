@@ -113,7 +113,7 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Daily Devotional / Silence &amp; Reflection</div>
-          <div style={tBody}>Choose either a Two-Minute Prayer or Silence &amp; Reflection, mark it complete, and add any reflections. Use Scripture Search / Reflection Search to find a topic, passage, or theme to focus on.</div>
+          <div style={tBody}>Choose either a Two-Minute Prayer or Silence &amp; Reflection, mark it complete, and add any reflections. Use Scripture Search / Reflection Search to find a topic, passage, or theme to focus on. Whichever mode you choose will become your default each day going forward — you can switch back and forth anytime using the toggle.</div>
         </div>
       </div>
 
