@@ -2,7 +2,7 @@ import React from 'react';
 import { GOLD, RED, BORDER, MID, GOLD_LIGHT } from '../utils/constants';
 import { card, secTitle, lbl, inp } from './styles';
 
-export default function ToAccomplishSection({ fd, upd, updTask }) {
+export default function ToAccomplishSection({ fd, upd, updTask, removeTask }) {
   return (
     <div style={card}>
       <div style={secTitle}>To Accomplish</div>
@@ -74,6 +74,10 @@ export default function ToAccomplishSection({ fd, upd, updTask }) {
                   <input style={{ ...inp, fontSize: 12 }} value={t.text}
                     onChange={e => updTask(i + 2, 'text', e.target.value)}
                     placeholder={`Future task ${i + 4}`} />
+                  <button
+                    onClick={() => removeTask(i + 2)}
+                    style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap' }}
+                  >Remove</button>
                 </div>
               ))}
               {visibleFuture < 3 && (

@@ -222,6 +222,18 @@ export default function PITApp() {
     save(n);
   }
 
+  function removeTask(absoluteIndex) {
+    const tasks = [...fd.tasks];
+    for (let j = absoluteIndex; j <= 3; j++) {
+      tasks[j] = { ...fd.tasks[j + 1] };
+    }
+    tasks[4] = { text: '', done: false };
+    const futureTasksVisible = Math.max(1, (fd.futureTasksVisible ?? 1) - 1);
+    const n = { ...fd, tasks, futureTasksVisible };
+    setFd(n);
+    save(n);
+  }
+
   function updAppt(id, f, v) {
     const updated = appointments.map(a => a.id === id ? { ...a, [f]: v } : a);
     setAppointments(updated);
@@ -485,7 +497,7 @@ export default function PITApp() {
           upd={upd}
         />
 
-        <ToAccomplishSection fd={fd} upd={upd} updTask={updTask} />
+        <ToAccomplishSection fd={fd} upd={upd} updTask={updTask} removeTask={removeTask} />
 
         <NotesSection nit={fd.nit} upd={upd} />
 
