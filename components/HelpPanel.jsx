@@ -158,7 +158,11 @@ export default function HelpPanel({ onClose }) {
       </div>
 
       <div style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.07)', borderRadius: 4, fontSize: 11, color: MID, fontStyle: 'italic', lineHeight: 1.6 }}>
-        <strong style={{ fontStyle: 'normal' }}>NOTE:</strong> Everything you enter in PIT saves automatically as you go — there is no Save button anywhere in this app. Saved information can be accessed with the Archive tab at the top of the page.
+        <strong style={{ fontStyle: 'normal' }}>NOTES:</strong>
+        <ol style={{ margin: '4px 0 0 0', paddingLeft: 20 }}>
+          <li style={{ marginBottom: 4 }}>Everything you enter in PIT saves automatically as you go — there is no Save button anywhere in this app. Saved information can be accessed with the Archive tab at the top of the page.</li>
+          <li>For the most accurate Sleep Score, a wearable monitor is recommended. If you don't have one, many phone apps can provide a ballpark sleep score as an alternative.</li>
+        </ol>
       </div>
     </div>
   );
