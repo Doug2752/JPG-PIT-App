@@ -30,11 +30,12 @@ import BooksView          from '../components/BooksView';
 import { gbtn }           from '../components/styles';
 
 // Storage key helpers
-const sk       = (uid, d) => `pit_${uid}_${d}`;
-const ak       = (uid)    => `pit_arch_${uid}`;
-const sentKey  = (uid)    => `pit_sent_${uid}`;
-const booksKey = (uid)    => `pit_books_${uid}`;
-const apptKey  = (uid)    => `pit_appts_${uid}`;
+const sk          = (uid, d) => `pit_${uid}_${d}`;
+const ak          = (uid)    => `pit_arch_${uid}`;
+const sentKey     = (uid)    => `pit_sent_${uid}`;
+const booksKey    = (uid)    => `pit_books_${uid}`;
+const apptKey     = (uid)    => `pit_appts_${uid}`;
+const devTypeKey  = (uid)    => `pit_devtype_${uid}`;
 
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
@@ -90,12 +91,18 @@ export default function PITApp() {
     }
   }, [currentUser]);
 
+
   // ── Data loaders ──────────────────────────────────────────────────────────
 
   async function loadToday() {
     try {
       const r = await storage.get(sk(currentUser.id, todayStr()));
-      setFd(r ? JSON.parse(r.value) : emptyForm());
+      if (r) {
+        setFd(JSON.parse(r.value));
+      } else {
+        const pref = await storage.get(devTypeKey(currentUser.id));
+        setFd({ ...emptyForm(), prayerType: pref ? pref.value : 'prayer' });
+      }
     } catch {
       setFd(emptyForm());
     }
@@ -207,6 +214,9 @@ export default function PITApp() {
     const n = { ...fd, [f]: v };
     setFd(n);
     save(n);
+    if (f === 'prayerType' && currentUser) {
+      storage.set(devTypeKey(currentUser.id), v);
+    }
   }
 
   function updMulti(pairs) {
