@@ -37,7 +37,8 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>How to use it:</div>
-          <div style={{ ...tBody, marginBottom: 4 }}>Each day, complete the 10 Required Fields and any additional fields you choose. There is substantial personal value in going above the 10, but that is your choice. Fields marked with an asterisk (*) are required to mark a day complete. The 10 Required Fields, in order:</div>
+          <div style={{ ...tBody, marginBottom: 6 }}>Each day, complete the 10 Required Fields and any additional fields you choose. There is substantial personal value in going above the 10, but that is your choice. Fields marked with an asterisk (*) are required to mark a day complete. The 10 Required Fields, in order:</div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: DARK, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4 }}>Daily Trackables (Items 1-5)</div>
           <ol style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0, paddingLeft: 32, marginTop: 0 }}>
             <li>Wake Up Time</li>
             <li>Weight</li>
