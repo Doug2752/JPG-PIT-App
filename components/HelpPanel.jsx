@@ -66,9 +66,12 @@ export default function HelpPanel({ onClose }) {
       <p style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 8 }}>
         <span style={{ color: GOLD, fontWeight: 700 }}>•</span> <strong>AI Summary</strong> — generates a summary of today plus your last 7 archived days.
       </p>
-      <p style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0 }}>
+      <p style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 8 }}>
         <span style={{ color: GOLD, fontWeight: 700 }}>•</span> <strong>Submit to Coach</strong> — once you have 7 complete days in the week, the submit button unlocks. Use Partial Submit if you need to send fewer days.
       </p>
+      <div style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.07)', borderRadius: 4, fontSize: 11, color: MID, fontStyle: 'italic', lineHeight: 1.6 }}>
+        <strong style={{ fontStyle: 'normal' }}>NOTE:</strong> Everything you enter in PIT saves automatically as you go — there is no Save button anywhere in this app. Saved information can be accessed with the Archive tab at the top of the page.
+      </div>
     </div>
   );
 }
