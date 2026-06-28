@@ -12,7 +12,7 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
     <div style={card}>
       <div style={secTitle}>Appointments</div>
       <div style={{ fontSize: 11, color: '#888', marginBottom: 12, fontStyle: 'italic' }}>
-        SMS reminders send to the phone number in your client profile.
+        SMS reminders are coming soon — checking the box and setting a reminder time saves your preference for when that feature is ready.
       </div>
 
       {appointments.map((a, i) => (

@@ -137,7 +137,7 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Today's Appointments</div>
-          <div style={tBody}>Track up to 5 appointments, each with a title, time, duration, location, and prep needed. SMS reminders send to the phone number in your client profile. Use the Add button to create new ones.</div>
+          <div style={tBody}>Track up to 5 appointments, each with a title, time, duration, location, and prep needed. SMS reminders are coming soon — for now, checking the box and setting a reminder time saves your preference, but no text message will be sent yet. Use the Add button to create new ones.</div>
         </div>
       </div>
 
