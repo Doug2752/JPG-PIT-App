@@ -227,6 +227,7 @@ export default function DailyTrackingSection({ fd, upd, updMulti, updFitnessEntr
               <option value="">Select</option>
               <option>Yes</option>
               <option>No</option>
+              <option>Rest Day</option>
             </select>
           </div>
           <div>
