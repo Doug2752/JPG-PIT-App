@@ -18,9 +18,9 @@ export const DEFAULT_USERS = {
 
 export const LOCATIONS          = ['Home', 'Work', 'Travel - Personal', 'Travel - Work'];
 export const PIT_TIMES          = ['30 Min', '1 Hr', '1 Hr 30 Min', '2 Hr', 'Over 2 Hr'];
-export const ACTIVITY_TYPES     = ['Running', 'Walking', 'Cycling', 'Stretching', 'Yoga', 'Swim', 'Strength Training / Weights', 'Strength Training / Body Weight', 'Other'];
+export const ACTIVITY_TYPES     = ['Running', 'Walking', 'Hiking', 'Cycling', 'Stretching', 'Yoga', 'Swim', 'Strength Training / Weights', 'Strength Training / Body Weight', 'Other'];
 export const DISTANCE_ACTIVITIES= ['Running', 'Walking', 'Hiking', 'Cycling'];
-export const TERRAIN_OPTIONS    = ['Road', 'Trail', 'Beach', 'Other'];
+export const TERRAIN_OPTIONS    = ['Road', 'Trail', 'Beach', 'Treadmill', 'Other'];
 export const YOGA_TYPES         = ['Hatha', 'Vinyasa', 'Ashtanga', 'Hot/Bikram', 'Restorative', 'Yin', 'Power', 'Kundalini', 'Aerial', 'Chair', 'Other'];
 export const SWIM_ENVIRONMENTS  = ['Lake', 'Ocean', 'Swimming Pool'];
 export const SWIM_STROKES       = ['Freestyle', 'Backstroke', 'Laps', 'Open Water'];

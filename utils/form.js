@@ -2,14 +2,42 @@ import { todayStr } from './date';
 
 export const REQUIRED_TOTAL = 10;
 
+// One fitness activity entry. Days now hold an array of these under
+// `fitnessEntries` instead of the seven flat fitness fields.
+export function emptyFitnessEntry() {
+  return {
+    fitnessActivity: '', fitnessActivityOther: '', cardioDistance: '',
+    terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
+  };
+}
+
+// Migrate a stored day from the legacy flat fitness fields to the
+// `fitnessEntries` array. If the day already has a `fitnessEntries`
+// array it is returned unchanged. Otherwise the legacy flat fields are
+// wrapped into a single entry (preserving any entered values), and the
+// now-obsolete flat keys are stripped. Run only in the form load path.
+export function withFitnessMigration(d) {
+  if (!d || typeof d !== 'object') return d;
+  if (Array.isArray(d.fitnessEntries)) return d;
+  const {
+    fitnessActivity = '', fitnessActivityOther = '', cardioDistance = '',
+    terrain = '', yogaType = '', swimEnvironment = '', swimStroke = '',
+    ...rest
+  } = d;
+  const entry = {
+    fitnessActivity, fitnessActivityOther, cardioDistance,
+    terrain, yogaType, swimEnvironment, swimStroke,
+  };
+  return { ...rest, fitnessEntries: [entry] };
+}
+
 export function emptyForm(date) {
   return {
     date: date || todayStr(),
     wakeTime: '', weight: '', fitnessYesterday: '', workOff: '', sleepScore: '',
     location: '', pitTimeFrame: '', amWorkout: '',
     meditation: '', meditationDuration: '',
-    fitnessActivity: '', fitnessActivityOther: '', cardioDistance: '',
-    terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
+    fitnessEntries: [emptyFitnessEntry()],
     thankful1: '', thankful2: '', thankful3: '',
     oneThing: '', oneThingDone: false, oneThingSetup: '',
     tasks: Array(5).fill(null).map(() => ({ text: '', done: false })),

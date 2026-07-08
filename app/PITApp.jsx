@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GOLD, GOLD_LIGHT, DARK, BG, BORDER, DEFAULT_USERS, WEBAPP_URL } from '../utils/constants';
 import { todayStr, localDateStr } from '../utils/date';
-import { emptyForm, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
+import { emptyForm, emptyFitnessEntry, withFitnessMigration, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
 import { storage } from '../services/storage';
 import { callSheet } from '../services/sheet';
 import {
@@ -98,7 +98,7 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, todayStr()));
       if (r) {
-        setFd(JSON.parse(r.value));
+        setFd(withFitnessMigration(JSON.parse(r.value)));
       } else {
         const pref = await storage.get(devTypeKey(currentUser.id));
         setFd({ ...emptyForm(), prayerType: pref ? pref.value : 'prayer' });
@@ -240,6 +240,28 @@ export default function PITApp() {
     tasks[4] = { text: '', done: false };
     const futureTasksVisible = Math.max(1, (fd.futureTasksVisible ?? 1) - 1);
     const n = { ...fd, tasks, futureTasksVisible };
+    setFd(n);
+    save(n);
+  }
+
+  function updFitnessEntry(i, patch) {
+    const fitnessEntries = fd.fitnessEntries.map((e, j) => j === i ? { ...e, ...patch } : e);
+    const n = { ...fd, fitnessEntries };
+    setFd(n);
+    save(n);
+  }
+
+  function addFitnessEntry() {
+    const fitnessEntries = [...fd.fitnessEntries, emptyFitnessEntry()];
+    const n = { ...fd, fitnessEntries };
+    setFd(n);
+    save(n);
+  }
+
+  function removeFitnessEntry(i) {
+    if (fd.fitnessEntries.length <= 1) return;
+    const fitnessEntries = fd.fitnessEntries.filter((_, j) => j !== i);
+    const n = { ...fd, fitnessEntries };
     setFd(n);
     save(n);
   }
@@ -400,7 +422,7 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, date));
       if (r) {
-        setFd(JSON.parse(r.value));
+        setFd(withFitnessMigration(JSON.parse(r.value)));
         setAM(true);
         setView('form');
       }
@@ -500,7 +522,8 @@ export default function PITApp() {
 
         <DOPBtn top />
 
-        <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti} />
+        <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti}
+          updFitnessEntry={updFitnessEntry} addFitnessEntry={addFitnessEntry} removeFitnessEntry={removeFitnessEntry} />
 
         <GratitudeSection
           thankful1={fd.thankful1} thankful2={fd.thankful2} thankful3={fd.thankful3}
