@@ -1,13 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { GOLD, GOLD_LIGHT, BORDER, MID } from '../utils/constants';
 import { SMS_TIMES } from '../utils/constants';
 import { card, secTitle, lbl, inp, sel } from './styles';
 
 export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt }) {
-  useEffect(() => {
-    if (appointments.length === 0) addAppt();
-  }, []);
-
   return (
     <div style={card}>
       <div style={secTitle}>Appointments</div>

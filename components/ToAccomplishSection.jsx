@@ -62,7 +62,8 @@ export default function ToAccomplishSection({ fd, upd, updTask, removeTask }) {
           const visibleFuture = Math.max(
             fd.futureTasksVisible ?? 1,
             (fd.tasks[4]?.text || fd.tasks[4]?.done) ? 3 :
-            (fd.tasks[3]?.text || fd.tasks[3]?.done) ? 2 : 1
+            (fd.tasks[3]?.text || fd.tasks[3]?.done) ? 2 :
+            (fd.tasks[2]?.text || fd.tasks[2]?.done) ? 1 : 0
           );
           return (
             <>

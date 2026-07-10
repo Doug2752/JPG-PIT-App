@@ -129,7 +129,8 @@ export default function PITApp() {
   async function loadAppointments() {
     try {
       const r = await storage.get(apptKey(currentUser.id));
-      setAppointments(r ? JSON.parse(r.value) : []);
+      const parsed = r ? JSON.parse(r.value) : [];
+      setAppointments(parsed.filter(a => !(a.title === '' && (a.date === '' || a.date === todayStr()))));
     } catch {
       setAppointments([]);
     }
@@ -238,7 +239,7 @@ export default function PITApp() {
       tasks[j] = { ...fd.tasks[j + 1] };
     }
     tasks[4] = { text: '', done: false };
-    const futureTasksVisible = Math.max(1, (fd.futureTasksVisible ?? 1) - 1);
+    const futureTasksVisible = Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
     const n = { ...fd, tasks, futureTasksVisible };
     setFd(n);
     save(n);
