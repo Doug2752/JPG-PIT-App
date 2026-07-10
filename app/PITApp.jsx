@@ -101,10 +101,77 @@ export default function PITApp() {
         setFd(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value))));
       } else {
         const pref = await storage.get(devTypeKey(currentUser.id));
-        setFd({ ...emptyForm(), prayerType: pref ? pref.value : 'prayer' });
+        const carried = await applyCarryover(currentUser.id, todayStr());
+        const base = carried || emptyForm();
+        setFd({ ...base, prayerType: pref ? pref.value : 'prayer' });
       }
     } catch {
       setFd(emptyForm());
+    }
+  }
+
+  // Pull unresolved To Accomplish items forward from the most recent
+  // prior PIT day into a fresh today form, preserving each carried
+  // item's identity (id / origin_date / resolution fields / carry
+  // history) so origin-day memorialization can resolve back to source.
+  // Writes today's date into each carried item's carried_dates on the
+  // SOURCE day's record. Returns the merged today form, or null when
+  // there is no prior record or nothing unresolved to carry.
+  async function applyCarryover(uid, todayDate) {
+    try {
+      const ar = await storage.get(ak(uid)).catch(() => null);
+      const list = ar ? JSON.parse(ar.value) : [];
+      const priorDates = list.filter(d => d < todayDate).sort();
+      const priorDate = priorDates.length ? priorDates[priorDates.length - 1] : null;
+      if (!priorDate) return null;
+
+      const pr = await storage.get(sk(uid, priorDate)).catch(() => null);
+      if (!pr) return null;
+      const priorDay = withCarryoverMigration(withFitnessMigration(JSON.parse(pr.value)));
+      const items = Array.isArray(priorDay.toAccomplishItems) ? priorDay.toAccomplishItems : [];
+
+      const unresolved = items.filter(it => it && it.resolution_status === null);
+      if (unresolved.length === 0) return null;
+
+      const today = emptyForm(todayDate);
+      const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
+      const carriedItems = [];
+      for (const it of unresolved) {
+        if (it.slot === 'one_thing') {
+          today.oneThing = it.text;
+          today.oneThingDone = false;
+        } else if (slotToTaskIndex[it.slot] != null) {
+          today.tasks[slotToTaskIndex[it.slot]] = { text: it.text, done: false };
+        } else {
+          continue;
+        }
+        carriedItems.push({
+          id: it.id,
+          slot: it.slot,
+          text: it.text,
+          done: false,
+          origin_date: it.origin_date,
+          resolution_status: it.resolution_status,
+          resolution_date: it.resolution_date,
+          carried_dates: Array.isArray(it.carried_dates) ? [...it.carried_dates] : [],
+        });
+      }
+      today.toAccomplishItems = carriedItems;
+
+      const updatedItems = items.map(it => {
+        if (it && it.resolution_status === null) {
+          const carried = Array.isArray(it.carried_dates) ? it.carried_dates : [];
+          if (!carried.includes(todayDate)) {
+            return { ...it, carried_dates: [...carried, todayDate] };
+          }
+        }
+        return it;
+      });
+      await storage.set(sk(uid, priorDate), JSON.stringify({ ...priorDay, toAccomplishItems: updatedItems }));
+
+      return today;
+    } catch {
+      return null;
     }
   }
 
