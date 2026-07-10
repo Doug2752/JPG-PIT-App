@@ -51,6 +51,7 @@ export default function PITApp() {
   const [fd,             setFd]            = useState(emptyForm());
   const [archive,        setArchive]       = useState([]);
   const [archiveMode,    setAM]            = useState(false);
+  const [noEntryDate,    setNoEntryDate]   = useState(null);
   const [aiLoad,         setAL]            = useState({});
   const [weekData,       setWD]            = useState({ completeDays: [], sentDates: [], canSend: false });
   const [coachMsg,       setCM]            = useState({ hasMessage: false, message: '', dismissed: false });
@@ -97,6 +98,7 @@ export default function PITApp() {
   // ── Data loaders ──────────────────────────────────────────────────────────
 
   async function loadToday() {
+    setNoEntryDate(null);
     try {
       const r = await storage.get(sk(currentUser.id, todayStr()));
       if (r) {
@@ -282,6 +284,7 @@ export default function PITApp() {
   }
 
   function upd(f, v) {
+    if (archiveMode) return;
     if (f === 'oneThingDone') {
       const item = (fd.toAccomplishItems || []).find(it => it && it.slot === 'one_thing');
       if (item && item.origin_date < todayStr()) {
@@ -298,12 +301,14 @@ export default function PITApp() {
   }
 
   function updMulti(pairs) {
+    if (archiveMode) return;
     const n = { ...fd, ...Object.fromEntries(pairs) };
     setFd(n);
     save(n);
   }
 
   function updTask(i, f, v) {
+    if (archiveMode) return;
     if (f === 'done') {
       const slot = { 0: 'daily_2', 1: 'daily_3', 2: 'future_4', 3: 'future_5', 4: 'future_6' }[i];
       const item = (fd.toAccomplishItems || []).find(it => it && it.slot === slot);
@@ -364,6 +369,7 @@ export default function PITApp() {
   // today) are memorialized as 'cleared' on their origin day (matched
   // by id); today's slots are emptied and save() rebuild drops them.
   async function handleClearConfirm(selectedSlots) {
+    if (archiveMode) return;
     const slots = selectedSlots || [];
     if (slots.length === 0) {
       setShowClearModal(false);
@@ -408,6 +414,7 @@ export default function PITApp() {
   }
 
   function removeTask(absoluteIndex) {
+    if (archiveMode) return;
     const tasks = [...fd.tasks];
     for (let j = absoluteIndex; j <= 3; j++) {
       tasks[j] = { ...fd.tasks[j + 1] };
@@ -420,6 +427,7 @@ export default function PITApp() {
   }
 
   function updFitnessEntry(i, patch) {
+    if (archiveMode) return;
     const fitnessEntries = fd.fitnessEntries.map((e, j) => j === i ? { ...e, ...patch } : e);
     const n = { ...fd, fitnessEntries };
     setFd(n);
@@ -427,6 +435,7 @@ export default function PITApp() {
   }
 
   function addFitnessEntry() {
+    if (archiveMode) return;
     const fitnessEntries = [...fd.fitnessEntries, emptyFitnessEntry()];
     const n = { ...fd, fitnessEntries };
     setFd(n);
@@ -434,6 +443,7 @@ export default function PITApp() {
   }
 
   function removeFitnessEntry(i) {
+    if (archiveMode) return;
     if (fd.fitnessEntries.length <= 1) return;
     const fitnessEntries = fd.fitnessEntries.filter((_, j) => j !== i);
     const n = { ...fd, fitnessEntries };
@@ -442,12 +452,14 @@ export default function PITApp() {
   }
 
   function updAppt(id, f, v) {
+    if (archiveMode) return;
     const updated = appointments.map(a => a.id === id ? { ...a, [f]: v } : a);
     setAppointments(updated);
     saveAppointments(updated);
   }
 
   function addAppt() {
+    if (archiveMode) return;
     const today = todayStr();
     if (appointments.filter(a => a.date >= today).length >= 5) return;
     const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '', resolved: false }];
@@ -456,18 +468,21 @@ export default function PITApp() {
   }
 
   function removeAppt(id) {
+    if (archiveMode) return;
     const updated = appointments.filter(a => a.id !== id);
     setAppointments(updated);
     saveAppointments(updated);
   }
 
   function resolveAppt(id) {
+    if (archiveMode) return;
     const updated = appointments.map(a => a.id === id ? { ...a, resolved: true, resolution_date: todayStr() } : a);
     setAppointments(updated);
     saveAppointments(updated);
   }
 
   async function markBookComplete() {
+    if (archiveMode) return;
     if (!fd.bookName.trim()) return;
     const entry = { title: fd.bookName.trim(), author: fd.bookAuthor || '', date: fd.date };
     const updated = [entry, ...completedBooks.filter(b => b.title !== fd.bookName.trim())].slice(0, 50);
@@ -604,6 +619,12 @@ export default function PITApp() {
       const r = await storage.get(sk(currentUser.id, date));
       if (r) {
         setFd(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value))));
+        setNoEntryDate(null);
+        setAM(true);
+        setView('form');
+      } else {
+        setFd(emptyForm(date));
+        setNoEntryDate(date);
         setAM(true);
         setView('form');
       }
@@ -660,6 +681,31 @@ export default function PITApp() {
         setCU={setCU}
         setView={setView}
       />
+    );
+  }
+
+  if (archiveMode && noEntryDate) {
+    return (
+      <div style={{ minHeight: '100vh', background: BG, fontFamily: 'sans-serif', overflowX: 'hidden' }}>
+        <Header
+          view={view} setView={setView}
+          archiveMode={archiveMode} backToday={backToday}
+          streak={streak}
+          complete={false}
+          fd={fd}
+          completedBooks={completedBooks}
+          showHelp={showHelp} onHelpToggle={toggleHelp}
+          currentUser={currentUser} setCU={setCU}
+          coachMsg={coachMsg}
+          replyText={replyText} setRT={setRT}
+          sendReply={sendReply} dismissMsg={dismissMsg}
+        />
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px 20px' }}>
+          <div style={{ fontSize: 16, color: '#888', textAlign: 'center', padding: '40px 0' }}>
+            No PIT entry for this day
+          </div>
+        </div>
+      </div>
     );
   }
 
