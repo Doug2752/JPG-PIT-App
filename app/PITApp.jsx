@@ -62,6 +62,8 @@ export default function PITApp() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showHelp,       setShowHelp]      = useState(false);
   const [appointments,   setAppointments]  = useState([]);
+  const [showClearModal, setShowClearModal] = useState(false);
+  const [toastMessage,   setToastMessage]   = useState('');
 
   useEffect(() => {
     if (currentUser) {
@@ -358,6 +360,53 @@ export default function PITApp() {
     save(n);
   }
 
+  // Clear selected To Accomplish slots. Carried items (origin_date <
+  // today) are memorialized as 'cleared' on their origin day (matched
+  // by id); today's slots are emptied and save() rebuild drops them.
+  async function handleClearConfirm(selectedSlots) {
+    const slots = selectedSlots || [];
+    if (slots.length === 0) {
+      setShowClearModal(false);
+      return;
+    }
+    const items = fd.toAccomplishItems || [];
+    const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
+    const n = { ...fd, tasks: fd.tasks.map(t => ({ ...t })) };
+    let cleared = 0;
+    for (const slot of slots) {
+      if (slot === 'one_thing') {
+        n.oneThing = '';
+        n.oneThingDone = false;
+      } else if (slotToTaskIndex[slot] != null) {
+        n.tasks[slotToTaskIndex[slot]] = { text: '', done: false };
+      } else {
+        continue;
+      }
+      const item = items.find(it => it && it.slot === slot);
+      if (item && item.origin_date < todayStr()) {
+        try {
+          const pr = await storage.get(sk(currentUser.id, item.origin_date)).catch(() => null);
+          if (pr) {
+            const originDay = withCarryoverMigration(withFitnessMigration(JSON.parse(pr.value)));
+            const originItems = Array.isArray(originDay.toAccomplishItems) ? originDay.toAccomplishItems : [];
+            const updatedOriginItems = originItems.map(oi =>
+              oi && oi.id === item.id
+                ? { ...oi, resolution_status: 'cleared', resolution_date: todayStr() }
+                : oi
+            );
+            await storage.set(sk(currentUser.id, item.origin_date), JSON.stringify({ ...originDay, toAccomplishItems: updatedOriginItems }));
+          }
+        } catch {}
+      }
+      cleared++;
+    }
+    setFd(n);
+    save(n);
+    setShowClearModal(false);
+    setToastMessage(`${cleared} item${cleared === 1 ? '' : 's'} cleared`);
+    setTimeout(() => setToastMessage(''), 2500);
+  }
+
   function removeTask(absoluteIndex) {
     const tasks = [...fd.tasks];
     for (let j = absoluteIndex; j <= 3; j++) {
@@ -610,6 +659,20 @@ export default function PITApp() {
 
   // Main form view
   const complete = isDayComplete(fd);
+  const clearSlotDefs = [
+    { slot: 'one_thing', label: 'The One Thing', text: fd.oneThing || '' },
+    { slot: 'daily_2',   label: 'Daily Task 2',  text: fd.tasks[0]?.text || '' },
+    { slot: 'daily_3',   label: 'Daily Task 3',  text: fd.tasks[1]?.text || '' },
+    { slot: 'future_4',  label: 'Future Task 4', text: fd.tasks[2]?.text || '' },
+    { slot: 'future_5',  label: 'Future Task 5', text: fd.tasks[3]?.text || '' },
+    { slot: 'future_6',  label: 'Future Task 6', text: fd.tasks[4]?.text || '' },
+  ];
+  const clearModalItems = clearSlotDefs
+    .filter(s => s.text.trim() !== '')
+    .map(s => {
+      const it = (fd.toAccomplishItems || []).find(x => x && x.slot === s.slot);
+      return { slot: s.slot, label: s.label, text: s.text, originDay: it ? it.origin_date : 'Today' };
+    });
   const visibleAppointments = appointments
     .filter(a => a.date >= todayStr())
     .sort((a, b) => a.date.localeCompare(b.date));
@@ -656,7 +719,15 @@ export default function PITApp() {
           upd={upd}
         />
 
-        <ToAccomplishSection fd={fd} upd={upd} updTask={updTask} removeTask={removeTask} />
+        <ToAccomplishSection
+          fd={fd} upd={upd} updTask={updTask} removeTask={removeTask}
+          showClearModal={showClearModal}
+          onClearModalOpen={() => setShowClearModal(true)}
+          clearModalItems={clearModalItems}
+          onClearConfirm={handleClearConfirm}
+          onClearCancel={() => setShowClearModal(false)}
+          toastMessage={toastMessage}
+        />
 
         <NotesSection nit={fd.nit} upd={upd} />
 

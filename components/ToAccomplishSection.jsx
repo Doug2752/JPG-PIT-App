@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GOLD, RED, BORDER, MID, GOLD_LIGHT } from '../utils/constants';
 import { card, secTitle, lbl, inp } from './styles';
 
-export default function ToAccomplishSection({ fd, upd, updTask, removeTask }) {
+export default function ToAccomplishSection({
+  fd, upd, updTask, removeTask,
+  showClearModal, onClearModalOpen, clearModalItems = [],
+  onClearConfirm, onClearCancel, toastMessage,
+}) {
+  const [checkedSlots, setCheckedSlots] = useState({});
+
+  const hasContent = (fd.oneThing || '').trim() !== '' ||
+    [0, 1, 2, 3, 4].some(i => (fd.tasks[i]?.text || '').trim() !== '');
+
+  function toggleSlot(slot) {
+    setCheckedSlots(prev => ({ ...prev, [slot]: !prev[slot] }));
+  }
+
+  function openModal() {
+    setCheckedSlots({});
+    onClearModalOpen();
+  }
+
+  function confirmClear() {
+    const selected = clearModalItems.map(it => it.slot).filter(slot => checkedSlots[slot]);
+    onClearConfirm(selected);
+    setCheckedSlots({});
+  }
+
   return (
     <div style={card}>
-      <div style={secTitle}>To Accomplish</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={secTitle}>To Accomplish</div>
+        {hasContent && (
+          <button
+            onClick={openModal}
+            style={{ background: GOLD_LIGHT, border: '1.5px solid #000', borderRadius: 5, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: '4px 10px' }}
+          >
+            Clear Items
+          </button>
+        )}
+      </div>
 
       {/* The One Thing */}
       <div style={{ background: '#fff5f5', border: `2px solid ${RED}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
@@ -96,6 +130,51 @@ export default function ToAccomplishSection({ fd, upd, updTask, removeTask }) {
           Three future tasks max. These are reference — not required today.
         </div>
       </div>
+
+      {showClearModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ ...card, maxWidth: 420, width: '90%', border: `2px solid ${GOLD}`, maxHeight: '80vh', overflowY: 'auto' }}>
+            <div style={secTitle}>Clear Items</div>
+            <div style={{ fontSize: 11, color: MID, marginBottom: 12 }}>
+              Select the items you want to clear. Carried items are memorialized on their origin day.
+            </div>
+            {clearModalItems.length === 0 && (
+              <div style={{ fontSize: 12, color: '#999', marginBottom: 12 }}>No items to clear.</div>
+            )}
+            {clearModalItems.map(it => (
+              <label key={it.slot} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={!!checkedSlots[it.slot]}
+                  onChange={() => toggleSlot(it.slot)}
+                  style={{ width: 16, height: 16, marginTop: 2, cursor: 'pointer', accentColor: GOLD }}
+                />
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 0.5 }}>{it.label}</div>
+                  <div style={{ fontSize: 13, color: '#333' }}>{it.text}</div>
+                  <div style={{ fontSize: 10, color: '#999' }}>Origin: {it.originDay}</div>
+                </div>
+              </label>
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+              <button
+                onClick={onClearCancel}
+                style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 5, color: '#666', fontSize: 12, fontWeight: 600, cursor: 'pointer', padding: '6px 14px' }}
+              >Cancel</button>
+              <button
+                onClick={confirmClear}
+                style={{ background: GOLD_LIGHT, border: '1.5px solid #000', borderRadius: 5, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: '6px 14px' }}
+              >Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toastMessage && (
+        <div style={{ position: 'fixed', bottom: 30, left: '50%', transform: 'translateX(-50%)', background: GOLD, color: '#000', borderRadius: 5, padding: '10px 20px', fontSize: 13, fontWeight: 700, zIndex: 1100, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }
