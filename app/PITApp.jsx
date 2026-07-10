@@ -280,6 +280,13 @@ export default function PITApp() {
   }
 
   function upd(f, v) {
+    if (f === 'oneThingDone') {
+      const item = (fd.toAccomplishItems || []).find(it => it && it.slot === 'one_thing');
+      if (item && item.origin_date < todayStr()) {
+        resolveCarriedItem('one_thing', v);
+        return;
+      }
+    }
     const n = { ...fd, [f]: v };
     setFd(n);
     save(n);
@@ -295,8 +302,58 @@ export default function PITApp() {
   }
 
   function updTask(i, f, v) {
+    if (f === 'done') {
+      const slot = { 0: 'daily_2', 1: 'daily_3', 2: 'future_4', 3: 'future_5', 4: 'future_6' }[i];
+      const item = (fd.toAccomplishItems || []).find(it => it && it.slot === slot);
+      if (item && item.origin_date < todayStr()) {
+        resolveCarriedItem(slot, v);
+        return;
+      }
+    }
     const tasks = fd.tasks.map((x, j) => j === i ? { ...x, [f]: v } : x);
     const n = { ...fd, tasks };
+    setFd(n);
+    save(n);
+  }
+
+  // Resolve a CARRIED To Accomplish item (origin_date < today) from
+  // today's screen. Option A: checking done memorializes the resolution
+  // on the ORIGIN day's record (matched by id) and clears today's slot
+  // so it is freed and will not re-carry. No in-place uncheck for
+  // carried items — once done, the slot is empty and available.
+  async function resolveCarriedItem(slot, done) {
+    const items = fd.toAccomplishItems || [];
+    const item = items.find(it => it && it.slot === slot);
+    const isCarried = !!(item && item.origin_date < todayStr());
+    const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
+
+    let n;
+    if (slot === 'one_thing') {
+      n = done ? { ...fd, oneThing: '', oneThingDone: false } : { ...fd, oneThingDone: false };
+    } else {
+      const i = slotToTaskIndex[slot];
+      const tasks = fd.tasks.map((x, j) => j === i
+        ? (done ? { text: '', done: false } : { ...x, done: false })
+        : x);
+      n = { ...fd, tasks };
+    }
+
+    if (isCarried && done) {
+      try {
+        const pr = await storage.get(sk(currentUser.id, item.origin_date)).catch(() => null);
+        if (pr) {
+          const originDay = withCarryoverMigration(withFitnessMigration(JSON.parse(pr.value)));
+          const originItems = Array.isArray(originDay.toAccomplishItems) ? originDay.toAccomplishItems : [];
+          const updatedOriginItems = originItems.map(oi =>
+            oi && oi.id === item.id
+              ? { ...oi, resolution_status: 'done', resolution_date: todayStr() }
+              : oi
+          );
+          await storage.set(sk(currentUser.id, item.origin_date), JSON.stringify({ ...originDay, toAccomplishItems: updatedOriginItems }));
+        }
+      } catch {}
+    }
+
     setFd(n);
     save(n);
   }
