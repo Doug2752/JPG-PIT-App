@@ -462,7 +462,7 @@ export default function PITApp() {
   }
 
   function resolveAppt(id) {
-    const updated = appointments.map(a => a.id === id ? { ...a, resolved: true } : a);
+    const updated = appointments.map(a => a.id === id ? { ...a, resolved: true, resolution_date: todayStr() } : a);
     setAppointments(updated);
     saveAppointments(updated);
   }
