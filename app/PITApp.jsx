@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GOLD, GOLD_LIGHT, DARK, BG, BORDER, DEFAULT_USERS, WEBAPP_URL } from '../utils/constants';
 import { todayStr, localDateStr } from '../utils/date';
-import { emptyForm, emptyFitnessEntry, withFitnessMigration, withCarryoverMigration, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
+import { emptyForm, emptyFitnessEntry, withFitnessMigration, withCarryoverMigration, rebuildToAccomplishItems, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
 import { storage } from '../services/storage';
 import { callSheet } from '../services/sheet';
 import {
@@ -200,6 +200,7 @@ export default function PITApp() {
   async function save(data) {
     if (!currentUser) return;
     try {
+      data.toAccomplishItems = rebuildToAccomplishItems(data);
       await storage.set(sk(currentUser.id, data.date), JSON.stringify(data));
       const r = await storage.get(ak(currentUser.id)).catch(() => null);
       let list = r ? JSON.parse(r.value) : [];

@@ -71,6 +71,53 @@ export function withCarryoverMigration(d) {
   return { ...d, toAccomplishItems };
 }
 
+// Rebuild the parallel `toAccomplishItems` array from the current
+// To Accomplish field values. Called on every save so the parallel
+// field stays in sync with the source-of-truth oneThing / tasks[]
+// fields. Preserves prior item metadata (id, origin_date, resolution
+// tracking, carry history) for any slot that already had an entry,
+// refreshing only text/done. New content with no prior entry gets a
+// fresh id and origin_date = today. Slots that are now empty (blank
+// text and not done) are dropped. Pure — returns the rebuilt array,
+// not the full day object.
+export function rebuildToAccomplishItems(d) {
+  if (!d || typeof d !== 'object') return [];
+  const prior = Array.isArray(d.toAccomplishItems) ? d.toAccomplishItems : [];
+  const priorBySlot = {};
+  for (const item of prior) {
+    if (item && item.slot) priorBySlot[item.slot] = item;
+  }
+  const tasks = Array.isArray(d.tasks) ? d.tasks : [];
+
+  const sources = [
+    { slot: 'one_thing', text: d.oneThing || '',      done: !!d.oneThingDone },
+    { slot: 'daily_2',   text: tasks[0]?.text || '',  done: !!tasks[0]?.done },
+    { slot: 'daily_3',   text: tasks[1]?.text || '',  done: !!tasks[1]?.done },
+    { slot: 'future_4',  text: tasks[2]?.text || '',  done: !!tasks[2]?.done },
+    { slot: 'future_5',  text: tasks[3]?.text || '',  done: !!tasks[3]?.done },
+    { slot: 'future_6',  text: tasks[4]?.text || '',  done: !!tasks[4]?.done },
+  ];
+
+  return sources
+    .filter(s => s.text.trim() !== '' || s.done === true)
+    .map(s => {
+      const existing = priorBySlot[s.slot];
+      if (existing) {
+        return { ...existing, text: s.text, done: s.done };
+      }
+      return {
+        id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+        slot: s.slot,
+        text: s.text,
+        done: s.done,
+        origin_date: todayStr(),
+        resolution_status: s.done ? 'done' : null,
+        resolution_date: null,
+        carried_dates: [],
+      };
+    });
+}
+
 export function emptyForm(date) {
   return {
     date: date || todayStr(),
