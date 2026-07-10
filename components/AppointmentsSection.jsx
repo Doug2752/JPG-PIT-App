@@ -1,9 +1,10 @@
 import React from 'react';
 import { GOLD, GOLD_LIGHT, BORDER, MID } from '../utils/constants';
 import { SMS_TIMES } from '../utils/constants';
+import { todayStr } from '../utils/date';
 import { card, secTitle, lbl, inp, sel } from './styles';
 
-export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt }) {
+export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt, resolveAppt }) {
   return (
     <div style={card}>
       <div style={secTitle}>Appointments</div>
@@ -14,8 +15,21 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
       {appointments.map((a, i) => (
         <div key={a.id} style={{ marginBottom: 12, padding: 12, background: '#f8f8f6', borderRadius: 6, border: `1px solid ${BORDER}` }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <div style={{ fontWeight: 700, fontSize: 11, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
-              Appointment {i + 1}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input
+                type="checkbox"
+                checked={a.resolved || false}
+                onChange={() => resolveAppt(a.id)}
+                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }}
+              />
+              <div style={{ fontWeight: 700, fontSize: 11, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
+                Appointment {i + 1}
+              </div>
+              {a.date && a.date < todayStr() && (
+                <span style={{ background: '#cc2222', color: '#fff', borderRadius: 4, fontSize: 10, fontWeight: 700, padding: '2px 8px', marginLeft: 8 }}>
+                  PAST DUE
+                </span>
+              )}
             </div>
             <button
               onClick={() => removeAppt(a.id)}

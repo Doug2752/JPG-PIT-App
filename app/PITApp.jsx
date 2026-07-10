@@ -450,13 +450,19 @@ export default function PITApp() {
   function addAppt() {
     const today = todayStr();
     if (appointments.filter(a => a.date >= today).length >= 5) return;
-    const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '' }];
+    const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '', resolved: false }];
     setAppointments(updated);
     saveAppointments(updated);
   }
 
   function removeAppt(id) {
     const updated = appointments.filter(a => a.id !== id);
+    setAppointments(updated);
+    saveAppointments(updated);
+  }
+
+  function resolveAppt(id) {
+    const updated = appointments.map(a => a.id === id ? { ...a, resolved: true } : a);
     setAppointments(updated);
     saveAppointments(updated);
   }
@@ -674,8 +680,8 @@ export default function PITApp() {
       return { slot: s.slot, label: s.label, text: s.text, originDay: it ? it.origin_date : 'Today' };
     });
   const visibleAppointments = appointments
-    .filter(a => a.date >= todayStr())
-    .sort((a, b) => a.date.localeCompare(b.date));
+    .filter(a => a.resolved !== true)
+    .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
   return (
     <div style={{ minHeight: '100vh', background: BG, fontFamily: 'sans-serif', overflowX: 'hidden' }}>
@@ -755,6 +761,7 @@ export default function PITApp() {
           updAppt={updAppt}
           addAppt={addAppt}
           removeAppt={removeAppt}
+          resolveAppt={resolveAppt}
         />
 
         <SummarySection
