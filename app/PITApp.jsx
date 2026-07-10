@@ -779,6 +779,8 @@ export default function PITApp() {
           onClearConfirm={handleClearConfirm}
           onClearCancel={() => setShowClearModal(false)}
           toastMessage={toastMessage}
+          archiveMode={archiveMode}
+          archiveDateStr={archiveMode ? (fd.date || '') : ''}
         />
 
         <NotesSection nit={fd.nit} upd={upd} />

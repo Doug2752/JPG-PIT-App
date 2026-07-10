@@ -6,11 +6,19 @@ export default function ToAccomplishSection({
   fd, upd, updTask, removeTask,
   showClearModal, onClearModalOpen, clearModalItems = [],
   onClearConfirm, onClearCancel, toastMessage,
+  archiveMode, archiveDateStr,
 }) {
   const [checkedSlots, setCheckedSlots] = useState({});
 
   const hasContent = (fd.oneThing || '').trim() !== '' ||
     [0, 1, 2, 3, 4].some(i => (fd.tasks[i]?.text || '').trim() !== '');
+
+  function isCarriedUnresolved(slotKey) {
+    if (!archiveMode) return false;
+    if (!archiveDateStr || !fd.toAccomplishItems) return false;
+    const item = fd.toAccomplishItems.find(it => it && it.slot === slotKey);
+    return !!(item && item.origin_date < archiveDateStr && item.resolution_status === null);
+  }
 
   function toggleSlot(slot) {
     setCheckedSlots(prev => ({ ...prev, [slot]: !prev[slot] }));
@@ -63,6 +71,11 @@ export default function ToAccomplishSection({
           onChange={e => upd('oneThing', e.target.value)}
           placeholder="The ONE THING I must accomplish today..."
         />
+        {isCarriedUnresolved('one_thing') && (
+          <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
+            carried, unresolved
+          </div>
+        )}
         <div style={{ marginTop: 8 }}>
           <label style={lbl}>First Action / Set-Up</label>
           <input
@@ -78,13 +91,20 @@ export default function ToAccomplishSection({
       <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: `1px dashed ${BORDER}` }}>
         <div style={{ ...lbl, color: GOLD, marginBottom: 8 }}>Daily Tasks (2-3)</div>
         {[0, 1].map(i => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <input type="checkbox" checked={fd.tasks[i].done}
-              onChange={e => updTask(i, 'done', e.target.checked)}
-              style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }} />
-            <input style={inp} value={fd.tasks[i].text}
-              onChange={e => updTask(i, 'text', e.target.value)}
-              placeholder={`Daily task ${i + 2}`} />
+          <div key={i} style={{ marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input type="checkbox" checked={fd.tasks[i].done}
+                onChange={e => updTask(i, 'done', e.target.checked)}
+                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }} />
+              <input style={inp} value={fd.tasks[i].text}
+                onChange={e => updTask(i, 'text', e.target.value)}
+                placeholder={`Daily task ${i + 2}`} />
+            </div>
+            {isCarriedUnresolved(`daily_${i + 2}`) && (
+              <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
+                carried, unresolved
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -102,17 +122,24 @@ export default function ToAccomplishSection({
           return (
             <>
               {fd.tasks.slice(2, 2 + visibleFuture).map((t, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
-                  <input type="checkbox" checked={t.done}
-                    onChange={e => updTask(i + 2, 'done', e.target.checked)}
-                    style={{ width: 14, height: 14, cursor: 'pointer' }} />
-                  <input style={{ ...inp, fontSize: 12 }} value={t.text}
-                    onChange={e => updTask(i + 2, 'text', e.target.value)}
-                    placeholder={`Future task ${i + 4}`} />
-                  <button
-                    onClick={() => removeTask(i + 2)}
-                    style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap' }}
-                  >Remove</button>
+                <div key={i} style={{ marginBottom: 7 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <input type="checkbox" checked={t.done}
+                      onChange={e => updTask(i + 2, 'done', e.target.checked)}
+                      style={{ width: 14, height: 14, cursor: 'pointer' }} />
+                    <input style={{ ...inp, fontSize: 12 }} value={t.text}
+                      onChange={e => updTask(i + 2, 'text', e.target.value)}
+                      placeholder={`Future task ${i + 4}`} />
+                    <button
+                      onClick={() => removeTask(i + 2)}
+                      style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap' }}
+                    >Remove</button>
+                  </div>
+                  {isCarriedUnresolved(`future_${i + 4}`) && (
+                    <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
+                      carried, unresolved
+                    </div>
+                  )}
                 </div>
               ))}
               {visibleFuture < 3 && (
