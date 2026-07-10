@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GOLD, GOLD_LIGHT, DARK, BG, BORDER, DEFAULT_USERS, WEBAPP_URL } from '../utils/constants';
 import { todayStr, localDateStr } from '../utils/date';
-import { emptyForm, emptyFitnessEntry, withFitnessMigration, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
+import { emptyForm, emptyFitnessEntry, withFitnessMigration, withCarryoverMigration, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
 import { storage } from '../services/storage';
 import { callSheet } from '../services/sheet';
 import {
@@ -98,7 +98,7 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, todayStr()));
       if (r) {
-        setFd(withFitnessMigration(JSON.parse(r.value)));
+        setFd(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value))));
       } else {
         const pref = await storage.get(devTypeKey(currentUser.id));
         setFd({ ...emptyForm(), prayerType: pref ? pref.value : 'prayer' });
@@ -423,7 +423,7 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, date));
       if (r) {
-        setFd(withFitnessMigration(JSON.parse(r.value)));
+        setFd(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value))));
         setAM(true);
         setView('form');
       }

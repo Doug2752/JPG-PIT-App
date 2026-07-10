@@ -31,6 +31,46 @@ export function withFitnessMigration(d) {
   return { ...rest, fitnessEntries: [entry] };
 }
 
+// Build the parallel `toAccomplishItems` array from the existing
+// To Accomplish fields on read. Migration-on-read only: it leaves
+// oneThing / oneThingDone / oneThingSetup / tasks[] untouched and
+// derives item-ID records (id, slot, origin_date, resolution tracking,
+// carry history) for the future carryover engine. Only slots with
+// content (non-empty text or done === true) are included. A day that
+// already carries a toAccomplishItems array is returned unchanged.
+// Pure — takes d, returns a new object, no side effects.
+export function withCarryoverMigration(d) {
+  if (!d || typeof d !== 'object') return d;
+  if (Array.isArray(d.toAccomplishItems)) return d;
+
+  const originDate = d.date || todayStr();
+  const tasks = Array.isArray(d.tasks) ? d.tasks : [];
+
+  const sources = [
+    { slot: 'one_thing', text: d.oneThing || '',      done: !!d.oneThingDone },
+    { slot: 'daily_2',   text: tasks[0]?.text || '',  done: !!tasks[0]?.done },
+    { slot: 'daily_3',   text: tasks[1]?.text || '',  done: !!tasks[1]?.done },
+    { slot: 'future_4',  text: tasks[2]?.text || '',  done: !!tasks[2]?.done },
+    { slot: 'future_5',  text: tasks[3]?.text || '',  done: !!tasks[3]?.done },
+    { slot: 'future_6',  text: tasks[4]?.text || '',  done: !!tasks[4]?.done },
+  ];
+
+  const toAccomplishItems = sources
+    .filter(s => s.text.trim() !== '' || s.done === true)
+    .map(s => ({
+      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      slot: s.slot,
+      text: s.text,
+      done: s.done,
+      origin_date: originDate,
+      resolution_status: s.done ? 'done' : null,
+      resolution_date: null,
+      carried_dates: [],
+    }));
+
+  return { ...d, toAccomplishItems };
+}
+
 export function emptyForm(date) {
   return {
     date: date || todayStr(),
