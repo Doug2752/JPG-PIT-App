@@ -138,10 +138,15 @@ export default function PITApp() {
       const pr = await storage.get(sk(uid, priorDate)).catch(() => null);
       if (!pr) return null;
       const priorDay = withCarryoverMigration(withFitnessMigration(JSON.parse(pr.value)));
+      const bookName = priorDay.bookName || '';
+      const bookAuthor = priorDay.bookAuthor || '';
+      const bookPage = priorDay.bookPage || '';
+      const bookCompleted = priorDay.bookCompleted || false;
       const items = Array.isArray(priorDay.toAccomplishItems) ? priorDay.toAccomplishItems : [];
 
       const unresolved = items.filter(it => it && it.resolution_status === null);
-      if (unresolved.length === 0) return null;
+      const hasBook = !bookCompleted && bookName.trim();
+      if (unresolved.length === 0 && !hasBook) return null;
 
       const today = emptyForm(todayDate);
       const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
@@ -167,6 +172,11 @@ export default function PITApp() {
         });
       }
       today.toAccomplishItems = carriedItems;
+      if (!bookCompleted && bookName.trim()) {
+        today.bookName = bookName;
+        today.bookAuthor = bookAuthor;
+        today.bookPage = bookPage;
+      }
 
       const updatedItems = items.map(it => {
         if (it && it.resolution_status === null) {
