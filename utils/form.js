@@ -124,7 +124,7 @@ export function emptyForm(date) {
   return {
     date: date || todayStr(),
     wakeTime: '', weight: '', fitnessYesterday: '', workOff: '', sleepScore: '',
-    location: '', pitTimeFrame: '', amWorkout: '',
+    location: '', pitTimeFrame: '', amWorkout: '', energyLevel: '',
     meditation: '', meditationDuration: '',
     fitnessEntries: [emptyFitnessEntry()],
     thankful1: '', thankful2: '', thankful3: '',

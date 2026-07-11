@@ -353,40 +353,50 @@ export default function DailyTrackingSection({
         <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 }}>
           Additional Tracking
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'end' }}>
-          <div>
-            <label style={dimLbl}>
-              AM Fitness Today
-              <span style={{ fontSize: '0.82em', fontWeight: 500, opacity: 0.9, display: 'block' }}>(non-negotiable)</span>
-            </label>
-            <select style={sel} value={fd.amWorkout} onChange={e => upd('amWorkout', e.target.value)}>
-              <option value="">Select</option>
-              <option>Yes</option>
-              <option>No</option>
-              <option>Rest Day</option>
-            </select>
-          </div>
-          <div>
-            <label style={dimLbl}>
-              <span>Location</span>
-              <span style={{ display: 'block', fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, letterSpacing: 0, marginTop: 1 }}>
-                Where are you completing today's PIT?
-              </span>
-            </label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'stretch' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ minHeight: 36 }}>
+              <label style={dimLbl}>
+                <span>Location</span>
+                <span style={{ display: 'block', fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, letterSpacing: 0, marginTop: 1 }}>
+                  Where are you completing today's PIT?
+                </span>
+              </label>
+            </div>
             <select style={sel} value={fd.location} onChange={e => upd('location', e.target.value)}>
               <option value="">Select</option>
               {LOCATIONS.map(l => <option key={l}>{l}</option>)}
             </select>
           </div>
-          <div>
-            <label style={dimLbl}>PIT Time Frame</label>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ minHeight: 36 }}>
+              <label style={dimLbl}>PIT Time Frame</label>
+              <div style={{ fontSize: 8, marginBottom: 0 }}>&nbsp;</div>
+            </div>
             <select style={sel} value={fd.pitTimeFrame} onChange={e => upd('pitTimeFrame', e.target.value)}>
               <option value="">Select</option>
               {PIT_TIMES.map(t => <option key={t}>{t}</option>)}
             </select>
           </div>
-          <div>
-            <label style={dimLbl}>Meditation / Mental Alignment Today</label>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ minHeight: 36 }}>
+              <label style={{...dimLbl, marginBottom: 0}}>Energy Level</label>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginTop: 2 }}>
+                10 = highest energy
+              </div>
+            </div>
+            <select style={sel} value={fd.energyLevel} onChange={e => upd('energyLevel', e.target.value)}>
+              <option value="">Select</option>
+              {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={String(n)}>{n}</option>)}
+            </select>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ minHeight: 36 }}>
+              <label style={{...dimLbl, marginBottom: 0}}>Mental Alignment</label>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginTop: 2 }}>
+                Completing all aspects of PIT makes this complete.
+              </div>
+            </div>
             <select style={sel} value={fd.meditation}
               onChange={e => updMulti([['meditation', e.target.value], ['meditationDuration', '']])}>
               <option value="">Select</option>
@@ -394,15 +404,6 @@ export default function DailyTrackingSection({
               <option>No</option>
             </select>
           </div>
-          {fd.meditation === 'Yes' && (
-            <div>
-              <label style={dimLbl}>Med. Duration</label>
-              <select style={sel} value={fd.meditationDuration} onChange={e => upd('meditationDuration', e.target.value)}>
-                <option value="">Select</option>
-                {MEDITATION_DURATIONS.map(d => <option key={d}>{d}</option>)}
-              </select>
-            </div>
-          )}
         </div>
       </div>
     </div>
