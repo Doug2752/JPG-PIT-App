@@ -13,8 +13,12 @@ function isDistanceActivity(a) {
   return DISTANCE_ACTIVITIES.some(d => a && a.toLowerCase().includes(d.toLowerCase()));
 }
 
-export default function DailyTrackingSection({ fd, upd, updMulti, updFitnessEntry, addFitnessEntry, removeFitnessEntry }) {
+export default function DailyTrackingSection({
+  fd, upd, updMulti, updFitnessEntry, addFitnessEntry, removeFitnessEntry,
+  recurringFitness = [], onAddRecurring, onUpdateRecurring, onRemoveRecurring,
+}) {
   const showActivity = fd.fitnessYesterday === 'Yes';
+  const [fitnessTab, setFitnessTab] = useState('yesterday');
 
   // Wake Up combobox: local text buffer so free-text typing never writes a
   // bad value to storage. Re-sync (and convert any legacy 24-hr value to
@@ -50,6 +54,103 @@ export default function DailyTrackingSection({ fd, upd, updMulti, updFitnessEntr
   const removeBtn = { background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600 };
   const addBtn    = { width: '100%', padding: '9px', borderRadius: 5, border: '1.5px solid #000', background: GOLD_LIGHT, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 };
 
+  const tabBtn = (active) => ({
+    background: active ? GOLD : '#666666',
+    color: active ? '#000000' : '#ffffff',
+    fontWeight: 700,
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    padding: '6px 16px',
+    border: '1px solid #333',
+    borderRadius: '4px 4px 0 0',
+    cursor: 'pointer',
+    marginRight: 4,
+  });
+
+  function renderRecurringActivity(activity) {
+    const isDistance = isDistanceActivity(activity.activityType);
+    const isOther = activity.activityType === 'Other';
+    const pref = activity.distanceOrDuration || 'distance';
+    const showDistance = pref === 'distance' || pref === 'both';
+    const showDuration = pref === 'duration' || pref === 'both';
+    const winp = { ...inp, background: '#ffffff' };
+    const wsel = { ...sel, background: '#ffffff' };
+    return (
+      <div key={activity.id} style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: 12, marginBottom: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
+            {activity.name || 'New Activity'}
+          </div>
+          <button onClick={() => onRemoveRecurring(activity.id)} style={removeBtn}>Remove</button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'start' }}>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={goldLbl}>Activity Name</label>
+            <input style={winp} value={activity.name || ''}
+              onChange={e => onUpdateRecurring(activity.id, { name: e.target.value })}
+              placeholder="e.g. AMDWR Morning Run" />
+          </div>
+          <div>
+            <label style={goldLbl}>Activity Type</label>
+            <select style={wsel} value={activity.activityType || ''}
+              onChange={e => onUpdateRecurring(activity.id, { activityType: e.target.value, terrain: '' })}>
+              <option value="">Select</option>
+              {ACTIVITY_TYPES.map(a => <option key={a}>{a}</option>)}
+            </select>
+          </div>
+          {isOther && (
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={goldLbl}>Describe Activity</label>
+              <input style={winp} value={activity.fitnessActivityOther || ''}
+                onChange={e => onUpdateRecurring(activity.id, { fitnessActivityOther: e.target.value })}
+                placeholder="What did you do?" />
+            </div>
+          )}
+          {isDistance && (
+            <div>
+              <label style={goldLbl}>Terrain</label>
+              <select style={wsel} value={activity.terrain || ''}
+                onChange={e => onUpdateRecurring(activity.id, { terrain: e.target.value })}>
+                <option value="">Select</option>
+                {TERRAIN_OPTIONS.map(t => <option key={t}>{t}</option>)}
+              </select>
+            </div>
+          )}
+          <div>
+            <label style={goldLbl}>Track By</label>
+            <select style={wsel} value={activity.distanceOrDuration}
+              onChange={e => onUpdateRecurring(activity.id, { distanceOrDuration: e.target.value })}>
+              <option value="distance">Distance</option>
+              <option value="duration">Duration</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+          {(showDistance || showDuration) && (
+            <div style={pref === 'both' ? { display: 'flex', gap: 12 } : undefined}>
+              {showDistance && (
+                <div style={pref === 'both' ? { flex: 1 } : undefined}>
+                  <label style={goldLbl}>Distance</label>
+                  <input style={winp} value={activity.defaultDistance || ''}
+                    onChange={e => onUpdateRecurring(activity.id, { defaultDistance: e.target.value })}
+                    placeholder="e.g. 3.1" />
+                </div>
+              )}
+              {showDuration && (
+                <div style={pref === 'both' ? { flex: 1 } : undefined}>
+                  <label style={goldLbl}>Time</label>
+                  <input style={winp} value={activity.defaultDuration || ''}
+                    onChange={e => onUpdateRecurring(activity.id, { defaultDuration: e.target.value })}
+                    placeholder="e.g. 45 min" />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   function renderFitnessEntry(entry, i) {
     const isDistance = isDistanceActivity(entry.fitnessActivity);
     const isYoga     = entry.fitnessActivity === 'Yoga';
@@ -65,6 +166,19 @@ export default function DailyTrackingSection({ fd, upd, updMulti, updFitnessEntr
             <button onClick={() => removeFitnessEntry(i)} style={removeBtn}>Remove</button>
           )}
         </div>
+        {entry.recurringId && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <input
+              type="checkbox"
+              checked={!!entry.confirmedDone}
+              onChange={e => updFitnessEntry(i, { confirmedDone: e.target.checked })}
+              style={{ accentColor: '#B8860B', width: 16, height: 16 }}
+            />
+            <span style={{ fontWeight: 700, fontSize: 13 }}>
+              {entry.recurringName || entry.fitnessActivity} — confirm done today
+            </span>
+          </div>
+        )}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'start' }}>
           <div>
             <label style={goldLbl}>Activity Type</label>
@@ -183,26 +297,48 @@ export default function DailyTrackingSection({ fd, upd, updMulti, updFitnessEntr
               value={fd.sleepScore} onChange={e => upd('sleepScore', e.target.value)} placeholder="0–100" />
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'start' }}>
-          <div>
-            <label style={reqLbl}>* Fitness Yesterday</label>
-            <select style={sel} value={fd.fitnessYesterday}
-              onChange={e => {
-                const v = e.target.value;
-                if (v === 'Yes') updMulti([['fitnessYesterday', v]]);
-                else updMulti([['fitnessYesterday', v], ['fitnessEntries', [emptyFitnessEntry()]]]);
-              }}>
-              <option value="">Select</option>
-              <option>Yes</option>
-              <option>No</option>
-              <option>Rest Day</option>
-            </select>
-          </div>
+        {/* Fitness tab row */}
+        <div style={{ display: 'flex', gap: 0, marginTop: 6, marginBottom: 10 }}>
+          <button style={tabBtn(fitnessTab === 'yesterday')} onClick={() => setFitnessTab('yesterday')}>
+            Fitness Yesterday
+          </button>
+          <button style={tabBtn(fitnessTab === 'configure')} onClick={() => setFitnessTab('configure')}>
+            Configure Recurring Fitness
+          </button>
         </div>
+
+        {fitnessTab === 'yesterday' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'start' }}>
+            <div>
+              <label style={reqLbl}>* Fitness Yesterday</label>
+              <select style={sel} value={fd.fitnessYesterday}
+                onChange={e => {
+                  const v = e.target.value;
+                  if (v === 'Yes') updMulti([['fitnessYesterday', v]]);
+                  else updMulti([['fitnessYesterday', v], ['fitnessEntries', [emptyFitnessEntry()]]]);
+                }}>
+                <option value="">Select</option>
+                <option>Yes</option>
+                <option>No</option>
+                <option>Rest Day</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {fitnessTab === 'configure' && (
+          <div>
+            <div style={{ fontSize: 11, color: '#888', fontStyle: 'italic', marginBottom: 8 }}>
+              Changes save automatically.
+            </div>
+            {recurringFitness.map(a => renderRecurringActivity(a))}
+            <button onClick={onAddRecurring} style={addBtn}>+ Add Recurring Activity</button>
+          </div>
+        )}
       </div>
 
       {/* Fitness Activity Details */}
-      {showActivity && (
+      {fitnessTab === 'yesterday' && showActivity && (
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 14, marginBottom: 14 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 }}>
             Fitness Activity Details

@@ -8,6 +8,8 @@ export function emptyFitnessEntry() {
   return {
     fitnessActivity: '', fitnessActivityOther: '', cardioDistance: '',
     terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
+    recurringId: '', recurringName: '', distanceOrDuration: 'distance',
+    defaultDuration: '', confirmedDone: false,
   };
 }
 

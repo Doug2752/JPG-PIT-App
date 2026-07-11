@@ -36,6 +36,7 @@ const sentKey     = (uid)    => `pit_sent_${uid}`;
 const booksKey    = (uid)    => `pit_books_${uid}`;
 const apptKey     = (uid)    => `pit_appts_${uid}`;
 const devTypeKey  = (uid)    => `pit_devtype_${uid}`;
+const fcKey       = (uid)    => `pit_fitness_config_${uid}`;
 
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
@@ -65,6 +66,7 @@ export default function PITApp() {
   const [appointments,   setAppointments]  = useState([]);
   const [showClearModal, setShowClearModal] = useState(false);
   const [toastMessage,   setToastMessage]   = useState('');
+  const [recurringFitness, setRecurringFitness] = useState([]);
 
   useEffect(() => {
     if (currentUser) {
@@ -72,6 +74,7 @@ export default function PITApp() {
       loadArchive();
       loadCompletedBooks();
       loadAppointments();
+      loadRecurringFitness();
     }
   }, [currentUser]);
 
@@ -107,7 +110,8 @@ export default function PITApp() {
         const pref = await storage.get(devTypeKey(currentUser.id));
         const carried = await applyCarryover(currentUser.id, todayStr());
         const base = carried || emptyForm();
-        setFd({ ...base, prayerType: pref ? pref.value : 'prayer' });
+        const seeded = await seedRecurringFitness(base);
+        setFd({ ...seeded, prayerType: pref ? pref.value : 'prayer' });
       }
     } catch {
       setFd(emptyForm());
@@ -179,6 +183,45 @@ export default function PITApp() {
     }
   }
 
+  // Seed a fresh day's fitnessEntries from the user's recurring fitness
+  // config (read directly from storage — mirrors applyCarryover — so it
+  // fires reliably on first load rather than depending on React state).
+  // Only applies when the incoming form has no fitness content; when it
+  // seeds, fitnessYesterday is set to 'Yes' so the detail block opens.
+  // Returns the (possibly) seeded form. Called only in loadToday's
+  // no-record (new-day) branch.
+  async function seedRecurringFitness(form) {
+    try {
+      const fcr = await storage.get(fcKey(currentUser.id)).catch(() => null);
+      const config = fcr ? JSON.parse(fcr.value) : [];
+      if (!Array.isArray(config) || config.length === 0) return form;
+
+      const hasContent = Array.isArray(form.fitnessEntries) &&
+        form.fitnessEntries.some(e => e && (
+          (e.fitnessActivity || '').trim() !== '' ||
+          (e.fitnessActivityOther || '').trim() !== '' ||
+          (e.cardioDistance || '').trim() !== ''
+        ));
+      if (hasContent) return form;
+
+      const seededEntries = config.map(activity => ({
+        ...emptyFitnessEntry(),
+        fitnessActivity: activity.activityType,
+        terrain: activity.terrain,
+        cardioDistance: activity.defaultDistance,
+        recurringId: activity.id,
+        recurringName: activity.name,
+        distanceOrDuration: activity.distanceOrDuration,
+        defaultDuration: activity.defaultDuration,
+        confirmedDone: false,
+      }));
+
+      return { ...form, fitnessEntries: seededEntries, fitnessYesterday: 'Yes' };
+    } catch {
+      return form;
+    }
+  }
+
   async function loadArchive() {
     try {
       const r = await storage.get(ak(currentUser.id));
@@ -211,6 +254,23 @@ export default function PITApp() {
     if (!currentUser) return;
     try {
       await storage.set(apptKey(currentUser.id), JSON.stringify(list));
+    } catch {}
+  }
+
+  async function loadRecurringFitness() {
+    try {
+      const r = await storage.get(fcKey(currentUser.id));
+      setRecurringFitness(r ? JSON.parse(r.value) : []);
+    } catch {
+      setRecurringFitness([]);
+    }
+  }
+
+  async function saveRecurringFitness(list) {
+    if (!currentUser) return;
+    try {
+      await storage.set(fcKey(currentUser.id), JSON.stringify(list));
+      setRecurringFitness(list);
     } catch {}
   }
 
@@ -449,6 +509,33 @@ export default function PITApp() {
     const n = { ...fd, fitnessEntries };
     setFd(n);
     save(n);
+  }
+
+  function addRecurringActivity() {
+    if (archiveMode) return;
+    const updated = [...recurringFitness, {
+      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      name: '',
+      activityType: '',
+      fitnessActivityOther: '',
+      terrain: '',
+      distanceOrDuration: 'distance',
+      defaultDistance: '',
+      defaultDuration: '',
+    }];
+    saveRecurringFitness(updated);
+  }
+
+  function updateRecurringActivity(id, patch) {
+    if (archiveMode) return;
+    const updated = recurringFitness.map(a => a.id === id ? { ...a, ...patch } : a);
+    saveRecurringFitness(updated);
+  }
+
+  function removeRecurringActivity(id) {
+    if (archiveMode) return;
+    const updated = recurringFitness.filter(a => a.id !== id);
+    saveRecurringFitness(updated);
   }
 
   function updAppt(id, f, v) {
@@ -764,7 +851,12 @@ export default function PITApp() {
         <DOPBtn top />
 
         <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti}
-          updFitnessEntry={updFitnessEntry} addFitnessEntry={addFitnessEntry} removeFitnessEntry={removeFitnessEntry} />
+          updFitnessEntry={updFitnessEntry} addFitnessEntry={addFitnessEntry} removeFitnessEntry={removeFitnessEntry}
+          recurringFitness={recurringFitness}
+          onAddRecurring={addRecurringActivity}
+          onUpdateRecurring={updateRecurringActivity}
+          onRemoveRecurring={removeRecurringActivity}
+          saveRecurringFitness={saveRecurringFitness} />
 
         <GratitudeSection
           thankful1={fd.thankful1} thankful2={fd.thankful2} thankful3={fd.thankful3}
