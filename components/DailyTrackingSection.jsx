@@ -353,57 +353,47 @@ export default function DailyTrackingSection({
         <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 }}>
           Additional Tracking
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'stretch' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ minHeight: 36 }}>
-              <label style={dimLbl}>
-                <span>Location</span>
-                <span style={{ display: 'block', fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, letterSpacing: 0, marginTop: 1 }}>
-                  Where are you completing today's PIT?
-                </span>
-              </label>
-            </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridTemplateRows: 'auto auto auto', gap: '0 10px' }}>
+
+          {/* Row 1 — Headers */}
+          <div style={{ gridRow: 1, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 3 }}>Location</div>
+          <div style={{ gridRow: 1, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 3 }}>PIT Time Frame</div>
+          <div style={{ gridRow: 1, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 3 }}>Energy Level</div>
+          <div style={{ gridRow: 1, fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 3 }}>Mental Alignment</div>
+
+          {/* Row 2 — Descriptions */}
+          <div style={{ gridRow: 2, fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, lineHeight: 1.3, paddingBottom: 5 }}>Where are you completing today's PIT?</div>
+          <div style={{ gridRow: 2, fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, lineHeight: 1.3, paddingBottom: 5 }}>Approx duration to complete PIT.</div>
+          <div style={{ gridRow: 2, fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, lineHeight: 1.3, paddingBottom: 5 }}>10 = highest energy.</div>
+          <div style={{ gridRow: 2, fontSize: 8, fontStyle: 'italic', color: 'rgba(255,255,255,0.4)', fontWeight: 400, lineHeight: 1.3, paddingBottom: 5 }}>Completing all aspects of PIT makes this complete.</div>
+
+          {/* Row 3 — Dropdowns */}
+          <div style={{ gridRow: 3 }}>
             <select style={sel} value={fd.location} onChange={e => upd('location', e.target.value)}>
               <option value="">Select</option>
               {LOCATIONS.map(l => <option key={l}>{l}</option>)}
             </select>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ minHeight: 36 }}>
-              <label style={dimLbl}>PIT Time Frame</label>
-              <div style={{ fontSize: 8, marginBottom: 0 }}>&nbsp;</div>
-            </div>
-            <select style={sel} value={fd.pitTimeFrame} onChange={e => upd('pitTimeFrame', e.target.value)}>
+          <div style={{ gridRow: 3 }}>
+            <select style={{ ...sel, width: '100%' }} value={fd.pitTimeFrame} onChange={e => upd('pitTimeFrame', e.target.value)}>
               <option value="">Select</option>
               {PIT_TIMES.map(t => <option key={t}>{t}</option>)}
             </select>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ minHeight: 36 }}>
-              <label style={{...dimLbl, marginBottom: 0}}>Energy Level</label>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginTop: 2 }}>
-                10 = highest energy
-              </div>
-            </div>
-            <select style={sel} value={fd.energyLevel} onChange={e => upd('energyLevel', e.target.value)}>
+          <div style={{ gridRow: 3 }}>
+            <select style={{ ...sel, width: '100%' }} value={fd.energyLevel} onChange={e => upd('energyLevel', e.target.value)}>
               <option value="">Select</option>
               {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={String(n)}>{n}</option>)}
             </select>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ minHeight: 36 }}>
-              <label style={{...dimLbl, marginBottom: 0}}>Mental Alignment</label>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', fontStyle: 'italic', marginTop: 2 }}>
-                Completing all aspects of PIT makes this complete.
-              </div>
-            </div>
-            <select style={sel} value={fd.meditation}
-              onChange={e => updMulti([['meditation', e.target.value], ['meditationDuration', '']])}>
+          <div style={{ gridRow: 3 }}>
+            <select style={{ ...sel, width: '100%' }} value={fd.meditation} onChange={e => updMulti([['meditation', e.target.value], ['meditationDuration', '']])}>
               <option value="">Select</option>
               <option>Yes</option>
               <option>No</option>
             </select>
           </div>
+
         </div>
       </div>
     </div>
