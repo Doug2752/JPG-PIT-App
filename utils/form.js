@@ -73,6 +73,12 @@ export function withCarryoverMigration(d) {
   return { ...d, toAccomplishItems };
 }
 
+export function withDiscoveriesMigration(d) {
+  if (!d || typeof d !== 'object') return d;
+  if (!Array.isArray(d.discoveries)) d.discoveries = [];
+  return d;
+}
+
 // Rebuild the parallel `toAccomplishItems` array from the current
 // To Accomplish field values. Called on every save so the parallel
 // field stays in sync with the source-of-truth oneThing / tasks[]
@@ -135,6 +141,7 @@ export function emptyForm(date) {
     scriptureQuery: '', scriptureResult: '',
     bookName: '', bookAuthor: '', bookPage: '', bookTopic: '',
     bookNotes: '', bookCompleted: false, bookAiQuery: '', bookAiResult: '',
+    discoveries: [],
     quotes: '', quotesInspirationQuery: '', quotesInspirationResult: '',
     futureTasksVisible: 1,
     aiSummary: '', sent: false, neverTwiceRead: false

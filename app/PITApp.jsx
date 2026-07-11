@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GOLD, GOLD_LIGHT, DARK, BG, BORDER, DEFAULT_USERS, WEBAPP_URL } from '../utils/constants';
 import { todayStr, localDateStr } from '../utils/date';
-import { emptyForm, emptyFitnessEntry, withFitnessMigration, withCarryoverMigration, rebuildToAccomplishItems, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
+import { emptyForm, emptyFitnessEntry, withFitnessMigration, withCarryoverMigration, withDiscoveriesMigration, rebuildToAccomplishItems, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
 import { storage } from '../services/storage';
 import { callSheet } from '../services/sheet';
 import {
@@ -22,6 +22,7 @@ import ToAccomplishSection from '../components/ToAccomplishSection';
 import NotesSection       from '../components/NotesSection';
 import DevotionalSection  from '../components/DevotionalSection';
 import BookSection        from '../components/BookSection';
+import ImportantDiscoveriesSection from '../components/ImportantDiscoveriesSection';
 import QuotesSection      from '../components/QuotesSection';
 import AppointmentsSection from '../components/AppointmentsSection';
 import SummarySection     from '../components/SummarySection';
@@ -37,6 +38,7 @@ const booksKey    = (uid)    => `pit_books_${uid}`;
 const apptKey     = (uid)    => `pit_appts_${uid}`;
 const devTypeKey  = (uid)    => `pit_devtype_${uid}`;
 const fcKey       = (uid)    => `pit_fitness_config_${uid}`;
+const discKey     = (uid)    => `pit_discoveries_${uid}`;
 
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
@@ -105,7 +107,7 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, todayStr()));
       if (r) {
-        setFd(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value))));
+        setFd(withDiscoveriesMigration(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value)))));
       } else {
         const pref = await storage.get(devTypeKey(currentUser.id));
         const carried = await applyCarryover(currentUser.id, todayStr());
@@ -332,6 +334,16 @@ export default function PITApp() {
     if (!currentUser) return;
     try {
       data.toAccomplishItems = rebuildToAccomplishItems(data);
+      // Dual-write discoveries to persistent library
+      try {
+        const discRaw = await storage.get(discKey(currentUser.id)).catch(() => null);
+        let library = discRaw ? JSON.parse(discRaw.value) : [];
+        const todayEntries = (data.discoveries || []).map(d => ({ ...d, date: data.date }));
+        // Remove all existing entries for this date then re-add (handles edits and removes)
+        library = library.filter(d => d.date !== data.date);
+        library = [...todayEntries, ...library];
+        await storage.set(discKey(currentUser.id), JSON.stringify(library));
+      } catch {}
       await storage.set(sk(currentUser.id, data.date), JSON.stringify(data));
       const r = await storage.get(ak(currentUser.id)).catch(() => null);
       let list = r ? JSON.parse(r.value) : [];
@@ -705,7 +717,7 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, date));
       if (r) {
-        setFd(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value))));
+        setFd(withDiscoveriesMigration(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value)))));
         setNoEntryDate(null);
         setAM(true);
         setView('form');
@@ -888,6 +900,29 @@ export default function PITApp() {
           markBookComplete={markBookComplete}
           fetchBookAI={fetchBookAI}
           aiLoadBook={!!aiLoad.bookAiResult}
+        />
+
+        <ImportantDiscoveriesSection
+          fd={fd}
+          archiveMode={archiveMode}
+          onAdd={(entry) => {
+            if (archiveMode) return;
+            const updated = [...(fd.discoveries || []), entry];
+            setFd(f => ({ ...f, discoveries: updated }));
+            save({ ...fd, discoveries: updated });
+          }}
+          onUpdate={(id, patch) => {
+            if (archiveMode) return;
+            const updated = (fd.discoveries || []).map(d => d.id === id ? { ...d, ...patch } : d);
+            setFd(f => ({ ...f, discoveries: updated }));
+            save({ ...fd, discoveries: updated });
+          }}
+          onRemove={(id) => {
+            if (archiveMode) return;
+            const updated = (fd.discoveries || []).filter(d => d.id !== id);
+            setFd(f => ({ ...f, discoveries: updated }));
+            save({ ...fd, discoveries: updated });
+          }}
         />
 
         <QuotesSection
