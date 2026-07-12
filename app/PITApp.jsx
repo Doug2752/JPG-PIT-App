@@ -746,7 +746,21 @@ export default function PITApp() {
     callAI(fetchQuotesInspirationAI, 'quotesInspirationResult', fd.quotesInspirationQuery);
   }
 
-  async function genSummary() {
+  async function genSummary(onLimitHit) {
+    const limitKey = `pit_ai_summary_last_used_${currentUser.id}`;
+    try {
+      const raw = await storage.get(limitKey).catch(() => null);
+      if (raw) {
+        const lastDate = new Date(raw.value);
+        const nextDate = new Date(lastDate);
+        nextDate.setDate(nextDate.getDate() + 7);
+        if (new Date() < nextDate) {
+          const formatted = nextDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          if (typeof onLimitHit === 'function') onLimitHit(formatted);
+          return;
+        }
+      }
+    } catch {}
     setAL(p => ({ ...p, aiSummary: true }));
     try {
       const dopUser  = currentUser.id.charAt(0).toUpperCase() + currentUser.id.slice(1);
@@ -765,6 +779,7 @@ export default function PITApp() {
         .sort((a, b) => a.date.localeCompare(b.date));
       const result = await generateSummaryAI(entries, upcomingAppts);
       upd('aiSummary', result);
+      await storage.set(limitKey, new Date().toISOString()).catch(() => {});
     } catch (e) {
       upd('aiSummary', 'Error: ' + e.message);
     }
