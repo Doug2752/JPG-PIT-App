@@ -3,7 +3,7 @@ import { GOLD, GOLD_LIGHT, RED } from '../utils/constants';
 import {
   LOCATIONS, PIT_TIMES, ACTIVITY_TYPES, DISTANCE_ACTIVITIES,
   TERRAIN_OPTIONS, YOGA_TYPES, SWIM_ENVIRONMENTS, SWIM_STROKES,
-  MEDITATION_DURATIONS, WORK_OPTS,
+  MEDITATION_DURATIONS, WORK_OPTS, DAYS_OF_WEEK,
 } from '../utils/constants';
 import { WAKE_TIMES, normalizeWakeTime, to12Hour } from '../utils/date';
 import { emptyFitnessEntry } from '../utils/form';
@@ -91,6 +91,31 @@ export default function DailyTrackingSection({
               onChange={e => onUpdateRecurring(activity.id, { name: e.target.value })}
               placeholder="e.g. AMDWR Morning Run" />
           </div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <label style={goldLbl}>Days of Week</label>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              {DAYS_OF_WEEK.map(day => {
+                const selected = Array.isArray(activity.daysOfWeek) && activity.daysOfWeek.includes(day);
+                return (
+                  <button
+                    key={day}
+                    onClick={() => {
+                      const current = Array.isArray(activity.daysOfWeek) ? activity.daysOfWeek : [];
+                      const updated = selected ? current.filter(d => d !== day) : [...current, day];
+                      onUpdateRecurring(activity.id, { daysOfWeek: updated });
+                    }}
+                    style={{
+                      width: 40, height: 24, fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
+                      borderRadius: 4, cursor: 'pointer',
+                      background: selected ? '#B8860B' : '#333',
+                      color: selected ? '#000' : '#999',
+                      border: selected ? '1.5px solid #000' : '1px solid #555',
+                    }}
+                  >{day}</button>
+                );
+              })}
+            </div>
+          </div>
           <div>
             <label style={goldLbl}>Activity Type</label>
             <select style={wsel} value={activity.activityType || ''}
@@ -131,7 +156,7 @@ export default function DailyTrackingSection({
               {showDistance && (
                 <div style={pref === 'both' ? { flex: 1 } : undefined}>
                   <label style={goldLbl}>Distance</label>
-                  <input style={winp} value={activity.defaultDistance || ''}
+                  <input style={{ ...winp, boxSizing: 'border-box', width: '100%' }} value={activity.defaultDistance || ''}
                     onChange={e => onUpdateRecurring(activity.id, { defaultDistance: e.target.value })}
                     placeholder="e.g. 3.1" />
                 </div>
@@ -139,7 +164,7 @@ export default function DailyTrackingSection({
               {showDuration && (
                 <div style={pref === 'both' ? { flex: 1 } : undefined}>
                   <label style={goldLbl}>Time</label>
-                  <input style={winp} value={activity.defaultDuration || ''}
+                  <input style={{ ...winp, boxSizing: 'border-box', width: '100%' }} value={activity.defaultDuration || ''}
                     onChange={e => onUpdateRecurring(activity.id, { defaultDuration: e.target.value })}
                     placeholder="e.g. 45 min" />
                 </div>
@@ -160,9 +185,9 @@ export default function DailyTrackingSection({
       <div key={i} style={{ border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: 12, marginBottom: 10 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
-            Entry {i + 1}
+            {entry.recurringId ? `Recurring Fitness ${i + 1}` : `Entry ${i + 1}`}
           </div>
-          {fd.fitnessEntries.length > 1 && (
+          {fd.fitnessEntries.length > 1 && !entry.recurringId && (
             <button onClick={() => removeFitnessEntry(i)} style={removeBtn}>Remove</button>
           )}
         </div>
@@ -174,79 +199,81 @@ export default function DailyTrackingSection({
               onChange={e => updFitnessEntry(i, { confirmedDone: e.target.checked })}
               style={{ accentColor: '#B8860B', width: 16, height: 16 }}
             />
-            <span style={{ fontWeight: 700, fontSize: 13 }}>
-              {entry.recurringName || entry.fitnessActivity} — confirm done today
+            <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff' }}>
+              Check if {entry.recurringName || entry.fitnessActivity} done today
             </span>
           </div>
         )}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'start' }}>
-          <div>
-            <label style={goldLbl}>Activity Type</label>
-            <select style={sel} value={entry.fitnessActivity}
-              onChange={e => updFitnessEntry(i, {
-                fitnessActivity: e.target.value, fitnessActivityOther: '',
-                cardioDistance: '', terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
-              })}>
-              <option value="">Select</option>
-              {ACTIVITY_TYPES.map(a => <option key={a}>{a}</option>)}
-            </select>
+        {!entry.recurringId && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'start' }}>
+            <div>
+              <label style={goldLbl}>Activity Type</label>
+              <select style={sel} value={entry.fitnessActivity}
+                onChange={e => updFitnessEntry(i, {
+                  fitnessActivity: e.target.value, fitnessActivityOther: '',
+                  cardioDistance: '', terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
+                })}>
+                <option value="">Select</option>
+                {ACTIVITY_TYPES.map(a => <option key={a}>{a}</option>)}
+              </select>
+            </div>
+
+            {isDistance && <>
+              <div>
+                <label style={goldLbl}>Distance (miles)</label>
+                <input style={{ ...inp, height: 34 }} type="number" min="0" step="0.1"
+                  value={entry.cardioDistance} onChange={e => updFitnessEntry(i, { cardioDistance: e.target.value })} placeholder="miles" />
+              </div>
+              <div>
+                <label style={goldLbl}>Terrain</label>
+                <select style={sel} value={entry.terrain} onChange={e => updFitnessEntry(i, { terrain: e.target.value })}>
+                  <option value="">Select</option>
+                  {TERRAIN_OPTIONS.map(t => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+            </>}
+
+            {isYoga && (
+              <div>
+                <label style={goldLbl}>Yoga Type</label>
+                <select style={sel} value={entry.yogaType} onChange={e => updFitnessEntry(i, { yogaType: e.target.value })}>
+                  <option value="">Select</option>
+                  {YOGA_TYPES.map(t => <option key={t}>{t}</option>)}
+                </select>
+              </div>
+            )}
+
+            {isSwim && <>
+              <div>
+                <label style={goldLbl}>Environment</label>
+                <select style={sel} value={entry.swimEnvironment} onChange={e => updFitnessEntry(i, { swimEnvironment: e.target.value })}>
+                  <option value="">Select</option>
+                  {SWIM_ENVIRONMENTS.map(v => <option key={v}>{v}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={goldLbl}>Stroke / Type</label>
+                <select style={sel} value={entry.swimStroke} onChange={e => updFitnessEntry(i, { swimStroke: e.target.value })}>
+                  <option value="">Select</option>
+                  {SWIM_STROKES.map(s => <option key={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={goldLbl}>Distance (meters)</label>
+                <input style={inp} type="number" min="0"
+                  value={entry.cardioDistance} onChange={e => updFitnessEntry(i, { cardioDistance: e.target.value })} placeholder="meters" />
+              </div>
+            </>}
+
+            {isOther && (
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={goldLbl}>Describe Activity</label>
+                <input style={inp} value={entry.fitnessActivityOther}
+                  onChange={e => updFitnessEntry(i, { fitnessActivityOther: e.target.value })} placeholder="What did you do?" />
+              </div>
+            )}
           </div>
-
-          {isDistance && <>
-            <div>
-              <label style={goldLbl}>Distance (miles)</label>
-              <input style={{ ...inp, height: 34 }} type="number" min="0" step="0.1"
-                value={entry.cardioDistance} onChange={e => updFitnessEntry(i, { cardioDistance: e.target.value })} placeholder="miles" />
-            </div>
-            <div>
-              <label style={goldLbl}>Terrain</label>
-              <select style={sel} value={entry.terrain} onChange={e => updFitnessEntry(i, { terrain: e.target.value })}>
-                <option value="">Select</option>
-                {TERRAIN_OPTIONS.map(t => <option key={t}>{t}</option>)}
-              </select>
-            </div>
-          </>}
-
-          {isYoga && (
-            <div>
-              <label style={goldLbl}>Yoga Type</label>
-              <select style={sel} value={entry.yogaType} onChange={e => updFitnessEntry(i, { yogaType: e.target.value })}>
-                <option value="">Select</option>
-                {YOGA_TYPES.map(t => <option key={t}>{t}</option>)}
-              </select>
-            </div>
-          )}
-
-          {isSwim && <>
-            <div>
-              <label style={goldLbl}>Environment</label>
-              <select style={sel} value={entry.swimEnvironment} onChange={e => updFitnessEntry(i, { swimEnvironment: e.target.value })}>
-                <option value="">Select</option>
-                {SWIM_ENVIRONMENTS.map(v => <option key={v}>{v}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={goldLbl}>Stroke / Type</label>
-              <select style={sel} value={entry.swimStroke} onChange={e => updFitnessEntry(i, { swimStroke: e.target.value })}>
-                <option value="">Select</option>
-                {SWIM_STROKES.map(s => <option key={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={goldLbl}>Distance (meters)</label>
-              <input style={inp} type="number" min="0"
-                value={entry.cardioDistance} onChange={e => updFitnessEntry(i, { cardioDistance: e.target.value })} placeholder="meters" />
-            </div>
-          </>}
-
-          {isOther && (
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label style={goldLbl}>Describe Activity</label>
-              <input style={inp} value={entry.fitnessActivityOther}
-                onChange={e => updFitnessEntry(i, { fitnessActivityOther: e.target.value })} placeholder="What did you do?" />
-            </div>
-          )}
-        </div>
+        )}
       </div>
     );
   }
@@ -328,11 +355,11 @@ export default function DailyTrackingSection({
 
         {fitnessTab === 'configure' && (
           <div>
-            <div style={{ fontSize: 11, color: '#888', fontStyle: 'italic', marginBottom: 8 }}>
-              Changes save automatically.
-            </div>
             {recurringFitness.map(a => renderRecurringActivity(a))}
             <button onClick={onAddRecurring} style={addBtn}>+ Add Recurring Activity</button>
+            <div style={{ fontSize: 11, color: '#888', fontStyle: 'italic', textAlign: 'center', marginTop: 8 }}>
+              All changes are automatically saved.
+            </div>
           </div>
         )}
       </div>

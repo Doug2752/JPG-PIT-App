@@ -272,7 +272,13 @@ export default function PITApp() {
   async function loadRecurringFitness() {
     try {
       const r = await storage.get(fcKey(currentUser.id));
-      setRecurringFitness(r ? JSON.parse(r.value) : []);
+      const list = r ? JSON.parse(r.value) : [];
+      const migrated = list.map(a =>
+        !Array.isArray(a.daysOfWeek)
+          ? { ...a, daysOfWeek: ['SUN','MON','TUE','WED','THU','FRI','SAT'] }
+          : a
+      );
+      setRecurringFitness(migrated);
     } catch {
       setRecurringFitness([]);
     }
@@ -544,6 +550,7 @@ export default function PITApp() {
       distanceOrDuration: 'distance',
       defaultDistance: '',
       defaultDuration: '',
+      daysOfWeek: [],
     }];
     saveRecurringFitness(updated);
   }

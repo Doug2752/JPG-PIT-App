@@ -27,3 +27,4 @@ export const SWIM_STROKES       = ['Freestyle', 'Backstroke', 'Laps', 'Open Wate
 export const MEDITATION_DURATIONS = ['10 min', '20 min', '30 min', '40 min', '50 min', '1:00', '1:10', '1:20', '1:30', '1:40', '1:50', '2:00'];
 export const SMS_TIMES          = ['15 min', '30 min', '45 min', '1 hr'];
 export const WORK_OPTS          = ['Off Work Today', 'Primary Work', 'Secondary Work', 'No Job / Retired'];
+export const DAYS_OF_WEEK       = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
