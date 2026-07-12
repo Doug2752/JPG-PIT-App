@@ -92,7 +92,7 @@ export default function DailyTrackingSection({
               placeholder="e.g. AMDWR Morning Run" />
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
-            <label style={goldLbl}>Days of Week</label>
+            <label style={goldLbl}>Days of Week (Gold = selected days)</label>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
               {DAYS_OF_WEEK.map(day => {
                 const selected = Array.isArray(activity.daysOfWeek) && activity.daysOfWeek.includes(day);
