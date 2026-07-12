@@ -15,7 +15,7 @@ function isDistanceActivity(a) {
 
 export default function DailyTrackingSection({
   fd, upd, updMulti, updFitnessEntry, addFitnessEntry, removeFitnessEntry,
-  recurringFitness = [], onAddRecurring, onUpdateRecurring, onRemoveRecurring,
+  recurringFitness = [], onAddRecurring, onUpdateRecurring, onRemoveRecurring, onSyncRecurring,
 }) {
   const showActivity = fd.fitnessYesterday === 'Yes';
   const [fitnessTab, setFitnessTab] = useState('yesterday');
@@ -326,7 +326,7 @@ export default function DailyTrackingSection({
         </div>
         {/* Fitness tab row */}
         <div style={{ display: 'flex', gap: 0, marginTop: 6, marginBottom: 10 }}>
-          <button style={tabBtn(fitnessTab === 'yesterday')} onClick={() => setFitnessTab('yesterday')}>
+          <button style={tabBtn(fitnessTab === 'yesterday')} onClick={() => { setFitnessTab('yesterday'); onSyncRecurring?.(); }}>
             Fitness Yesterday
           </button>
           <button style={tabBtn(fitnessTab === 'configure')} onClick={() => setFitnessTab('configure')}>
@@ -370,7 +370,9 @@ export default function DailyTrackingSection({
           <div style={{ fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 10 }}>
             Fitness Activity Details
           </div>
-          {fd.fitnessEntries.map((entry, i) => renderFitnessEntry(entry, i))}
+          {[...fd.fitnessEntries]
+            .sort((a, b) => (a.recurringId ? 0 : 1) - (b.recurringId ? 0 : 1))
+            .map((entry, i) => renderFitnessEntry(entry, i))}
           <button onClick={addFitnessEntry} style={addBtn}>+ Add Fitness Activity</button>
         </div>
       )}

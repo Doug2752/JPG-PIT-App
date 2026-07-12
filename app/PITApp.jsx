@@ -216,7 +216,11 @@ export default function PITApp() {
         ));
       if (hasContent) return form;
 
-      const seededEntries = config.map(activity => ({
+      const todayCode = ['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()];
+      const todayConfig = config.filter(item => Array.isArray(item.daysOfWeek) && item.daysOfWeek.includes(todayCode));
+      if (todayConfig.length === 0) return form;
+
+      const seededEntries = todayConfig.map(activity => ({
         ...emptyFitnessEntry(),
         fitnessActivity: activity.activityType,
         terrain: activity.terrain,
@@ -567,6 +571,45 @@ export default function PITApp() {
     saveRecurringFitness(updated);
   }
 
+  async function syncRecurringForToday() {
+    try {
+      const fcr = await storage.get(fcKey(currentUser.id)).catch(() => null);
+      const config = fcr ? JSON.parse(fcr.value) : [];
+      if (!Array.isArray(config) || config.length === 0) return;
+
+      const todayCode = ['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()];
+      const todayConfig = config.filter(item => Array.isArray(item.daysOfWeek) && item.daysOfWeek.includes(todayCode));
+      if (todayConfig.length === 0) return;
+
+      setFd(prev => {
+        const entries = Array.isArray(prev.fitnessEntries) ? prev.fitnessEntries : [];
+        const newEntries = [...entries];
+        let added = false;
+        for (const item of todayConfig) {
+          if (entries.some(e => e.recurringId === item.id)) continue;
+          newEntries.push({
+            ...emptyFitnessEntry(),
+            recurringId: item.id,
+            recurringName: item.name,
+            fitnessActivity: item.activityType,
+            terrain: item.terrain,
+            distanceOrDuration: item.distanceOrDuration,
+            defaultDistance: item.defaultDistance,
+            defaultDuration: item.defaultDuration,
+            confirmedDone: false,
+          });
+          added = true;
+        }
+        if (!added) return prev;
+        return {
+          ...prev,
+          fitnessEntries: newEntries,
+          ...(prev.fitnessYesterday !== 'Yes' ? { fitnessYesterday: 'Yes' } : {}),
+        };
+      });
+    } catch {}
+  }
+
   function updAppt(id, f, v) {
     if (archiveMode) return;
     const updated = appointments.map(a => a.id === id ? { ...a, [f]: v } : a);
@@ -885,6 +928,7 @@ export default function PITApp() {
           onAddRecurring={addRecurringActivity}
           onUpdateRecurring={updateRecurringActivity}
           onRemoveRecurring={removeRecurringActivity}
+          onSyncRecurring={syncRecurringForToday}
           saveRecurringFitness={saveRecurringFitness} />
 
         <GratitudeSection
