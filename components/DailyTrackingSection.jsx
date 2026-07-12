@@ -200,7 +200,7 @@ export default function DailyTrackingSection({
               style={{ accentColor: '#B8860B', width: 16, height: 16 }}
             />
             <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff' }}>
-              Check if {entry.recurringName || entry.fitnessActivity} done today
+              Check if {entry.recurringName || entry.fitnessActivity} done yesterday
             </span>
           </div>
         )}
