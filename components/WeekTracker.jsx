@@ -24,7 +24,6 @@ export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg 
           {filled} / 7 days
         </span>
       </div>
-
       <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 20, height: 10, overflow: 'hidden', marginBottom: 12 }}>
         <div style={{
           height: '100%', width: `${pct * 100}%`,

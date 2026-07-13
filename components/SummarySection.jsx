@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { GOLD, MID, BORDER } from '../utils/constants';
+import { GOLD, GOLD_LIGHT, MID, BORDER } from '../utils/constants';
+import { isDayComplete } from '../utils/form';
 import { card, secTitle, gbtn } from './styles';
 
-export default function SummarySection({ fd, genSummary, onLimitHit, aiLoadSummary, weekData, submitting, submitMsg, doSubmit, setSMsg }) {
+export default function SummarySection({ fd, genSummary, onLimitHit, aiLoadSummary, weekData, submitting, submitMsg, doSubmit, setSMsg, isDayCompleteMarked, onMarkDayComplete, onUnlockDay }) {
   const { completeDays } = weekData;
   const [limitMsg, setLimitMsg] = useState('');
+  const canMarkComplete = isDayComplete(fd);
 
   return (
     <>
@@ -30,6 +32,36 @@ export default function SummarySection({ fd, genSummary, onLimitHit, aiLoadSumma
           <div style={{ background: GOLD, border: '1.5px solid #000', borderRadius: 6, padding: 14, fontSize: 12, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: '#000' }}>
             {fd.aiSummary}
           </div>
+        )}
+      </div>
+
+      {/* Mark Day Complete / Unlock */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginTop: 16, marginBottom: 8 }}>
+        {!isDayCompleteMarked && (
+          <button
+            onClick={onMarkDayComplete}
+            disabled={!canMarkComplete || isDayCompleteMarked}
+            style={{
+              background: GOLD_LIGHT, color: '#000', border: '3px solid #000',
+              borderRadius: 6, padding: '10px 20px', fontSize: 13, fontWeight: 700,
+              cursor: (!canMarkComplete || isDayCompleteMarked) ? 'not-allowed' : 'pointer',
+              opacity: (!canMarkComplete || isDayCompleteMarked) ? 0.4 : 1,
+            }}
+          >
+            Mark Day Complete
+          </button>
+        )}
+        {isDayCompleteMarked && (
+          <button
+            onClick={onUnlockDay}
+            style={{
+              background: GOLD_LIGHT, color: '#000', border: '3px solid #000',
+              borderRadius: 6, padding: '10px 20px', fontSize: 13, fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Unlock
+          </button>
         )}
       </div>
 

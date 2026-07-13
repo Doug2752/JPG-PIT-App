@@ -6,7 +6,7 @@ function firstName(name) {
   return name ? name.split(' ')[0] : '';
 }
 
-export default function ArchiveView({ archive, weekData, completedBooks, streak, currentUser, setCU, setView, openArchive }) {
+export default function ArchiveView({ archive, weekData, completedBooks, streak, currentUser, setCU, setView, openArchive, dayCompleteDates = [] }) {
   return (
     <div style={{ minHeight: '100vh', background: BG, fontFamily: 'sans-serif', overflowX: 'hidden' }}>
       {/* Nav */}
@@ -54,7 +54,14 @@ export default function ArchiveView({ archive, weekData, completedBooks, streak,
                   <span style={{ marginLeft: 10, fontSize: 10, color: '#2ecc71', fontWeight: 700 }}>SUBMITTED</span>
                 )}
               </div>
-              <span style={{ color: GOLD, fontSize: 12, fontWeight: 700 }}>Open / Edit</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {dayCompleteDates.includes(d) && (
+                  <span style={{ color: '#ddb94a', fontSize: 12, fontWeight: 700 }}>
+                    ✓ Day Complete
+                  </span>
+                )}
+                <span style={{ color: GOLD, fontSize: 12, fontWeight: 700 }}>Open / Edit</span>
+              </div>
             </div>
           );
         })}

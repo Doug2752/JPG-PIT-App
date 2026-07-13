@@ -14,6 +14,7 @@ export default function Header({
   showHelp, onHelpToggle,
   currentUser, setCU,
   coachMsg, replyText, setRT, sendReply, dismissMsg,
+  isDayCompleteMarked,
 }) {
   return (
     <>
@@ -49,7 +50,7 @@ export default function Header({
         </div>
 
         <div style={{
-          background: complete && !fd.sent ? GOLD : '#444',
+          background: isDayCompleteMarked ? '#333' : complete && !fd.sent ? GOLD : '#333',
           color: '#fff',
           borderRadius: 6,
           padding: '5px 14px',
@@ -61,7 +62,7 @@ export default function Header({
           marginLeft: 120,
           marginRight: 16,
         }}>
-          {complete && !fd.sent ? 'Day Complete' : `${countComplete(fd)} of ${REQUIRED_TOTAL} Fields Done`}
+          {isDayCompleteMarked ? 'PIT Completed Today' : complete && !fd.sent ? 'Required Fields Done' : `${countComplete(fd)} of ${REQUIRED_TOTAL} Fields Done`}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

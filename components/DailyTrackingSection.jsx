@@ -16,8 +16,10 @@ function isDistanceActivity(a) {
 export default function DailyTrackingSection({
   fd, upd, updMulti, updFitnessEntry, addFitnessEntry, removeFitnessEntry,
   recurringFitness = [], onAddRecurring, onUpdateRecurring, onRemoveRecurring, onSyncRecurring,
+  isDayCompleteMarked,
 }) {
   const showActivity = fd.fitnessYesterday === 'Yes';
+  const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
   const [fitnessTab, setFitnessTab] = useState('yesterday');
 
   // Wake Up combobox: local text buffer so free-text typing never writes a
@@ -295,9 +297,9 @@ export default function DailyTrackingSection({
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'end', marginBottom: 10 }}>
           <div>
             <label style={reqLbl}>* Wake Up Time</label>
-            <input list="wake-time-options" style={{ ...inp, height: 34 }} value={wakeInput}
+            <input list="wake-time-options" style={{ ...inp, height: 34, ...lockStyle }} value={wakeInput}
               onChange={e => { setWakeInput(e.target.value); if (wakeError) setWakeError(''); }}
-              onBlur={commitWake} placeholder="e.g. 7:30 AM" />
+              onBlur={commitWake} placeholder="e.g. 7:30 AM" disabled={isDayCompleteMarked} />
             <datalist id="wake-time-options">
               {WAKE_TIMES.map(t => <option key={t} value={t} />)}
             </datalist>
@@ -305,12 +307,12 @@ export default function DailyTrackingSection({
           </div>
           <div>
             <label style={reqLbl}>* Weight (lbs)</label>
-            <input style={{ ...inp, height: 34 }} type="number" min="50" max="400" step="1"
-              value={fd.weight} onChange={e => upd('weight', e.target.value)} placeholder="50–400 lbs" />
+            <input style={{ ...inp, height: 34, ...lockStyle }} type="number" min="50" max="400" step="1"
+              value={fd.weight} onChange={e => upd('weight', e.target.value)} placeholder="50–400 lbs" disabled={isDayCompleteMarked} />
           </div>
           <div>
             <label style={reqLbl}>* Work / Off</label>
-            <select style={sel} value={fd.workOff} onChange={e => upd('workOff', e.target.value)}>
+            <select style={{ ...sel, ...lockStyle }} value={fd.workOff} onChange={e => upd('workOff', e.target.value)} disabled={isDayCompleteMarked}>
               <option value="">Select</option>
               {WORK_OPTS.map(o => <option key={o}>{o}</option>)}
             </select>
@@ -320,8 +322,8 @@ export default function DailyTrackingSection({
               * Sleep Score
               <span style={{ fontSize: 9, fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, marginLeft: 4, fontStyle: 'italic' }}>last night</span>
             </label>
-            <input style={{ ...inp, height: 34 }} type="number" min="0" max="100"
-              value={fd.sleepScore} onChange={e => upd('sleepScore', e.target.value)} placeholder="0–100" />
+            <input style={{ ...inp, height: 34, ...lockStyle }} type="number" min="0" max="100"
+              value={fd.sleepScore} onChange={e => upd('sleepScore', e.target.value)} placeholder="0–100" disabled={isDayCompleteMarked} />
           </div>
         </div>
         {/* Fitness tab row */}
@@ -338,7 +340,7 @@ export default function DailyTrackingSection({
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, alignItems: 'start' }}>
             <div>
               <label style={reqLbl}>* Fitness Yesterday</label>
-              <select style={sel} value={fd.fitnessYesterday}
+              <select style={{ ...sel, ...lockStyle }} value={fd.fitnessYesterday} disabled={isDayCompleteMarked}
                 onChange={e => {
                   const v = e.target.value;
                   if (v === 'Yes') updMulti([['fitnessYesterday', v]]);

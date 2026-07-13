@@ -39,6 +39,7 @@ const apptKey     = (uid)    => `pit_appts_${uid}`;
 const devTypeKey  = (uid)    => `pit_devtype_${uid}`;
 const fcKey       = (uid)    => `pit_fitness_config_${uid}`;
 const discKey     = (uid)    => `pit_discoveries_${uid}`;
+const dayCompleteKey = (uid) => `pit_day_complete_${uid}`;
 
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
@@ -69,6 +70,7 @@ export default function PITApp() {
   const [showClearModal, setShowClearModal] = useState(false);
   const [toastMessage,   setToastMessage]   = useState('');
   const [recurringFitness, setRecurringFitness] = useState([]);
+  const [dayCompleteDates, setDayCompleteDates] = useState([]);
 
   useEffect(() => {
     if (currentUser) {
@@ -77,6 +79,7 @@ export default function PITApp() {
       loadCompletedBooks();
       loadAppointments();
       loadRecurringFitness();
+      loadDayComplete();
     }
   }, [currentUser]);
 
@@ -295,6 +298,30 @@ export default function PITApp() {
       setRecurringFitness(list);
     } catch {}
   }
+
+  async function loadDayComplete() {
+    try {
+      const r = await storage.get(dayCompleteKey(currentUser.id));
+      setDayCompleteDates(r ? JSON.parse(r.value) : []);
+    } catch {
+      setDayCompleteDates([]);
+    }
+  }
+
+  const onMarkDayComplete = async () => {
+    if (!isDayComplete(fd)) return; // guard — required fields must be filled
+    const today = todayStr();
+    const next = dayCompleteDates.includes(today) ? dayCompleteDates : [...dayCompleteDates, today];
+    setDayCompleteDates(next);
+    await storage.set(dayCompleteKey(currentUser.id), JSON.stringify(next));
+  };
+
+  const onUnlockDay = async () => {
+    const today = todayStr();
+    const next = dayCompleteDates.filter(d => d !== today);
+    setDayCompleteDates(next);
+    await storage.set(dayCompleteKey(currentUser.id), JSON.stringify(next));
+  };
 
   async function getSentDates() {
     try {
@@ -842,6 +869,7 @@ export default function PITApp() {
         setCU={setCU}
         setView={setView}
         openArchive={openArchive}
+        dayCompleteDates={dayCompleteDates}
       />
     );
   }
@@ -885,6 +913,7 @@ export default function PITApp() {
 
   // Main form view
   const complete = isDayComplete(fd);
+  const isDayCompleteMarked = dayCompleteDates.includes(todayStr());
   const clearSlotDefs = [
     { slot: 'one_thing', label: 'The One Thing', text: fd.oneThing || '' },
     { slot: 'daily_2',   label: 'Daily Task 2',  text: fd.tasks[0]?.text || '' },
@@ -917,6 +946,7 @@ export default function PITApp() {
         coachMsg={coachMsg}
         replyText={replyText} setRT={setRT}
         sendReply={sendReply} dismissMsg={dismissMsg}
+        isDayCompleteMarked={isDayCompleteMarked}
       />
 
       <BrandBar
@@ -931,6 +961,7 @@ export default function PITApp() {
           submitting={submitting}
           doSubmit={doSubmit}
           submitMsg={submitMsg}
+          isDayCompleteMarked={isDayCompleteMarked}
         />
 
         {showHelp && <HelpPanel onClose={toggleHelp} />}
@@ -944,11 +975,13 @@ export default function PITApp() {
           onUpdateRecurring={updateRecurringActivity}
           onRemoveRecurring={removeRecurringActivity}
           onSyncRecurring={syncRecurringForToday}
-          saveRecurringFitness={saveRecurringFitness} />
+          saveRecurringFitness={saveRecurringFitness}
+          isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
 
         <GratitudeSection
           thankful1={fd.thankful1} thankful2={fd.thankful2} thankful3={fd.thankful3}
           upd={upd}
+          isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
         />
 
         <ToAccomplishSection
@@ -961,9 +994,10 @@ export default function PITApp() {
           toastMessage={toastMessage}
           archiveMode={archiveMode}
           archiveDateStr={archiveMode ? (fd.date || '') : ''}
+          isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
         />
 
-        <NotesSection nit={fd.nit} upd={upd} />
+        <NotesSection nit={fd.nit} upd={upd} isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
 
         <DevotionalSection
           fd={fd} upd={upd} updMulti={updMulti}
@@ -1024,6 +1058,9 @@ export default function PITApp() {
           submitMsg={submitMsg}
           doSubmit={doSubmit}
           setSMsg={setSMsg}
+          isDayCompleteMarked={isDayCompleteMarked}
+          onMarkDayComplete={onMarkDayComplete}
+          onUnlockDay={onUnlockDay}
         />
 
         <DOPBtn />

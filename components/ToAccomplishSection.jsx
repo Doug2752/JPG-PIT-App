@@ -6,9 +6,10 @@ export default function ToAccomplishSection({
   fd, upd, updTask, removeTask,
   showClearModal, onClearModalOpen, clearModalItems = [],
   onClearConfirm, onClearCancel, toastMessage,
-  archiveMode, archiveDateStr,
+  archiveMode, archiveDateStr, isDayCompleteMarked,
 }) {
   const [checkedSlots, setCheckedSlots] = useState({});
+  const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
 
   const hasContent = (fd.oneThing || '').trim() !== '' ||
     [0, 1, 2, 3, 4].some(i => (fd.tasks[i]?.text || '').trim() !== '');
@@ -66,10 +67,11 @@ export default function ToAccomplishSection({
           By completing this one thing, everything else becomes easier or unnecessary.
         </div>
         <input
-          style={{ ...inp, fontSize: 15, fontWeight: 700, borderColor: RED }}
+          style={{ ...inp, fontSize: 15, fontWeight: 700, borderColor: RED, ...lockStyle }}
           value={fd.oneThing}
           onChange={e => upd('oneThing', e.target.value)}
           placeholder="The ONE THING I must accomplish today..."
+          disabled={isDayCompleteMarked}
         />
         {isCarriedUnresolved('one_thing') && (
           <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
