@@ -652,9 +652,13 @@ export default function PITApp() {
     save(n);
   }
 
-  function updFitnessEntry(i, patch) {
+  function updFitnessEntry(idOrIdx, patch, isRecurring) {
     if (archiveMode) return;
-    const fitnessEntries = fd.fitnessEntries.map((e, j) => j === i ? { ...e, ...patch } : e);
+    const fitnessEntries = fd.fitnessEntries.map((e, j) =>
+      isRecurring
+        ? (e.recurringId === idOrIdx ? { ...e, ...patch } : e)
+        : (j === idOrIdx ? { ...e, ...patch } : e)
+    );
     const n = { ...fd, fitnessEntries };
     setFd(n);
     save(n);

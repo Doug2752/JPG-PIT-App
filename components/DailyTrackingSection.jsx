@@ -179,6 +179,7 @@ export default function DailyTrackingSection({
   }
 
   function renderFitnessEntry(entry, i) {
+    const origIdx = fd.fitnessEntries.findIndex(e => e === entry);
     const isDistance = isDistanceActivity(entry.fitnessActivity);
     const isYoga     = entry.fitnessActivity === 'Yoga';
     const isSwim     = entry.fitnessActivity === 'Swim';
@@ -198,7 +199,11 @@ export default function DailyTrackingSection({
             <input
               type="checkbox"
               checked={!!entry.confirmedDone}
-              onChange={e => updFitnessEntry(i, { confirmedDone: e.target.checked })}
+              onChange={e => updFitnessEntry(
+                entry.recurringId,
+                { confirmedDone: e.target.checked },
+                true
+              )}
               style={{ accentColor: '#B8860B', width: 16, height: 16 }}
             />
             <span style={{ fontWeight: 700, fontSize: 13, color: '#ffffff' }}>
@@ -211,7 +216,7 @@ export default function DailyTrackingSection({
             <div>
               <label style={goldLbl}>Activity Type</label>
               <select style={sel} value={entry.fitnessActivity}
-                onChange={e => updFitnessEntry(i, {
+                onChange={e => updFitnessEntry(origIdx, {
                   fitnessActivity: e.target.value, fitnessActivityOther: '',
                   cardioDistance: '', terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
                 })}>
@@ -224,11 +229,11 @@ export default function DailyTrackingSection({
               <div>
                 <label style={goldLbl}>Distance (miles)</label>
                 <input style={{ ...inp, height: 34 }} type="number" min="0" step="0.1"
-                  value={entry.cardioDistance} onChange={e => updFitnessEntry(i, { cardioDistance: e.target.value })} placeholder="miles" />
+                  value={entry.cardioDistance} onChange={e => updFitnessEntry(origIdx, { cardioDistance: e.target.value })} placeholder="miles" />
               </div>
               <div>
                 <label style={goldLbl}>Terrain</label>
-                <select style={sel} value={entry.terrain} onChange={e => updFitnessEntry(i, { terrain: e.target.value })}>
+                <select style={sel} value={entry.terrain} onChange={e => updFitnessEntry(origIdx, { terrain: e.target.value })}>
                   <option value="">Select</option>
                   {TERRAIN_OPTIONS.map(t => <option key={t}>{t}</option>)}
                 </select>
@@ -238,7 +243,7 @@ export default function DailyTrackingSection({
             {isYoga && (
               <div>
                 <label style={goldLbl}>Yoga Type</label>
-                <select style={sel} value={entry.yogaType} onChange={e => updFitnessEntry(i, { yogaType: e.target.value })}>
+                <select style={sel} value={entry.yogaType} onChange={e => updFitnessEntry(origIdx, { yogaType: e.target.value })}>
                   <option value="">Select</option>
                   {YOGA_TYPES.map(t => <option key={t}>{t}</option>)}
                 </select>
@@ -248,14 +253,14 @@ export default function DailyTrackingSection({
             {isSwim && <>
               <div>
                 <label style={goldLbl}>Environment</label>
-                <select style={sel} value={entry.swimEnvironment} onChange={e => updFitnessEntry(i, { swimEnvironment: e.target.value })}>
+                <select style={sel} value={entry.swimEnvironment} onChange={e => updFitnessEntry(origIdx, { swimEnvironment: e.target.value })}>
                   <option value="">Select</option>
                   {SWIM_ENVIRONMENTS.map(v => <option key={v}>{v}</option>)}
                 </select>
               </div>
               <div>
                 <label style={goldLbl}>Stroke / Type</label>
-                <select style={sel} value={entry.swimStroke} onChange={e => updFitnessEntry(i, { swimStroke: e.target.value })}>
+                <select style={sel} value={entry.swimStroke} onChange={e => updFitnessEntry(origIdx, { swimStroke: e.target.value })}>
                   <option value="">Select</option>
                   {SWIM_STROKES.map(s => <option key={s}>{s}</option>)}
                 </select>
@@ -263,7 +268,7 @@ export default function DailyTrackingSection({
               <div>
                 <label style={goldLbl}>Distance (meters)</label>
                 <input style={inp} type="number" min="0"
-                  value={entry.cardioDistance} onChange={e => updFitnessEntry(i, { cardioDistance: e.target.value })} placeholder="meters" />
+                  value={entry.cardioDistance} onChange={e => updFitnessEntry(origIdx, { cardioDistance: e.target.value })} placeholder="meters" />
               </div>
             </>}
 
@@ -271,7 +276,7 @@ export default function DailyTrackingSection({
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={goldLbl}>Describe Activity</label>
                 <input style={inp} value={entry.fitnessActivityOther}
-                  onChange={e => updFitnessEntry(i, { fitnessActivityOther: e.target.value })} placeholder="What did you do?" />
+                  onChange={e => updFitnessEntry(origIdx, { fitnessActivityOther: e.target.value })} placeholder="What did you do?" />
               </div>
             )}
           </div>
