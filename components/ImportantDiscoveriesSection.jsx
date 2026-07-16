@@ -4,7 +4,7 @@ import { GOLD, GOLD_LIGHT, DARK } from '../utils/constants';
 const DISCOVERY_TAGS = [
   'General Info', 'Business', 'Personal Development', 'Education & Learning',
   'Hobby', 'Relationship', 'Religious', 'Inspiration',
-  'Health & Fitness', 'Leadership', 'Finance', 'Mindset'
+  'Health & Fitness', 'Leadership', 'Finance', 'Mindset', 'Other'
 ];
 
 function generateId() {
@@ -78,32 +78,52 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
   const discoveries = fd.discoveries || [];
   const [newTag, setNewTag] = useState('');
   const [newText, setNewText] = useState('');
+  const [newTagOther, setNewTagOther] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editTag, setEditTag] = useState('');
   const [editText, setEditText] = useState('');
+  const [editTagOther, setEditTagOther] = useState('');
 
   function handleAdd() {
     if (!newTag || !newText.trim()) return;
-    const entry = { id: generateId(), tag: newTag, text: newText.trim(), timestamp: new Date().toISOString() };
+    const resolvedTag = newTag === 'Other'
+      ? newTagOther.trim()
+      : newTag;
+    if (newTag === 'Other' && !resolvedTag) return;
+    const entry = {
+      id: generateId(),
+      tag: resolvedTag,
+      text: newText.trim(),
+      timestamp: new Date().toISOString(),
+    };
     onAdd(entry);
     setNewTag('');
+    setNewTagOther('');
     setNewText('');
   }
 
   function handleEditStart(d) {
+    const isCustom = !DISCOVERY_TAGS.includes(d.tag);
     setEditingId(d.id);
-    setEditTag(d.tag);
+    setEditTag(isCustom ? 'Other' : d.tag);
+    setEditTagOther(isCustom ? d.tag : '');
     setEditText(d.text);
   }
 
   function handleEditSave(id) {
     if (!editTag || !editText.trim()) return;
-    onUpdate(id, { tag: editTag, text: editText.trim() });
+    const resolvedTag = editTag === 'Other'
+      ? editTagOther.trim()
+      : editTag;
+    if (editTag === 'Other' && !resolvedTag) return;
+    onUpdate(id, { tag: resolvedTag, text: editText.trim() });
     setEditingId(null);
+    setEditTagOther('');
   }
 
   function handleEditCancel() {
     setEditingId(null);
+    setEditTagOther('');
   }
 
   return (
@@ -137,6 +157,14 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
                       <option value="">Select topic</option>
                       {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
                     </select>
+                    {editTag === 'Other' && (
+                      <input
+                        style={{ ...sel, marginBottom: 8 }}
+                        placeholder="Enter your own category..."
+                        value={editTagOther}
+                        onChange={e => setEditTagOther(e.target.value)}
+                      />
+                    )}
                     <textarea style={{ ...textarea, marginBottom: 8 }} value={editText} onChange={e => setEditText(e.target.value)} />
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button style={{ ...editBtn, color: GOLD, border: `1px solid ${GOLD}` }} onClick={() => handleEditSave(d.id)}>Save</button>
@@ -167,6 +195,14 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
               <option value="">Select topic tag...</option>
               {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
             </select>
+            {newTag === 'Other' && (
+              <input
+                style={{ ...sel, marginBottom: 8 }}
+                placeholder="Enter your own category..."
+                value={newTagOther}
+                onChange={e => setNewTagOther(e.target.value)}
+              />
+            )}
             <textarea
               style={{ ...textarea, marginBottom: 8 }}
               value={newText}
