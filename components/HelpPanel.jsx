@@ -223,6 +223,56 @@ export default function HelpPanel({ onClose }) {
         </div>
       </div>
 
+      <div style={topItem}>
+        <span style={bul}>•</span>
+        <div style={{ flex: 1 }}>
+          <div style={tTitle}>Day Complete</div>
+          <div style={tBody}>
+            Track your daily completion status and lock in your
+            required fields when your PIT session is done.
+          </div>
+          <div style={{ paddingLeft: 16 }}>
+            <div style={{ ...subItem, marginBottom: 6 }}>
+              <span style={hyp}>–</span>
+              <div style={{ flex: 1 }}>
+                <div style={sTitle}>Mark Day Complete</div>
+                <div style={tBody}>
+                  Appears at the bottom of PIT after the AI Summary
+                  section. Active only when all 10 required fields
+                  are filled. Clicking it locks the 10 required
+                  fields to read-only for the day — your work is
+                  preserved.
+                </div>
+              </div>
+            </div>
+            <div style={{ ...subItem, marginBottom: 6 }}>
+              <span style={hyp}>–</span>
+              <div style={{ flex: 1 }}>
+                <div style={sTitle}>Unlock</div>
+                <div style={tBody}>
+                  Appears next to the Mark Day Complete button once
+                  the day is marked. Clicking Unlock reverses the
+                  lock — all required fields become editable again
+                  and the day returns to an incomplete state.
+                </div>
+              </div>
+            </div>
+            <div style={subItem}>
+              <span style={hyp}>–</span>
+              <div style={{ flex: 1 }}>
+                <div style={sTitle}>Day Complete in Archive</div>
+                <div style={tBody}>
+                  Any day you marked complete shows a gold ✓ Day
+                  Complete indicator in the Archive list, immediately
+                  left of the Open / Edit button. Days not marked
+                  complete show nothing in that spot.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style={{ ...topItem, marginBottom: 8 }}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
