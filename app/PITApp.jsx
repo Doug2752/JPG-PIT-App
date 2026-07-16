@@ -672,10 +672,12 @@ export default function PITApp() {
     save(n);
   }
 
-  function removeFitnessEntry(i) {
+  function removeFitnessEntry(idOrIdx, isRecurring) {
     if (archiveMode) return;
     if (fd.fitnessEntries.length <= 1) return;
-    const fitnessEntries = fd.fitnessEntries.filter((_, j) => j !== i);
+    const fitnessEntries = fd.fitnessEntries.filter((e, j) =>
+      isRecurring ? e.recurringId !== idOrIdx : j !== idOrIdx
+    );
     const n = { ...fd, fitnessEntries };
     setFd(n);
     save(n);

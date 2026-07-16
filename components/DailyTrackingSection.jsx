@@ -191,7 +191,7 @@ export default function DailyTrackingSection({
             {entry.recurringId ? `Recurring Fitness ${i + 1}` : `Entry ${i + 1}`}
           </div>
           {fd.fitnessEntries.length > 1 && !entry.recurringId && (
-            <button onClick={() => removeFitnessEntry(i)} style={removeBtn}>Remove</button>
+            <button onClick={() => removeFitnessEntry(origIdx)} style={removeBtn}>Remove</button>
           )}
         </div>
         {entry.recurringId && (
