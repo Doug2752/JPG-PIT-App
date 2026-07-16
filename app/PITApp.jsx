@@ -429,7 +429,15 @@ export default function PITApp() {
   function updTask(i, f, v) {
     if (archiveMode) return;
     if (f === 'done') {
-      const slot = { 0: 'daily_2', 1: 'daily_3', 2: 'future_4', 3: 'future_5', 4: 'future_6' }[i];
+      const slot = {
+        0: 'daily_2', 1: 'daily_3',
+        2: 'future_4', 3: 'future_5', 4: 'future_6',
+        5: 'future_7', 6: 'future_8', 7: 'future_9',
+        8: 'future_10', 9: 'future_11', 10: 'future_12',
+        11: 'future_13', 12: 'future_14', 13: 'future_15',
+        14: 'future_16', 15: 'future_17', 16: 'future_18',
+        17: 'future_19', 18: 'future_20', 19: 'future_21',
+      }[i];
       const item = (fd.toAccomplishItems || []).find(it => it && it.slot === slot);
       if (item && item.origin_date < todayStr()) {
         resolveCarriedItem(slot, v);
@@ -535,10 +543,20 @@ export default function PITApp() {
   function removeTask(absoluteIndex) {
     if (archiveMode) return;
     const tasks = [...fd.tasks];
-    for (let j = absoluteIndex; j <= 3; j++) {
+    // Highest filled future slot among indices 2–19 (text or done).
+    let lastFilled = -1;
+    for (let j = 2; j <= 19; j++) {
+      if (fd.tasks[j] && (fd.tasks[j].text || fd.tasks[j].done)) {
+        lastFilled = j;
+      }
+    }
+    // Clamp so removing an empty trailing slot clears that slot
+    // itself rather than a filled slot below it.
+    const end = Math.max(absoluteIndex, lastFilled);
+    for (let j = absoluteIndex; j < end; j++) {
       tasks[j] = { ...fd.tasks[j + 1] };
     }
-    tasks[4] = { text: '', done: false };
+    tasks[end] = { text: '', done: false };
     const futureTasksVisible = Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
     const n = { ...fd, tasks, futureTasksVisible };
     setFd(n);

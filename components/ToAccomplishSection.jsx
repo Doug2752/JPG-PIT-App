@@ -113,14 +113,15 @@ export default function ToAccomplishSection({
 
       {/* Future Tasks #4-6 */}
       <div>
-        <div style={{ ...lbl, color: '#aaa', marginBottom: 8 }}>Future Tasks (4-6) — not tied to today</div>
+        <div style={{ ...lbl, color: '#aaa', marginBottom: 8 }}>Future Tasks — not tied to today</div>
         {(() => {
-          const visibleFuture = Math.max(
-            fd.futureTasksVisible ?? 1,
-            (fd.tasks[4]?.text || fd.tasks[4]?.done) ? 3 :
-            (fd.tasks[3]?.text || fd.tasks[3]?.done) ? 2 :
-            (fd.tasks[2]?.text || fd.tasks[2]?.done) ? 1 : 0
-          );
+          let visibleFuture = fd.futureTasksVisible ?? 1;
+          for (let j = 2; j <= 19; j++) {
+            if (fd.tasks[j]?.text || fd.tasks[j]?.done) {
+              visibleFuture = Math.max(visibleFuture, j - 1);
+            }
+          }
+          if (visibleFuture > 18) visibleFuture = 18;
           return (
             <>
               {fd.tasks.slice(2, 2 + visibleFuture).map((t, i) => (
@@ -144,7 +145,7 @@ export default function ToAccomplishSection({
                   )}
                 </div>
               ))}
-              {visibleFuture < 3 && (
+              {visibleFuture < 18 && (
                 <button
                   onClick={() => upd('futureTasksVisible', visibleFuture + 1)}
                   style={{ width: '100%', padding: '9px', borderRadius: 5, border: '1.5px solid #000', background: GOLD_LIGHT, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}
@@ -155,9 +156,6 @@ export default function ToAccomplishSection({
             </>
           );
         })()}
-        <div style={{ marginTop: 10, padding: '8px 12px', background: GOLD, border: '1.5px solid #000', borderRadius: 5, fontSize: 11, color: '#000' }}>
-          Three future tasks max. These are reference — not required today.
-        </div>
       </div>
 
       {showClearModal && (

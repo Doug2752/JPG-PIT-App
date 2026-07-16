@@ -135,7 +135,7 @@ export function emptyForm(date) {
     fitnessEntries: [emptyFitnessEntry()],
     thankful1: '', thankful2: '', thankful3: '',
     oneThing: '', oneThingDone: false, oneThingSetup: '',
-    tasks: Array(5).fill(null).map(() => ({ text: '', done: false })),
+    tasks: Array(20).fill(null).map(() => ({ text: '', done: false })),
     nit: '',
     prayerType: 'prayer', prayerDone: false, devotionalNotes: '',
     scriptureQuery: '', scriptureResult: '',
