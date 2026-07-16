@@ -152,7 +152,14 @@ export default function PITApp() {
       if (unresolved.length === 0 && !hasBook) return null;
 
       const today = emptyForm(todayDate);
-      const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
+      const slotToTaskIndex = {
+        daily_2: 0, daily_3: 1,
+        future_4: 2, future_5: 3, future_6: 4, future_7: 5,
+        future_8: 6, future_9: 7, future_10: 8, future_11: 9,
+        future_12: 10, future_13: 11, future_14: 12, future_15: 13,
+        future_16: 14, future_17: 15, future_18: 16, future_19: 17,
+        future_20: 18, future_21: 19,
+      };
       const carriedItems = [];
       for (const it of unresolved) {
         if (it.slot === 'one_thing') {
@@ -459,7 +466,14 @@ export default function PITApp() {
     const items = fd.toAccomplishItems || [];
     const item = items.find(it => it && it.slot === slot);
     const isCarried = !!(item && item.origin_date < todayStr());
-    const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
+    const slotToTaskIndex = {
+      daily_2: 0, daily_3: 1,
+      future_4: 2, future_5: 3, future_6: 4, future_7: 5,
+      future_8: 6, future_9: 7, future_10: 8, future_11: 9,
+      future_12: 10, future_13: 11, future_14: 12, future_15: 13,
+      future_16: 14, future_17: 15, future_18: 16, future_19: 17,
+      future_20: 18, future_21: 19,
+    };
 
     let n;
     if (slot === 'one_thing') {
@@ -503,7 +517,14 @@ export default function PITApp() {
       return;
     }
     const items = fd.toAccomplishItems || [];
-    const slotToTaskIndex = { daily_2: 0, daily_3: 1, future_4: 2, future_5: 3, future_6: 4 };
+    const slotToTaskIndex = {
+      daily_2: 0, daily_3: 1,
+      future_4: 2, future_5: 3, future_6: 4, future_7: 5,
+      future_8: 6, future_9: 7, future_10: 8, future_11: 9,
+      future_12: 10, future_13: 11, future_14: 12, future_15: 13,
+      future_16: 14, future_17: 15, future_18: 16, future_19: 17,
+      future_20: 18, future_21: 19,
+    };
     const n = { ...fd, tasks: fd.tasks.map(t => ({ ...t })) };
     let cleared = 0;
     for (const slot of slots) {
@@ -559,6 +580,74 @@ export default function PITApp() {
     tasks[end] = { text: '', done: false };
     const futureTasksVisible = Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
     const n = { ...fd, tasks, futureTasksVisible };
+    setFd(n);
+    save(n);
+  }
+
+  // Promote a Future Task (absolute index 2–19) into the first open
+  // Daily Task slot. Occupancy matches rebuildToAccomplishItems: a slot
+  // is filled if text.trim() !== '' OR done === true. If both daily
+  // slots are full, toast and bail. On success the source future slot is
+  // cleared with removeTask's shift pattern, and the promoted item's
+  // identity (id / origin_date / carried_dates) is carried onto the
+  // target daily slot so origin-day memorialization still resolves to
+  // its source. Silent on success.
+  function promoteFutureTask(futureIndex) {
+    if (archiveMode) return;
+
+    const filled = (t) =>
+      ((t?.text || '').trim() !== '') || t?.done === true;
+
+    let target;
+    if (!filled(fd.tasks[0])) target = 0;
+    else if (!filled(fd.tasks[1])) target = 1;
+    else {
+      setToastMessage(
+        'Daily Task slots are full — check off or clear ' +
+        'Item 2 or Item 3 first.'
+      );
+      setTimeout(() => setToastMessage(''), 2500);
+      return;
+    }
+
+    const srcSlot = `future_${futureIndex + 2}`;
+    const srcItem = (fd.toAccomplishItems || [])
+      .find(it => it && it.slot === srcSlot);
+    const srcTask = fd.tasks[futureIndex] || { text: '', done: false };
+
+    const tasks = [...fd.tasks];
+    tasks[target] = { text: srcTask.text, done: srcTask.done };
+
+    // Clear source future with removeTask's shift pattern.
+    let lastFilled = -1;
+    for (let j = 2; j <= 19; j++) {
+      if (tasks[j] && (tasks[j].text || tasks[j].done)) lastFilled = j;
+    }
+    const end = Math.max(futureIndex, lastFilled);
+    for (let j = futureIndex; j < end; j++) tasks[j] = { ...tasks[j + 1] };
+    tasks[end] = { text: '', done: false };
+
+    const futureTasksVisible =
+      Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
+
+    // Preserve promoted item identity on the target daily slot; drop the
+    // source future item so save()'s rebuild neither recycles nor
+    // duplicates its id onto shifted content.
+    const targetSlot = target === 0 ? 'daily_2' : 'daily_3';
+    const items = (fd.toAccomplishItems || [])
+      .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
+    if (srcItem) {
+      items.push({
+        ...srcItem,
+        slot: targetSlot,
+        text: srcTask.text,
+        done: srcTask.done,
+        carried_dates: Array.isArray(srcItem.carried_dates)
+          ? [...srcItem.carried_dates] : [],
+      });
+    }
+
+    const n = { ...fd, tasks, futureTasksVisible, toAccomplishItems: items };
     setFd(n);
     save(n);
   }
@@ -1004,6 +1093,7 @@ export default function PITApp() {
 
         <ToAccomplishSection
           fd={fd} upd={upd} updTask={updTask} removeTask={removeTask}
+          promoteFutureTask={promoteFutureTask}
           showClearModal={showClearModal}
           onClearModalOpen={() => setShowClearModal(true)}
           clearModalItems={clearModalItems}

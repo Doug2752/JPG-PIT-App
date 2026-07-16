@@ -52,9 +52,14 @@ export function withCarryoverMigration(d) {
     { slot: 'one_thing', text: d.oneThing || '',      done: !!d.oneThingDone },
     { slot: 'daily_2',   text: tasks[0]?.text || '',  done: !!tasks[0]?.done },
     { slot: 'daily_3',   text: tasks[1]?.text || '',  done: !!tasks[1]?.done },
-    { slot: 'future_4',  text: tasks[2]?.text || '',  done: !!tasks[2]?.done },
-    { slot: 'future_5',  text: tasks[3]?.text || '',  done: !!tasks[3]?.done },
-    { slot: 'future_6',  text: tasks[4]?.text || '',  done: !!tasks[4]?.done },
+    ...Array.from({ length: 18 }, (_, k) => {
+      const idx = k + 2;                 // tasks index 2..19
+      return {
+        slot: `future_${idx + 2}`,       // future_4..future_21
+        text: tasks[idx]?.text || '',
+        done: !!tasks[idx]?.done,
+      };
+    }),
   ];
 
   const toAccomplishItems = sources
@@ -101,9 +106,14 @@ export function rebuildToAccomplishItems(d) {
     { slot: 'one_thing', text: d.oneThing || '',      done: !!d.oneThingDone },
     { slot: 'daily_2',   text: tasks[0]?.text || '',  done: !!tasks[0]?.done },
     { slot: 'daily_3',   text: tasks[1]?.text || '',  done: !!tasks[1]?.done },
-    { slot: 'future_4',  text: tasks[2]?.text || '',  done: !!tasks[2]?.done },
-    { slot: 'future_5',  text: tasks[3]?.text || '',  done: !!tasks[3]?.done },
-    { slot: 'future_6',  text: tasks[4]?.text || '',  done: !!tasks[4]?.done },
+    ...Array.from({ length: 18 }, (_, k) => {
+      const idx = k + 2;                 // tasks index 2..19
+      return {
+        slot: `future_${idx + 2}`,       // future_4..future_21
+        text: tasks[idx]?.text || '',
+        done: !!tasks[idx]?.done,
+      };
+    }),
   ];
 
   return sources

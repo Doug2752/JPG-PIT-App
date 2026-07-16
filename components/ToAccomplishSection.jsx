@@ -3,13 +3,19 @@ import { GOLD, RED, BORDER, MID, GOLD_LIGHT } from '../utils/constants';
 import { card, secTitle, lbl, inp } from './styles';
 
 export default function ToAccomplishSection({
-  fd, upd, updTask, removeTask,
+  fd, upd, updTask, removeTask, promoteFutureTask,
   showClearModal, onClearModalOpen, clearModalItems = [],
   onClearConfirm, onClearCancel, toastMessage,
   archiveMode, archiveDateStr, isDayCompleteMarked,
 }) {
   const [checkedSlots, setCheckedSlots] = useState({});
   const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
+
+  // Both daily slots filled? (same rule as rebuildToAccomplishItems)
+  const dailyFilled = (t) =>
+    ((t?.text || '').trim() !== '') || t?.done === true;
+  const dailySlotsFull =
+    dailyFilled(fd.tasks[0]) && dailyFilled(fd.tasks[1]);
 
   const hasContent = (fd.oneThing || '').trim() !== '' ||
     [0, 1, 2, 3, 4].some(i => (fd.tasks[i]?.text || '').trim() !== '');
@@ -133,6 +139,10 @@ export default function ToAccomplishSection({
                     <input style={{ ...inp, fontSize: 12 }} value={t.text}
                       onChange={e => updTask(i + 2, 'text', e.target.value)}
                       placeholder={`Future task ${i + 4}`} />
+                    <button
+                      onClick={() => promoteFutureTask(i + 2)}
+                      style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: dailySlotsFull ? 'not-allowed' : 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap', opacity: dailySlotsFull ? 0.4 : 1 }}
+                    >Move to Daily Task</button>
                     <button
                       onClick={() => removeTask(i + 2)}
                       style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap' }}
