@@ -4,12 +4,35 @@ import { card, secTitle, lbl, inp } from './styles';
 
 export default function ToAccomplishSection({
   fd, upd, updTask, removeTask, promoteFutureTask,
+  moveModalSource, setMoveModalSource,
+  moveOneThingToDaily, moveOneThingToFuture,
+  moveDailyToOneThing, moveDailyToFuture,
   showClearModal, onClearModalOpen, clearModalItems = [],
   onClearConfirm, onClearCancel, toastMessage,
   archiveMode, archiveDateStr, isDayCompleteMarked,
 }) {
   const [checkedSlots, setCheckedSlots] = useState({});
   const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
+
+  // Small "Move" button style, shared by One Thing and Daily rows.
+  // Matches the Future Tasks "Move to Daily Task" button.
+  const moveBtn = (disabled) => ({
+    background: 'transparent', border: '1px solid #ccc',
+    borderRadius: 4, color: '#999', fontSize: 10,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap',
+    opacity: disabled ? 0.4 : 1,
+  });
+
+  // Small "Remove" button style, shared by Daily and Future rows.
+  // Same footprint as moveBtn; disabled greys out and blocks the click.
+  const removeBtn = (disabled) => ({
+    background: 'transparent', border: '1px solid #ccc',
+    borderRadius: 4, color: '#999', fontSize: 10,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap',
+    opacity: disabled ? 0.4 : 1,
+  });
 
   // Both daily slots filled? (same rule as rebuildToAccomplishItems)
   const dailyFilled = (t) =>
@@ -58,16 +81,23 @@ export default function ToAccomplishSection({
 
       {/* The One Thing */}
       <div style={{ background: '#fff5f5', border: `2px solid ${RED}`, borderRadius: 8, padding: 16, marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <input
-            type="checkbox"
-            checked={fd.oneThingDone}
-            onChange={e => upd('oneThingDone', e.target.checked)}
-            style={{ width: 18, height: 18, cursor: 'pointer', accentColor: RED }}
-          />
-          <span style={{ fontWeight: 900, fontSize: 13, color: RED, textTransform: 'uppercase', letterSpacing: 1.5 }}>
-            * The One Thing
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <input
+              type="checkbox"
+              checked={fd.oneThingDone}
+              onChange={e => upd('oneThingDone', e.target.checked)}
+              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: RED }}
+            />
+            <span style={{ fontWeight: 900, fontSize: 13, color: RED, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+              * The One Thing
+            </span>
+          </div>
+          <button
+            onClick={() => setMoveModalSource({ type: 'oneThing' })}
+            disabled={(fd.oneThing || '').trim() === ''}
+            style={moveBtn((fd.oneThing || '').trim() === '')}
+          >Move to Daily or Future Tasks</button>
         </div>
         <div style={{ fontSize: 10, color: '#999', fontStyle: 'italic', marginBottom: 8 }}>
           By completing this one thing, everything else becomes easier or unnecessary.
@@ -98,23 +128,36 @@ export default function ToAccomplishSection({
       {/* Daily Tasks #2-3 */}
       <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: `1px dashed ${BORDER}` }}>
         <div style={{ ...lbl, color: GOLD, marginBottom: 8 }}>Daily Tasks (2-3)</div>
-        {[0, 1].map(i => (
-          <div key={i} style={{ marginBottom: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input type="checkbox" checked={fd.tasks[i].done}
-                onChange={e => updTask(i, 'done', e.target.checked)}
-                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }} />
-              <input style={inp} value={fd.tasks[i].text}
-                onChange={e => updTask(i, 'text', e.target.value)}
-                placeholder={`Daily task ${i + 2}`} />
-            </div>
-            {isCarriedUnresolved(`daily_${i + 2}`) && (
-              <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
-                carried, unresolved
+        {[0, 1].map(i => {
+          const empty = (fd.tasks[i].text || '').trim() === '';
+          return (
+            <div key={i} style={{ marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <input type="checkbox" checked={fd.tasks[i].done}
+                  onChange={e => updTask(i, 'done', e.target.checked)}
+                  style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }} />
+                <input style={{ ...inp, flex: 1 }} value={fd.tasks[i].text}
+                  onChange={e => updTask(i, 'text', e.target.value)}
+                  placeholder={`Daily task ${i + 2}`} />
+                <button
+                  onClick={() => setMoveModalSource({ type: 'daily', index: i })}
+                  disabled={empty}
+                  style={moveBtn(empty)}
+                >Move to One Thing or Future Tasks</button>
+                <button
+                  onClick={() => removeTask(i)}
+                  disabled={empty}
+                  style={removeBtn(empty)}
+                >Remove</button>
               </div>
-            )}
-          </div>
-        ))}
+              {isCarriedUnresolved(`daily_${i + 2}`) && (
+                <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
+                  carried, unresolved
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Future Tasks #4-6 */}
@@ -145,7 +188,8 @@ export default function ToAccomplishSection({
                     >Move to Daily Task</button>
                     <button
                       onClick={() => removeTask(i + 2)}
-                      style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap' }}
+                      disabled={(t.text || '').trim() === ''}
+                      style={removeBtn((t.text || '').trim() === '')}
                     >Remove</button>
                   </div>
                   {isCarriedUnresolved(`future_${i + 4}`) && (
@@ -212,6 +256,82 @@ export default function ToAccomplishSection({
           {toastMessage}
         </div>
       )}
+
+      {moveModalSource && (() => {
+        const futureSlotsFull = fd.tasks.slice(2).every(
+          t => (t.text || '').trim() !== ''
+        );
+        const oneThingFilled = (fd.oneThing || '').trim() !== '';
+        const optBtn = (disabled) => ({
+          background: disabled ? '#ccc' : GOLD,
+          color: '#fff', border: 'none', borderRadius: 6,
+          padding: '10px 0', width: '100%', fontSize: 13,
+          fontWeight: 600, marginBottom: 8,
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          opacity: disabled ? 0.6 : 1,
+        });
+        return (
+          <div style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.5)', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            zIndex: 1000,
+          }}>
+            <div style={{
+              background: '#fff', borderRadius: 8, padding: 24,
+              maxWidth: 320, width: '90%',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            }}>
+              <div style={{
+                fontWeight: 700, fontSize: 15,
+                marginBottom: 16, color: '#222',
+              }}>Move to...</div>
+
+              {moveModalSource.type === 'oneThing' && (
+                <>
+                  <button
+                    disabled={dailySlotsFull}
+                    style={optBtn(dailySlotsFull)}
+                    onClick={() => moveOneThingToDaily()}
+                  >Move to Daily Task</button>
+                  <button
+                    disabled={futureSlotsFull}
+                    style={optBtn(futureSlotsFull)}
+                    onClick={() => moveOneThingToFuture()}
+                  >Move to Future Task</button>
+                </>
+              )}
+
+              {moveModalSource.type === 'daily' && (
+                <>
+                  <button
+                    disabled={oneThingFilled}
+                    style={optBtn(oneThingFilled)}
+                    onClick={() =>
+                      moveDailyToOneThing(moveModalSource.index)}
+                  >Move to One Thing</button>
+                  <button
+                    disabled={futureSlotsFull}
+                    style={optBtn(futureSlotsFull)}
+                    onClick={() =>
+                      moveDailyToFuture(moveModalSource.index)}
+                  >Move to Future Task</button>
+                </>
+              )}
+
+              <button
+                onClick={() => setMoveModalSource(null)}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid #ccc', borderRadius: 6,
+                  padding: '8px 0', width: '100%', fontSize: 12,
+                  color: '#999', cursor: 'pointer', marginTop: 8,
+                }}
+              >Cancel</button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

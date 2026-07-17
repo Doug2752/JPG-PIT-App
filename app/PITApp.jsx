@@ -68,6 +68,7 @@ export default function PITApp() {
   const [showHelp,       setShowHelp]      = useState(false);
   const [appointments,   setAppointments]  = useState([]);
   const [showClearModal, setShowClearModal] = useState(false);
+  const [moveModalSource, setMoveModalSource] = useState(null);
   const [toastMessage,   setToastMessage]   = useState('');
   const [recurringFitness, setRecurringFitness] = useState([]);
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
@@ -563,6 +564,16 @@ export default function PITApp() {
 
   function removeTask(absoluteIndex) {
     if (archiveMode) return;
+    // Daily slots (0–1) are fixed positions: clear in place with no
+    // shift and no futureTasksVisible change.
+    if (absoluteIndex < 2) {
+      const tasks = [...fd.tasks];
+      tasks[absoluteIndex] = { text: '', done: false };
+      const n = { ...fd, tasks };
+      setFd(n);
+      save(n);
+      return;
+    }
     const tasks = [...fd.tasks];
     // Highest filled future slot among indices 2–19 (text or done).
     let lastFilled = -1;
@@ -650,6 +661,193 @@ export default function PITApp() {
     const n = { ...fd, tasks, futureTasksVisible, toAccomplishItems: items };
     setFd(n);
     save(n);
+  }
+
+  // First empty future slot (tasks index 2..19), or -1 if all 18 are
+  // filled. Empty = blank text and not done, matching occupancy in
+  // rebuildToAccomplishItems.
+  function firstEmptyFutureIndex(tasks) {
+    for (let j = 2; j <= 19; j++) {
+      const t = tasks[j];
+      const filled = ((t?.text || '').trim() !== '') || t?.done === true;
+      if (!filled) return j;
+    }
+    return -1;
+  }
+
+  // Move One Thing into the first open Daily Task slot. If both daily
+  // slots are full, toast and bail. One Thing is cleared on success.
+  // Preserves the source item's identity (id / origin_date / carry
+  // history) onto the target daily slot, mirroring promoteFutureTask.
+  function moveOneThingToDaily() {
+    if (archiveMode) return;
+    const filled = (t) =>
+      ((t?.text || '').trim() !== '') || t?.done === true;
+    let target;
+    if (!filled(fd.tasks[0])) target = 0;
+    else if (!filled(fd.tasks[1])) target = 1;
+    else {
+      setToastMessage('Daily task slots are full');
+      setTimeout(() => setToastMessage(''), 2500);
+      return;
+    }
+    const srcSlot = 'one_thing';
+    const targetSlot = target === 0 ? 'daily_2' : 'daily_3';
+    const srcItem = (fd.toAccomplishItems || [])
+      .find(it => it && it.slot === srcSlot);
+    const text = fd.oneThing;
+    const tasks = [...fd.tasks];
+    tasks[target] = { text, done: false };
+    const items = (fd.toAccomplishItems || [])
+      .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
+    if (srcItem) {
+      items.push({
+        ...srcItem,
+        slot: targetSlot,
+        text,
+        done: false,
+        resolution_status: null,
+        resolution_date: null,
+        carried_dates: Array.isArray(srcItem.carried_dates)
+          ? [...srcItem.carried_dates] : [],
+      });
+    }
+    const n = {
+      ...fd, tasks, oneThing: '', oneThingDone: false,
+      toAccomplishItems: items,
+    };
+    setFd(n);
+    save(n);
+    setToastMessage('One Thing is required for day completion');
+    setTimeout(() => setToastMessage(''), 2500);
+    setMoveModalSource(null);
+  }
+
+  // Move One Thing into the first open Future Task slot. If all 18
+  // future slots are full, toast and bail. One Thing cleared on success.
+  // Preserves the source item's identity onto the target future slot,
+  // mirroring promoteFutureTask.
+  function moveOneThingToFuture() {
+    if (archiveMode) return;
+    const tasks = [...fd.tasks];
+    const slot = firstEmptyFutureIndex(tasks);
+    if (slot === -1) {
+      setToastMessage('Future task slots are full');
+      setTimeout(() => setToastMessage(''), 2500);
+      return;
+    }
+    const srcSlot = 'one_thing';
+    const targetSlot = `future_${slot + 2}`;
+    const srcItem = (fd.toAccomplishItems || [])
+      .find(it => it && it.slot === srcSlot);
+    const text = fd.oneThing;
+    tasks[slot] = { text, done: false };
+    const futureTasksVisible = Math.min(
+      18, Math.max(fd.futureTasksVisible ?? 1, slot - 1)
+    );
+    const items = (fd.toAccomplishItems || [])
+      .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
+    if (srcItem) {
+      items.push({
+        ...srcItem,
+        slot: targetSlot,
+        text,
+        done: false,
+        resolution_status: null,
+        resolution_date: null,
+        carried_dates: Array.isArray(srcItem.carried_dates)
+          ? [...srcItem.carried_dates] : [],
+      });
+    }
+    const n = {
+      ...fd, tasks, oneThing: '', oneThingDone: false,
+      futureTasksVisible, toAccomplishItems: items,
+    };
+    setFd(n);
+    save(n);
+    setToastMessage('One Thing is required for day completion');
+    setTimeout(() => setToastMessage(''), 2500);
+    setMoveModalSource(null);
+  }
+
+  // Move a Daily Task (index 0 or 1) up into One Thing. Guarded so it
+  // is a no-op when One Thing already holds content. Preserves the
+  // source item's identity onto the one_thing slot.
+  function moveDailyToOneThing(dailyIndex) {
+    if (archiveMode) return;
+    if ((fd.oneThing || '').trim() !== '') return;
+    const srcSlot = dailyIndex === 0 ? 'daily_2' : 'daily_3';
+    const targetSlot = 'one_thing';
+    const srcItem = (fd.toAccomplishItems || [])
+      .find(it => it && it.slot === srcSlot);
+    const tasks = [...fd.tasks];
+    const text = tasks[dailyIndex]?.text || '';
+    tasks[dailyIndex] = { text: '', done: false };
+    const items = (fd.toAccomplishItems || [])
+      .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
+    if (srcItem) {
+      items.push({
+        ...srcItem,
+        slot: targetSlot,
+        text,
+        done: false,
+        resolution_status: null,
+        resolution_date: null,
+        carried_dates: Array.isArray(srcItem.carried_dates)
+          ? [...srcItem.carried_dates] : [],
+      });
+    }
+    const n = {
+      ...fd, tasks, oneThing: text, oneThingDone: false,
+      toAccomplishItems: items,
+    };
+    setFd(n);
+    save(n);
+    setMoveModalSource(null);
+  }
+
+  // Move a Daily Task (index 0 or 1) down into the first open Future
+  // slot. If all 18 future slots are full, toast and bail. Preserves
+  // the source item's identity onto the target future slot.
+  function moveDailyToFuture(dailyIndex) {
+    if (archiveMode) return;
+    const tasks = [...fd.tasks];
+    const slot = firstEmptyFutureIndex(tasks);
+    if (slot === -1) {
+      setToastMessage('Future task slots are full');
+      setTimeout(() => setToastMessage(''), 2500);
+      return;
+    }
+    const srcSlot = dailyIndex === 0 ? 'daily_2' : 'daily_3';
+    const targetSlot = `future_${slot + 2}`;
+    const srcItem = (fd.toAccomplishItems || [])
+      .find(it => it && it.slot === srcSlot);
+    const text = tasks[dailyIndex]?.text || '';
+    tasks[slot] = { text, done: false };
+    tasks[dailyIndex] = { text: '', done: false };
+    const futureTasksVisible = Math.min(
+      18, Math.max(fd.futureTasksVisible ?? 1, slot - 1)
+    );
+    const items = (fd.toAccomplishItems || [])
+      .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
+    if (srcItem) {
+      items.push({
+        ...srcItem,
+        slot: targetSlot,
+        text,
+        done: false,
+        resolution_status: null,
+        resolution_date: null,
+        carried_dates: Array.isArray(srcItem.carried_dates)
+          ? [...srcItem.carried_dates] : [],
+      });
+    }
+    const n = {
+      ...fd, tasks, futureTasksVisible, toAccomplishItems: items,
+    };
+    setFd(n);
+    save(n);
+    setMoveModalSource(null);
   }
 
   function updFitnessEntry(idOrIdx, patch, isRecurring) {
@@ -1100,6 +1298,12 @@ export default function PITApp() {
         <ToAccomplishSection
           fd={fd} upd={upd} updTask={updTask} removeTask={removeTask}
           promoteFutureTask={promoteFutureTask}
+          moveModalSource={moveModalSource}
+          setMoveModalSource={setMoveModalSource}
+          moveOneThingToDaily={moveOneThingToDaily}
+          moveOneThingToFuture={moveOneThingToFuture}
+          moveDailyToOneThing={moveDailyToOneThing}
+          moveDailyToFuture={moveDailyToFuture}
           showClearModal={showClearModal}
           onClearModalOpen={() => setShowClearModal(true)}
           clearModalItems={clearModalItems}
