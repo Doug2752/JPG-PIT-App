@@ -813,7 +813,9 @@ export default function PITApp() {
     const targetSlot = target === 0 ? 'daily_2' : 'daily_3';
     const srcItem = (fd.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const text = fd.oneThing;
+    const text = (fd.oneThingSetup || '').trim()
+      ? `${fd.oneThing} (${fd.oneThingSetup.trim()})`
+      : fd.oneThing;
     const tasks = [...fd.tasks];
     tasks[target] = { text, done: false };
     const items = (fd.toAccomplishItems || [])
@@ -832,6 +834,7 @@ export default function PITApp() {
     }
     let n = {
       ...fd, tasks, oneThing: '', oneThingDone: false,
+      oneThingSetup: '',
       toAccomplishItems: items,
     };
     {
@@ -876,7 +879,9 @@ export default function PITApp() {
     const targetSlot = `future_${slot + 2}`;
     const srcItem = (fd.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const text = fd.oneThing;
+    const text = (fd.oneThingSetup || '').trim()
+      ? `${fd.oneThing} (${fd.oneThingSetup.trim()})`
+      : fd.oneThing;
     tasks[slot] = { text, done: false };
     const futureTasksVisible = Math.min(
       18, Math.max(fd.futureTasksVisible ?? 1, slot - 1)
@@ -897,6 +902,7 @@ export default function PITApp() {
     }
     let n = {
       ...fd, tasks, oneThing: '', oneThingDone: false,
+      oneThingSetup: '',
       futureTasksVisible, toAccomplishItems: items,
     };
     {

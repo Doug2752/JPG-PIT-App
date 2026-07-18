@@ -217,7 +217,7 @@ export default function ToAccomplishSection({
           <div style={{ ...card, maxWidth: 420, width: '90%', border: `2px solid ${GOLD}`, maxHeight: '80vh', overflowY: 'auto' }}>
             <div style={secTitle}>Clear Items</div>
             <div style={{ fontSize: 11, color: MID, marginBottom: 12 }}>
-              Select the items you want to clear. Carried items are memorialized on their origin day.
+              Select the items you want to clear. Cleared items are memorialized on their origin day.
             </div>
             {clearModalItems.length === 0 && (
               <div style={{ fontSize: 12, color: '#999', marginBottom: 12 }}>No items to clear.</div>
