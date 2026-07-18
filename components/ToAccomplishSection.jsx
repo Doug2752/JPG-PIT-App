@@ -127,7 +127,7 @@ export default function ToAccomplishSection({
 
       {/* Daily Tasks #2-3 */}
       <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: `1px dashed ${BORDER}` }}>
-        <div style={{ ...lbl, color: GOLD, marginBottom: 8 }}>Daily Tasks (2-3)</div>
+        <div style={{ ...lbl, color: GOLD, marginBottom: 8 }}>Daily Tasks (2-3)<span style={{ fontSize: 10, color: '#999', fontWeight: 400, marginLeft: 8 }}>(only two tasks allowed)</span></div>
         {[0, 1].map(i => {
           const empty = (fd.tasks[i].text || '').trim() === '';
           return (

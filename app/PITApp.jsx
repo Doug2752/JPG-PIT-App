@@ -41,6 +41,66 @@ const fcKey       = (uid)    => `pit_fitness_config_${uid}`;
 const discKey     = (uid)    => `pit_discoveries_${uid}`;
 const dayCompleteKey = (uid) => `pit_day_complete_${uid}`;
 
+// Compact tasks AND toAccomplishItems in lockstep so filled items
+// float to the top of each group (daily 0–1, future 2–19) with no
+// blank gaps, while preserving each item's identity (id, origin_date,
+// carried_dates, resolution fields) as it shifts slots. Because
+// rebuildToAccomplishItems matches by slot position, the pre-seeded
+// item is re-keyed to its NEW slot here so save() finds it and keeps
+// the id/origin_date instead of minting a fresh one. An item is
+// "filled" if it has non-empty text OR done === true. Returns
+// { tasks, toAccomplishItems } — a 20-length tasks array (2 daily +
+// 18 future, blank-padded) and the re-slotted item list for the
+// daily/future grid. NOTE: only daily/future slot items are returned;
+// the one_thing item (and any non-grid slot) is not carried through.
+function compactTasks(tasks, toAccomplishItems) {
+  const SLOT_KEYS = [
+    'daily_2', 'daily_3',
+    'future_4', 'future_5', 'future_6', 'future_7', 'future_8',
+    'future_9', 'future_10', 'future_11', 'future_12', 'future_13',
+    'future_14', 'future_15', 'future_16', 'future_17', 'future_18',
+    'future_19', 'future_20', 'future_21',
+  ];
+
+  const bySlot = {};
+  (toAccomplishItems || []).forEach(item => {
+    if (item && item.slot) bySlot[item.slot] = item;
+  });
+
+  const daily = tasks.slice(0, 2);
+  const future = tasks.slice(2);
+
+  const dailyFilled = daily
+    .map((t, i) => ({ t, item: bySlot[SLOT_KEYS[i]] }))
+    .filter(({ t }) => (t.text || '').trim() !== '' || t.done);
+
+  const futureFilled = future
+    .map((t, i) => ({ t, item: bySlot[SLOT_KEYS[i + 2]] }))
+    .filter(({ t }) => (t.text || '').trim() !== '' || t.done);
+
+  while (dailyFilled.length < 2) {
+    dailyFilled.push({ t: { text: '', done: false }, item: null });
+  }
+  while (futureFilled.length < 18) {
+    futureFilled.push({ t: { text: '', done: false }, item: null });
+  }
+
+  const allFilled = [...dailyFilled, ...futureFilled];
+
+  const newTasks = allFilled.map(({ t }) => t);
+  const newToAccomplishItems = allFilled
+    .map(({ item }, i) => (item ? { ...item, slot: SLOT_KEYS[i] } : null))
+    .filter(Boolean);
+
+  const gridSlots = new Set(SLOT_KEYS);
+  const passthrough = (toAccomplishItems || [])
+    .filter(it => it && it.slot && !gridSlots.has(it.slot));
+  return {
+    tasks: newTasks,
+    toAccomplishItems: [...newToAccomplishItems, ...passthrough],
+  };
+}
+
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
     const username = new URLSearchParams(window.location.search).get('hub_user');
@@ -111,7 +171,29 @@ export default function PITApp() {
     try {
       const r = await storage.get(sk(currentUser.id, todayStr()));
       if (r) {
-        setFd(withDiscoveriesMigration(withCarryoverMigration(withFitnessMigration(JSON.parse(r.value)))));
+        const loaded = withDiscoveriesMigration(
+          withCarryoverMigration(
+            withFitnessMigration(JSON.parse(r.value))
+          )
+        );
+        const { tasks: compacted,
+                toAccomplishItems: compactedItems } = compactTasks(
+          loaded.tasks, loaded.toAccomplishItems
+        );
+        const fv = Math.max(
+          0,
+          compacted.slice(2).filter(
+            t => (t.text || '').trim() !== '' || t.done
+          ).length
+        );
+        const n = {
+          ...loaded,
+          tasks: compacted,
+          toAccomplishItems: compactedItems,
+          futureTasksVisible: fv,
+        };
+        setFd(n);
+        save(n);
       } else {
         const pref = await storage.get(devTypeKey(currentUser.id));
         const carried = await applyCarryover(currentUser.id, todayStr());
@@ -453,6 +535,27 @@ export default function PITApp() {
       }
     }
     const tasks = fd.tasks.map((x, j) => j === i ? { ...x, [f]: v } : x);
+    if (f === 'done') {
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        tasks, fd.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      const n = {
+        ...fd,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
+      setFd(n);
+      save(n);
+      return;
+    }
     const n = { ...fd, tasks };
     setFd(n);
     save(n);
@@ -569,7 +672,22 @@ export default function PITApp() {
     if (absoluteIndex < 2) {
       const tasks = [...fd.tasks];
       tasks[absoluteIndex] = { text: '', done: false };
-      const n = { ...fd, tasks };
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        tasks, fd.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      const n = {
+        ...fd,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
       setFd(n);
       save(n);
       return;
@@ -712,10 +830,28 @@ export default function PITApp() {
           ? [...srcItem.carried_dates] : [],
       });
     }
-    const n = {
+    let n = {
       ...fd, tasks, oneThing: '', oneThingDone: false,
       toAccomplishItems: items,
     };
+    {
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        n.tasks, n.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      n = {
+        ...n,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
+    }
     setFd(n);
     save(n);
     setToastMessage('One Thing is required for day completion');
@@ -759,10 +895,28 @@ export default function PITApp() {
           ? [...srcItem.carried_dates] : [],
       });
     }
-    const n = {
+    let n = {
       ...fd, tasks, oneThing: '', oneThingDone: false,
       futureTasksVisible, toAccomplishItems: items,
     };
+    {
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        n.tasks, n.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      n = {
+        ...n,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
+    }
     setFd(n);
     save(n);
     setToastMessage('One Thing is required for day completion');
@@ -797,10 +951,28 @@ export default function PITApp() {
           ? [...srcItem.carried_dates] : [],
       });
     }
-    const n = {
+    let n = {
       ...fd, tasks, oneThing: text, oneThingDone: false,
       toAccomplishItems: items,
     };
+    {
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        n.tasks, n.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      n = {
+        ...n,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
+    }
     setFd(n);
     save(n);
     setMoveModalSource(null);
@@ -842,9 +1014,27 @@ export default function PITApp() {
           ? [...srcItem.carried_dates] : [],
       });
     }
-    const n = {
+    let n = {
       ...fd, tasks, futureTasksVisible, toAccomplishItems: items,
     };
+    {
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        n.tasks, n.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      n = {
+        ...n,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
+    }
     setFd(n);
     save(n);
     setMoveModalSource(null);
