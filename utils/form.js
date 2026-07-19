@@ -9,7 +9,7 @@ export function emptyFitnessEntry() {
     fitnessActivity: '', fitnessActivityOther: '', cardioDistance: '',
     terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
     recurringId: '', recurringName: '', distanceOrDuration: 'distance',
-    defaultDuration: '', confirmedDone: false,
+    defaultDuration: '', confirmedDone: false, notes: '',
   };
 }
 

@@ -279,6 +279,14 @@ export default function DailyTrackingSection({
                   onChange={e => updFitnessEntry(origIdx, { fitnessActivityOther: e.target.value })} placeholder="What did you do?" />
               </div>
             )}
+
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label style={goldLbl}>Notes</label>
+              <textarea style={{ ...inp, resize: 'vertical' }} rows={2}
+                value={entry.notes || ''}
+                onChange={e => updFitnessEntry(origIdx, { notes: e.target.value })}
+                placeholder="Workout details, how it felt, etc." />
+            </div>
           </div>
         )}
       </div>
