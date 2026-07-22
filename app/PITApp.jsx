@@ -500,6 +500,16 @@ export default function PITApp() {
         resolveCarriedItem('one_thing', v);
         return;
       }
+      if (v) {
+        const setup = fd.oneThingSetup && fd.oneThingSetup.trim();
+        const updatedOneThing = setup
+          ? `${fd.oneThing} (${setup})`
+          : fd.oneThing;
+        const n = { ...fd, oneThingDone: true, oneThing: updatedOneThing, oneThingSetup: '' };
+        setFd(n);
+        save(n);
+        return;
+      }
     }
     const n = { ...fd, [f]: v };
     setFd(n);
