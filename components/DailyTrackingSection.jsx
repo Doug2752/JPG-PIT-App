@@ -221,7 +221,7 @@ export default function DailyTrackingSection({
                   cardioDistance: '', terrain: '', yogaType: '', swimEnvironment: '', swimStroke: '',
                 })}>
                 <option value="">Select</option>
-                {ACTIVITY_TYPES.map(a => <option key={a}>{a}</option>)}
+                {['Rest and Recovery', ...ACTIVITY_TYPES].map(a => <option key={a}>{a}</option>)}
               </select>
             </div>
 
