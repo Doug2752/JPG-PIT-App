@@ -113,7 +113,7 @@ export default function HelpPanel({ onClose }) {
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Future Tasks:</div>
-                <div style={tBody}>Reference items not tied to today, capped at 3. Use the Add button to create a new slot as needed.</div>
+                <div style={tBody}>Future tasks are for items not directly tied to today. Use the Add button to create a new slot. Tasks can be moved in any direction — One Thing, Daily, or Future — in any combination.</div>
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Thankful For</div>
-          <div style={tBody}>Add the first 3 things that come to mind.</div>
+          <div style={tBody}>Add the first 3 things that come to mind. Repeats are okay, but try to discover different things you are thankful for.</div>
         </div>
       </div>
 
