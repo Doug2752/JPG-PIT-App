@@ -5,6 +5,7 @@ export const DARK       = '#1a1a1a';
 export const MID        = '#3a3a3a';
 export const BG         = '#f8f8f6';
 export const BORDER     = '#d0c8b8';
+export const GREEN_COMPLETE = '#2ecc71';
 
 export const LOGO = 'jpglogo.png';
 

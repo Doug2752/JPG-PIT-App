@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, BORDER } from '../utils/constants';
+import { GOLD, BORDER, GREEN_COMPLETE } from '../utils/constants';
 import { gbtn } from './styles';
 
 export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg }) {
@@ -17,24 +17,24 @@ export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg 
       boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <span style={{ fontWeight: 800, fontSize: 13, color: canSend ? '#2ecc71' : GOLD, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+        <span style={{ fontWeight: 800, fontSize: 13, color: canSend ? GREEN_COMPLETE : GOLD, textTransform: 'uppercase', letterSpacing: 1.5 }}>
           {canSend ? 'Week Complete — Ready to Submit' : 'Weekly Progress'}
         </span>
-        <span style={{ fontWeight: 700, fontSize: 14, color: canSend ? '#2ecc71' : GOLD }}>
+        <span style={{ fontWeight: 700, fontSize: 14, color: canSend ? GREEN_COMPLETE : GOLD }}>
           {filled} / 7 days
         </span>
       </div>
       <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 20, height: 10, overflow: 'hidden', marginBottom: 12 }}>
         <div style={{
           height: '100%', width: `${pct * 100}%`,
-          background: canSend ? '#2ecc71' : GOLD,
+          background: canSend ? GREEN_COMPLETE : GOLD,
           borderRadius: 20, transition: 'width 0.4s ease',
         }} />
       </div>
 
       {canSend && (
         <button
-          style={{ ...gbtn({ width: '100%', padding: '12px', fontSize: 14, background: '#2ecc71', letterSpacing: 1, color: '#fff', border: 'none' }), boxShadow: '0 0 16px rgba(46,204,113,0.5)' }}
+          style={{ ...gbtn({ width: '100%', padding: '12px', fontSize: 14, background: GREEN_COMPLETE, letterSpacing: 1, color: '#fff', border: 'none' }), boxShadow: '0 0 16px rgba(46,204,113,0.5)' }}
           onClick={() => doSubmit(false)}
           disabled={submitting}
         >

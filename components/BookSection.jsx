@@ -1,5 +1,5 @@
 import React from 'react';
-import { GOLD, DARK, MID } from '../utils/constants';
+import { GOLD, DARK, MID, GREEN_COMPLETE } from '../utils/constants';
 import { card, secTitle, lbl, inp, gbtn } from './styles';
 
 export default function BookSection({ fd, upd, updMulti, markBookComplete, fetchBookAI, aiLoadBook }) {
@@ -16,7 +16,7 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
         padding: '10px 14px',
         background: fd.bookCompleted ? '#f0f8f0' : GOLD,
         borderRadius: 6,
-        border: `1.5px solid ${fd.bookCompleted ? '#2ecc71' : '#000'}`,
+        border: `1.5px solid ${fd.bookCompleted ? GREEN_COMPLETE : '#000'}`,
         cursor: fd.bookName.trim() ? 'pointer' : 'not-allowed',
         opacity: (!fd.bookName.trim() && !fd.bookCompleted) ? 0.6 : 1,
       }}>
@@ -30,11 +30,11 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
           style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }}
           disabled={!fd.bookName.trim() && !fd.bookCompleted}
         />
-        <span style={{ fontSize: 12, fontWeight: 700, color: fd.bookCompleted ? '#2ecc71' : '#000' }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: fd.bookCompleted ? GREEN_COMPLETE : '#000' }}>
           Finished book. Add to my log
         </span>
         {fd.bookCompleted && (
-          <span style={{ background: '#2ecc71', color: '#fff', borderRadius: 20, padding: '2px 10px', fontSize: 10, fontWeight: 700, marginLeft: 'auto' }}>
+          <span style={{ background: GREEN_COMPLETE, color: '#fff', borderRadius: 20, padding: '2px 10px', fontSize: 10, fontWeight: 700, marginLeft: 'auto' }}>
             Completed ✓
           </span>
         )}
