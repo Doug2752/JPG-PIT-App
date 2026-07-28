@@ -95,7 +95,7 @@ export default function ToAccomplishSection({
               type="checkbox"
               checked={fd.oneThingDone}
               onChange={e => upd('oneThingDone', e.target.checked)}
-              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: RED }}
+              style={{ width: 18, height: 18, cursor: 'pointer', accentColor: GOLD_LIGHT }}
             />
             <span style={{ fontWeight: 900, fontSize: 13, color: RED, textTransform: 'uppercase', letterSpacing: 1.5 }}>
               * The One Thing
