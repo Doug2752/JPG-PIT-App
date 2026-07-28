@@ -87,7 +87,7 @@
   Logic Section F2, pre-build scoping required before any code
 
 ### Known credentials
-- test / test123
+- test / JPG2026
 
 ## KEY ARCHITECTURAL FACTS
 - React + Vite, npm run dev port 5174, localStorage, no backend
