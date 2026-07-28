@@ -12,6 +12,7 @@ export default function ToAccomplishSection({
   archiveMode, archiveDateStr, isDayCompleteMarked,
 }) {
   const [checkedSlots, setCheckedSlots] = useState({});
+  const [nothingSelectedErr, setNothingSelectedErr] = useState(false);
   const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
 
   // Small "Move" button style, shared by One Thing and Daily rows.
@@ -52,17 +53,24 @@ export default function ToAccomplishSection({
 
   function toggleSlot(slot) {
     setCheckedSlots(prev => ({ ...prev, [slot]: !prev[slot] }));
+    if (nothingSelectedErr) setNothingSelectedErr(false);
   }
 
   function openModal() {
     setCheckedSlots({});
+    setNothingSelectedErr(false);
     onClearModalOpen();
   }
 
   function confirmClear() {
     const selected = clearModalItems.map(it => it.slot).filter(slot => checkedSlots[slot]);
+    if (selected.length === 0) {
+      setNothingSelectedErr(true);
+      return;
+    }
     onClearConfirm(selected);
     setCheckedSlots({});
+    setNothingSelectedErr(false);
   }
 
   return (
@@ -252,6 +260,11 @@ export default function ToAccomplishSection({
                 style={{ background: GOLD_LIGHT, border: '1.5px solid #000', borderRadius: 5, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: '6px 14px' }}
               >Confirm</button>
             </div>
+            {nothingSelectedErr && (
+              <div style={{ fontSize: 11, color: '#b02020', marginTop: 8, textAlign: 'center' }}>
+                No items selected — please check at least one item to clear.
+              </div>
+            )}
           </div>
         </div>
       )}

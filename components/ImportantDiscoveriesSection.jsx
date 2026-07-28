@@ -83,13 +83,21 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
   const [editTag, setEditTag] = useState('');
   const [editText, setEditText] = useState('');
   const [editTagOther, setEditTagOther] = useState('');
+  const [errTag, setErrTag] = useState('');
+  const [errText, setErrText] = useState('');
 
   function handleAdd() {
-    if (!newTag || !newText.trim()) return;
-    const resolvedTag = newTag === 'Other'
-      ? newTagOther.trim()
-      : newTag;
-    if (newTag === 'Other' && !resolvedTag) return;
+    let tagErr = '';
+    let textErr = '';
+    if (!newTag) tagErr = 'Please select a tag.';
+    else if (newTag === 'Other' && !newTagOther.trim()) tagErr = 'Please enter a custom tag.';
+    if (!newText.trim()) textErr = 'Please enter a discovery.';
+    if (tagErr || textErr) {
+      setErrTag(tagErr);
+      setErrText(textErr);
+      return;
+    }
+    const resolvedTag = newTag === 'Other' ? newTagOther.trim() : newTag;
     const entry = {
       id: generateId(),
       tag: resolvedTag,
@@ -100,6 +108,8 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
     setNewTag('');
     setNewTagOther('');
     setNewText('');
+    setErrTag('');
+    setErrText('');
   }
 
   function handleEditStart(d) {
@@ -196,24 +206,29 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
         {/* Add new entry — hidden in archive mode */}
         {!archiveMode && (
           <div>
-            <select style={{ ...sel, marginBottom: 8 }} value={newTag} onChange={e => setNewTag(e.target.value)}>
+            <select style={{ ...sel, marginBottom: 4 }} value={newTag} onChange={e => { setNewTag(e.target.value); setErrTag(''); }}>
               <option value="">Select topic tag...</option>
               {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
             </select>
+            {errTag && !newTag && <div style={{ fontSize: 11, color: '#b02020', marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
             {newTag === 'Other' && (
-              <input
-                style={{ ...sel, marginBottom: 8 }}
-                placeholder="Enter your own category..."
-                value={newTagOther}
-                onChange={e => setNewTagOther(e.target.value)}
-              />
+              <>
+                <input
+                  style={{ ...sel, marginBottom: 4, marginTop: 4 }}
+                  placeholder="Enter your own category..."
+                  value={newTagOther}
+                  onChange={e => { setNewTagOther(e.target.value); setErrTag(''); }}
+                />
+                {errTag && <div style={{ fontSize: 11, color: '#b02020', marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
+              </>
             )}
             <textarea
-              style={{ ...textarea, marginBottom: 8 }}
+              style={{ ...textarea, marginBottom: 4, marginTop: 8 }}
               value={newText}
-              onChange={e => setNewText(e.target.value)}
+              onChange={e => { setNewText(e.target.value); setErrText(''); }}
               placeholder="Write your discovery here..."
             />
+            {errText && <div style={{ fontSize: 11, color: '#b02020', marginTop: 4, marginBottom: 4 }}>{errText}</div>}
             <button
               style={{
                 width: '100%', padding: '9px', borderRadius: 5,

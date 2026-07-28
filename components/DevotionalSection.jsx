@@ -58,7 +58,7 @@ export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, a
         {fd.scriptureResult && (
           <div style={{ marginTop: 10, background: '#fff', borderRadius: 5, padding: 12, fontSize: 12, lineHeight: 1.7, whiteSpace: 'pre-wrap', color: MID, position: 'relative' }}>
             <button
-              onClick={() => updMulti([['scriptureQuery', ''], ['scriptureResult', '']])}
+              onClick={() => upd('scriptureResult', '')}
               style={{ position: 'absolute', top: 6, right: 8, width: 22, height: 22, border: 'none', background: 'transparent', color: MID, fontSize: 18, lineHeight: 1, cursor: 'pointer', fontWeight: 700, padding: 0 }}
               title="Close"
             >×</button>
