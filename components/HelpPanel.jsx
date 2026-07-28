@@ -117,7 +117,7 @@ export default function HelpPanel({ onClose }) {
               </div>
             </div>
           </div>
-          <div style={{ ...tBody, marginTop: 6 }}>Use Clear Items to remove all current To Accomplish items at once. Remember the difference — clearing all your items will memorialize them to the day they were created. This is different than using the check-off box next to each item, and may be important for your tracking purposes.</div>
+          <div style={{ ...tBody, marginTop: 6 }}>Use Clear Items to remove all current To Accomplish items at once. Remember the difference — clearing all your items archives them back to the day they were created. This is different than using the check-off box next to each item, and may be important for your tracking purposes.</div>
         </div>
       </div>
 
@@ -212,6 +212,7 @@ export default function HelpPanel({ onClose }) {
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Today's Appointments</div>
           <div style={tBody}>Track upcoming appointments by date. Each appointment includes a title, time, duration, location, and prep needed. Appointments persist going forward and will automatically drop off once their date has passed. If an appointment date passes without being resolved, it will carry forward with a Past Due badge until you check it off. Use the Add button to create a new appointment.</div>
+          <div style={{ ...tBody, marginTop: 6 }}>Each appointment has a Lock Appointment button at the bottom of the card. Tap it to lock all fields so nothing can be accidentally changed. A gold left border appears on the card when locked. Tap Unlock Appointment to edit again. The Remove button is always available regardless of lock state.</div>
         </div>
       </div>
 
@@ -219,7 +220,7 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>AI Summary</div>
-          <div style={tBody}>Generates a summary pulling from every section of your PIT entry — today plus your last 7 days. Available once per week.</div>
+          <div style={tBody}>Generates a summary pulling from every section of your PIT entry — today plus your last 7 days. Available once per 7-day rolling window from your last use.</div>
         </div>
       </div>
 
