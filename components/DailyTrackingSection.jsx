@@ -144,15 +144,17 @@ export default function DailyTrackingSection({
               </select>
             </div>
           )}
-          <div>
-            <label style={goldLbl}>Track By</label>
-            <select style={wsel} value={activity.distanceOrDuration}
-              onChange={e => onUpdateRecurring(activity.id, { distanceOrDuration: e.target.value })}>
-              <option value="distance">Distance</option>
-              <option value="duration">Duration</option>
-              <option value="both">Both</option>
-            </select>
-          </div>
+          {activity.activityType !== 'Rest and Recovery' && (
+            <div>
+              <label style={goldLbl}>Track By</label>
+              <select style={wsel} value={activity.distanceOrDuration}
+                onChange={e => onUpdateRecurring(activity.id, { distanceOrDuration: e.target.value })}>
+                <option value="distance">Distance</option>
+                <option value="duration">Duration</option>
+                <option value="both">Both</option>
+              </select>
+            </div>
+          )}
           {(showDistance || showDuration) && (
             <div style={pref === 'both' ? { display: 'flex', gap: 12 } : undefined}>
               {showDistance && (

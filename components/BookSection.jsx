@@ -54,7 +54,7 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
         </div>
         <div>
           <label style={lbl}>Page</label>
-          <input style={inp} type="number" value={fd.bookPage} onChange={e => upd('bookPage', e.target.value)} />
+          <input style={inp} type="number" min={0} value={fd.bookPage} onChange={e => upd('bookPage', e.target.value)} />
         </div>
         <div>
           <label style={lbl}>Topic</label>
