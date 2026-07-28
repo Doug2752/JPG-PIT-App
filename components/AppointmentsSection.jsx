@@ -31,19 +31,32 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
                   PAST DUE
                 </span>
               )}
+              {a.locked && (
+                <span style={{ fontSize: 9, fontWeight: 700, color: GOLD, letterSpacing: 0.5, textTransform: 'uppercase', marginLeft: 8 }}>
+                  LOCKED
+                </span>
+              )}
             </div>
-            <button
-              onClick={() => removeAppt(a.id)}
-              style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600 }}
-            >
-              Remove
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                onClick={() => updAppt(a.id, 'locked', !a.locked)}
+                style={{ background: GOLD_LIGHT, border: '1.5px solid #000', color: '#000', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 4, cursor: 'pointer' }}
+              >
+                {a.locked ? 'Unlock Appointment' : 'Lock Appointment'}
+              </button>
+              <button
+                onClick={() => removeAppt(a.id)}
+                style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600 }}
+              >
+                Remove
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Date</label>
-              <input style={inp} type="date" value={a.date || ''} onChange={e => updAppt(a.id, 'date', e.target.value)} readOnly={a.locked || false} />
+              <input style={inp} type="date" value={a.date || ''} onChange={e => updAppt(a.id, 'date', e.target.value)} disabled={a.locked || false} />
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Title</label>
@@ -51,7 +64,7 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
             </div>
             <div>
               <label style={lbl}>Time</label>
-              <input style={inp} type="time" value={a.time || ''} onChange={e => updAppt(a.id, 'time', e.target.value)} readOnly={a.locked || false} />
+              <input style={inp} type="time" value={a.time || ''} onChange={e => updAppt(a.id, 'time', e.target.value)} disabled={a.locked || false} />
             </div>
             <div>
               <label style={lbl}>Duration</label>
@@ -89,12 +102,6 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
                 {SMS_TIMES.map(t => <option key={t}>{t}</option>)}
               </select>
             )}
-            <button
-              onClick={() => updAppt(a.id, 'locked', !a.locked)}
-              style={{ background: GOLD_LIGHT, border: '1.5px solid #000', color: '#000', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 4, cursor: 'pointer' }}
-            >
-              {a.locked ? 'Unlock Appointment' : 'Lock Appointment'}
-            </button>
           </div>
         </div>
       ))}
