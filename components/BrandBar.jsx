@@ -52,7 +52,7 @@ export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker })
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, border: '1.5px solid #000', borderRadius: 5, padding: '5px 14px', background: '#B8860B' }}>
               <span style={{ fontSize: 15, fontWeight: 900, color: '#000', letterSpacing: 1, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Never Twice</span>
-              <span style={{ fontSize: 8, fontWeight: 600, color: '#000', letterSpacing: 0.3, whiteSpace: 'nowrap' }}>Miss one — never miss the second.</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.3, whiteSpace: 'nowrap' }}>Miss one — never miss the second.</span>
             </div>
             <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', fontSize: 10, fontWeight: 700, color: DARK, letterSpacing: 0.3, marginTop: 6, userSelect: 'none' }}>
               <input

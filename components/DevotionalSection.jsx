@@ -25,7 +25,7 @@ export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, a
           style={{ ...dbtn({ padding: '4px 12px', fontSize: 10 }), marginLeft: 'auto' }}
           onClick={() => upd('prayerType', fd.prayerType === 'prayer' ? 'silence' : 'prayer')}
         >
-          Switch to: {fd.prayerType === 'prayer' ? 'Silence & Reflection' : 'Prayer'}
+          Switch to {fd.prayerType === 'prayer' ? 'Silence & Reflection' : 'Prayer'}
         </button>
       </div>
 

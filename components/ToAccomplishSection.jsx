@@ -207,6 +207,11 @@ export default function ToAccomplishSection({
                   + Add Another Future Task
                 </button>
               )}
+              {visibleFuture >= 18 && (
+                <div style={{ fontSize: 11, color: '#888', fontStyle: 'italic', marginTop: 6, textAlign: 'center' }}>
+                  Future Tasks is full (18 max). Complete or remove a task to add another.
+                </div>
+              )}
             </>
           );
         })()}

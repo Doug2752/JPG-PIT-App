@@ -91,7 +91,7 @@ export default function DailyTrackingSection({
             <label style={goldLbl}>Activity Name</label>
             <input style={winp} value={activity.name || ''}
               onChange={e => onUpdateRecurring(activity.id, { name: e.target.value })}
-              placeholder="e.g. AMDWR Morning Run" />
+              placeholder="e.g. Morning Run" />
           </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={goldLbl}>Days of Week (Gold = selected days)</label>

@@ -81,7 +81,7 @@ export default function Header({
             </span>
           )}
           <button
-            style={{ padding: '6px 14px', borderRadius: 5, border: `1.5px solid ${GOLD}`, background: 'transparent', color: GOLD, fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, whiteSpace: 'nowrap' }}
+            style={{ padding: '6px 14px', borderRadius: 5, border: `1.5px solid ${GOLD_LIGHT}`, background: 'transparent', color: GOLD_LIGHT, fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, whiteSpace: 'nowrap' }}
             onClick={onHelpToggle}
           >
             {showHelp ? 'Close Help' : 'Set-Up and Instructions'}
