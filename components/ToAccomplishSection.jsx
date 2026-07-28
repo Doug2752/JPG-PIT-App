@@ -204,7 +204,7 @@ export default function ToAccomplishSection({
                   onClick={() => upd('futureTasksVisible', visibleFuture + 1)}
                   style={{ width: '100%', padding: '9px', borderRadius: 5, border: '1.5px solid #000', background: GOLD_LIGHT, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}
                 >
-                  + Add Future Task
+                  + Add Another Future Task
                 </button>
               )}
             </>

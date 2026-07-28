@@ -388,7 +388,7 @@ export default function DailyTrackingSection({
           {[...fd.fitnessEntries]
             .sort((a, b) => (a.recurringId ? 0 : 1) - (b.recurringId ? 0 : 1))
             .map((entry, i) => renderFitnessEntry(entry, i))}
-          <button onClick={addFitnessEntry} style={addBtn}>+ Add Fitness Activity</button>
+          <button onClick={addFitnessEntry} style={addBtn}>+ Add Another Activity</button>
         </div>
       )}
 

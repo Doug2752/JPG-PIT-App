@@ -218,7 +218,7 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
               }}
               onClick={handleAdd}
             >
-              + Add Discovery
+              + Add Another Discovery
             </button>
           </div>
         )}
