@@ -84,7 +84,7 @@ export default function DailyTrackingSection({
           <div style={{ fontSize: 10, fontWeight: 700, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
             {activity.name || 'New Activity'}
           </div>
-          <button onClick={() => onRemoveRecurring(activity.id)} style={removeBtn}>Remove</button>
+          <button onClick={() => { if (window.confirm('Remove this recurring activity?')) onRemoveRecurring(activity.id); }} style={removeBtn}>Remove</button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(148px,1fr))', gap: 10, alignItems: 'start' }}>
           <div style={{ gridColumn: '1 / -1' }}>
@@ -358,8 +358,19 @@ export default function DailyTrackingSection({
               <select style={{ ...sel, ...lockStyle }} value={fd.fitnessYesterday} disabled={isDayCompleteMarked}
                 onChange={e => {
                   const v = e.target.value;
-                  if (v === 'Yes') updMulti([['fitnessYesterday', v]]);
-                  else updMulti([['fitnessYesterday', v], ['fitnessEntries', [emptyFitnessEntry()]]]);
+                  if (v === 'Yes') {
+                    updMulti([['fitnessYesterday', v]]);
+                  } else {
+                    const hasEnteredData = (fd.fitnessEntries || []).some(entry =>
+                      !entry.recurringId && (
+                        (entry.fitnessActivity || '').trim() !== '' ||
+                        (entry.cardioDistance || '').toString().trim() !== '' ||
+                        (entry.notes || '').trim() !== ''
+                      )
+                    );
+                    if (hasEnteredData && !window.confirm('Changing this will clear your entered fitness data. Continue?')) return;
+                    updMulti([['fitnessYesterday', v], ['fitnessEntries', [emptyFitnessEntry()]]]);
+                  }
                 }}>
                 <option value="">Select</option>
                 <option>Yes</option>

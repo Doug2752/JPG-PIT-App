@@ -132,6 +132,10 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
   }
 
   function handleEditCancel() {
+    const d = discoveries.find(it => it.id === editingId);
+    const resolvedEditTag = editTag === 'Other' ? editTagOther.trim() : editTag;
+    const changed = d && (editText !== d.text || resolvedEditTag !== d.tag);
+    if (changed && !window.confirm('Discard changes to this discovery?')) return;
     setEditingId(null);
     setEditTagOther('');
   }
