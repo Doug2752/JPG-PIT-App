@@ -723,6 +723,13 @@ export default function PITApp() {
     save(n);
   }
 
+  function removeOneThing() {
+    if (archiveMode) return;
+    const n = { ...fd, oneThing: '', oneThingSetup: '', oneThingDone: false };
+    setFd(n);
+    save(n);
+  }
+
   // Promote a Future Task (absolute index 2–19) into the first open
   // Daily Task slot. Occupancy matches rebuildToAccomplishItems: a slot
   // is filled if text.trim() !== '' OR done === true. If both daily
@@ -1503,6 +1510,7 @@ export default function PITApp() {
 
         <ToAccomplishSection
           fd={fd} upd={upd} updTask={updTask} removeTask={removeTask}
+          removeOneThing={removeOneThing}
           promoteFutureTask={promoteFutureTask}
           moveModalSource={moveModalSource}
           setMoveModalSource={setMoveModalSource}

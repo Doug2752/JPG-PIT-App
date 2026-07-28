@@ -3,7 +3,7 @@ import { GOLD, RED, BORDER, MID, GOLD_LIGHT } from '../utils/constants';
 import { card, secTitle, lbl, inp } from './styles';
 
 export default function ToAccomplishSection({
-  fd, upd, updTask, removeTask, promoteFutureTask,
+  fd, upd, updTask, removeTask, removeOneThing, promoteFutureTask,
   moveModalSource, setMoveModalSource,
   moveOneThingToDaily, moveOneThingToFuture,
   moveDailyToOneThing, moveDailyToFuture,
@@ -13,6 +13,9 @@ export default function ToAccomplishSection({
 }) {
   const [checkedSlots, setCheckedSlots] = useState({});
   const [nothingSelectedErr, setNothingSelectedErr] = useState(false);
+  const [confirmRemoveOne, setConfirmRemoveOne] = useState(false);
+  const [confirmRemoveDaily, setConfirmRemoveDaily] = useState(null);  // holds index (0 or 1) or null
+  const [confirmRemoveFuture, setConfirmRemoveFuture] = useState(null); // holds index or null
   const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
 
   // Small "Move" button style, shared by One Thing and Daily rows.
@@ -101,11 +104,32 @@ export default function ToAccomplishSection({
               * The One Thing
             </span>
           </div>
-          <button
-            onClick={() => setMoveModalSource({ type: 'oneThing' })}
-            disabled={(fd.oneThing || '').trim() === ''}
-            style={moveBtn((fd.oneThing || '').trim() === '')}
-          >Move to Daily or Future Tasks</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              onClick={() => setMoveModalSource({ type: 'oneThing' })}
+              disabled={(fd.oneThing || '').trim() === ''}
+              style={moveBtn((fd.oneThing || '').trim() === '')}
+            >Move to Daily or Future Tasks</button>
+            {!confirmRemoveOne ? (
+              <button
+                onClick={() => setConfirmRemoveOne(true)}
+                disabled={(fd.oneThing || '').trim() === ''}
+                style={removeBtn((fd.oneThing || '').trim() === '')}
+              >Remove</button>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 10, color: RED, fontWeight: 600, whiteSpace: 'nowrap' }}>Task will not be recorded</span>
+                <button
+                  onClick={() => { removeOneThing(); setConfirmRemoveOne(false); }}
+                  style={{ ...removeBtn(false), color: RED, borderColor: RED }}
+                >Confirm</button>
+                <button
+                  onClick={() => setConfirmRemoveOne(false)}
+                  style={removeBtn(false)}
+                >Cancel</button>
+              </div>
+            )}
+          </div>
         </div>
         <div style={{ fontSize: 10, color: '#999', fontStyle: 'italic', marginBottom: 8 }}>
           By completing this one thing, everything else becomes easier or unnecessary.
@@ -152,11 +176,25 @@ export default function ToAccomplishSection({
                   disabled={empty}
                   style={moveBtn(empty)}
                 >Move to One Thing or Future Tasks</button>
-                <button
-                  onClick={() => removeTask(i)}
-                  disabled={empty}
-                  style={removeBtn(empty)}
-                >Remove</button>
+                {confirmRemoveDaily !== i ? (
+                  <button
+                    onClick={() => setConfirmRemoveDaily(i)}
+                    disabled={empty}
+                    style={removeBtn(empty)}
+                  >Remove</button>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 10, color: RED, fontWeight: 600, whiteSpace: 'nowrap' }}>Task will not be recorded</span>
+                    <button
+                      onClick={() => { removeTask(i); setConfirmRemoveDaily(null); }}
+                      style={{ ...removeBtn(false), color: RED, borderColor: RED }}
+                    >Confirm</button>
+                    <button
+                      onClick={() => setConfirmRemoveDaily(null)}
+                      style={removeBtn(false)}
+                    >Cancel</button>
+                  </div>
+                )}
               </div>
               {isCarriedUnresolved(`daily_${i + 2}`) && (
                 <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
@@ -194,11 +232,25 @@ export default function ToAccomplishSection({
                       onClick={() => promoteFutureTask(i + 2)}
                       style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: dailySlotsFull ? 'not-allowed' : 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap', opacity: dailySlotsFull ? 0.4 : 1 }}
                     >Move to Daily Task</button>
-                    <button
-                      onClick={() => removeTask(i + 2)}
-                      disabled={(t.text || '').trim() === ''}
-                      style={removeBtn((t.text || '').trim() === '')}
-                    >Remove</button>
+                    {confirmRemoveFuture !== i ? (
+                      <button
+                        onClick={() => setConfirmRemoveFuture(i)}
+                        disabled={(t.text || '').trim() === ''}
+                        style={removeBtn((t.text || '').trim() === '')}
+                      >Remove</button>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 10, color: RED, fontWeight: 600, whiteSpace: 'nowrap' }}>Task will not be recorded</span>
+                        <button
+                          onClick={() => { removeTask(i + 2); setConfirmRemoveFuture(null); }}
+                          style={{ ...removeBtn(false), color: RED, borderColor: RED }}
+                        >Confirm</button>
+                        <button
+                          onClick={() => setConfirmRemoveFuture(null)}
+                          style={removeBtn(false)}
+                        >Cancel</button>
+                      </div>
+                    )}
                   </div>
                   {isCarriedUnresolved(`future_${i + 4}`) && (
                     <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
