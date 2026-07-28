@@ -13,14 +13,15 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
       </div>
 
       {appointments.map((a, i) => (
-        <div key={a.id} style={{ marginBottom: 12, padding: 12, background: '#f8f8f6', borderRadius: 6, border: `1px solid ${BORDER}` }}>
+        <div key={a.id} style={{ marginBottom: 12, padding: 12, background: '#f8f8f6', borderRadius: 6, border: `1px solid ${BORDER}`, ...(a.locked ? { borderLeft: `3px solid ${GOLD}` } : {}) }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input
                 type="checkbox"
                 checked={a.resolved || false}
                 onChange={() => resolveAppt(a.id)}
-                style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }}
+                disabled={a.locked || false}
+                style={{ width: 16, height: 16, cursor: a.locked ? 'not-allowed' : 'pointer', accentColor: GOLD }}
               />
               <div style={{ fontWeight: 700, fontSize: 11, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
                 Appointment {i + 1}
@@ -42,27 +43,27 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Date</label>
-              <input style={inp} type="date" value={a.date || ''} onChange={e => updAppt(a.id, 'date', e.target.value)} />
+              <input style={inp} type="date" value={a.date || ''} onChange={e => updAppt(a.id, 'date', e.target.value)} readOnly={a.locked || false} />
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Title</label>
-              <input style={inp} value={a.title} onChange={e => updAppt(a.id, 'title', e.target.value)} placeholder="Description..." />
+              <input style={inp} value={a.title} onChange={e => updAppt(a.id, 'title', e.target.value)} placeholder="Description..." readOnly={a.locked || false} />
             </div>
             <div>
               <label style={lbl}>Time</label>
-              <input style={inp} type="time" value={a.time || ''} onChange={e => updAppt(a.id, 'time', e.target.value)} />
+              <input style={inp} type="time" value={a.time || ''} onChange={e => updAppt(a.id, 'time', e.target.value)} readOnly={a.locked || false} />
             </div>
             <div>
               <label style={lbl}>Duration</label>
-              <input style={inp} value={a.duration} onChange={e => updAppt(a.id, 'duration', e.target.value)} placeholder="1 hr" />
+              <input style={inp} value={a.duration} onChange={e => updAppt(a.id, 'duration', e.target.value)} placeholder="1 hr" readOnly={a.locked || false} />
             </div>
             <div>
               <label style={lbl}>Location</label>
-              <input style={inp} value={a.location} onChange={e => updAppt(a.id, 'location', e.target.value)} placeholder="Location" />
+              <input style={inp} value={a.location} onChange={e => updAppt(a.id, 'location', e.target.value)} placeholder="Location" readOnly={a.locked || false} />
             </div>
             <div>
               <label style={lbl}>Prep Needed</label>
-              <input style={inp} value={a.prep} onChange={e => updAppt(a.id, 'prep', e.target.value)} placeholder="Preparation needed..." />
+              <input style={inp} value={a.prep} onChange={e => updAppt(a.id, 'prep', e.target.value)} placeholder="Preparation needed..." readOnly={a.locked || false} />
             </div>
           </div>
 
@@ -72,7 +73,8 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
                 type="checkbox"
                 checked={a.smsReminder || false}
                 onChange={e => updAppt(a.id, 'smsReminder', e.target.checked)}
-                style={{ width: 14, height: 14, cursor: 'pointer', accentColor: GOLD }}
+                disabled={a.locked || false}
+                style={{ width: 14, height: 14, cursor: a.locked ? 'not-allowed' : 'pointer', accentColor: GOLD }}
               />
               <span style={{ fontSize: 11, fontWeight: 700, color: MID }}>SMS Reminder</span>
             </div>
@@ -81,11 +83,18 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
                 style={{ ...sel, width: 130, fontSize: 12, padding: '5px 8px' }}
                 value={a.smsTime || ''}
                 onChange={e => updAppt(a.id, 'smsTime', e.target.value)}
+                disabled={a.locked || false}
               >
                 <option value="">How early?</option>
                 {SMS_TIMES.map(t => <option key={t}>{t}</option>)}
               </select>
             )}
+            <button
+              onClick={() => updAppt(a.id, 'locked', !a.locked)}
+              style={{ background: GOLD_LIGHT, border: '1.5px solid #000', color: '#000', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 4, cursor: 'pointer' }}
+            >
+              {a.locked ? 'Unlock Appointment' : 'Lock Appointment'}
+            </button>
           </div>
         </div>
       ))}
@@ -95,7 +104,7 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
           onClick={addAppt}
           style={{ width: '100%', padding: '9px', borderRadius: 5, border: '1.5px solid #000', background: GOLD_LIGHT, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}
         >
-          + Add Appointment
+          + Add Another Appointment
         </button>
       )}
     </div>
