@@ -212,7 +212,7 @@ export default function HelpPanel({ onClose }) {
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Today's Appointments</div>
           <div style={tBody}>Track upcoming appointments by date. Each appointment includes a title, time, duration, location, and prep needed. Appointments persist going forward and will automatically drop off once their date has passed. If an appointment date passes without being resolved, it will carry forward with a Past Due badge until you check it off. Use the Add button to create a new appointment.</div>
-          <div style={{ ...tBody, marginTop: 6 }}>Each appointment has a Lock Appointment button at the bottom of the card. Tap it to lock all fields so nothing can be accidentally changed. A gold left border appears on the card when locked. Tap Unlock Appointment to edit again. The Remove button is always available regardless of lock state.</div>
+          <div style={{ ...tBody, marginTop: 6 }}>Each appointment has a Lock Appointment button in the appointment header. Tap it to lock all fields so nothing can be accidentally changed. A gold left border and LOCKED badge appear on the card when locked. Tap Unlock Appointment to edit again. The Remove button is always available regardless of lock state.</div>
         </div>
       </div>
 
