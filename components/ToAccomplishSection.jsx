@@ -267,6 +267,10 @@ export default function ToAccomplishSection({
           t => (t.text || '').trim() !== ''
         );
         const oneThingFilled = (fd.oneThing || '').trim() !== '';
+        const rawText = moveModalSource.type === 'oneThing'
+          ? (fd.oneThing || '')
+          : (fd.tasks[moveModalSource.index]?.text || '');
+        const moveTaskText = rawText.length > 40 ? rawText.slice(0, 40) + '...' : rawText;
         const optBtn = (disabled) => ({
           background: disabled ? '#ccc' : GOLD,
           color: '#fff', border: 'none', borderRadius: 6,
@@ -289,8 +293,13 @@ export default function ToAccomplishSection({
             }}>
               <div style={{
                 fontWeight: 700, fontSize: 15,
-                marginBottom: 16, color: '#222',
+                marginBottom: moveTaskText ? 0 : 16, color: '#222',
               }}>Move to...</div>
+              {moveTaskText && (
+                <div style={{ fontSize: 11, color: '#888', fontStyle: 'italic', marginTop: 4, marginBottom: 8 }}>
+                  {moveTaskText}
+                </div>
+              )}
 
               {moveModalSource.type === 'oneThing' && (
                 <>

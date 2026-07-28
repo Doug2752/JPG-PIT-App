@@ -147,6 +147,11 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
       <div style={{ background: '#1a1a1a', border: '1px solid #333', borderTop: 'none', borderRadius: '0 0 6px 6px', padding: 14 }}>
 
         {/* Scrollable entries list */}
+        {discoveries.length === 0 && (
+          <div style={{ fontSize: 12, color: '#888', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+            No discoveries yet. Add your first one below.
+          </div>
+        )}
         {discoveries.length > 0 && (
           <div style={{ maxHeight: 320, overflowY: 'auto', marginBottom: 14 }}>
             {discoveries.map(d => (
