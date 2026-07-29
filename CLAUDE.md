@@ -1,116 +1,91 @@
-# CLAUDE.md — PIT (Personal Investment Time)
+# CLAUDE.md — JPG-PIT-App
 
 ## APP IDENTITY
-- Name: PIT — Personal Investment Time
-- Full folder: C:\JPG-PROJECTS\JPG-PIT-App
-- GitHub repo: Doug2752/JPG-PIT-App
-- Dev port: 5174 (5175 fallback)
-- Purpose: Internal alignment app — daily detail that sits 
-  inside the DOP process.
-- Architecture: React + Vite, Class 3 modular, localStorage.
+
+- App name: Personal Investment Time (PIT)
+- Dev port: 5174
+- Repo: Doug2752/JPG-PIT-App
+- Local folder: C:\JPG-PROJECTS\JPG-PIT-App
+- Framework: React + Vite, Class 3 modular structure
+- Storage: localStorage (pre-Supabase)
+
+## CREDENTIALS
+
+- doug / jpg2026
+- test / JPG2026
+- Login comparison is case-insensitive on both sides
 
 ## NON-NEGOTIABLE WORKING RULES
-1. Investigation before action.
-2. Never assume.
-3. Never act without asking first.
-4. One task at a time (logic / styling / copy stay isolated).
-5. Plan mode always on.
-6. GitHub Desktop is the only trusted push mechanism.
-7. Browser-verify before commit.
-8. Never redraft finalized copy from scratch.
-9. Never touch .md files in the app folder during code builds.
 
-## MODEL SELECTION
-- Opus — complex multi-file logic.
-- Sonnet — small edits, investigations, styling, cleanup.
-- Model stated at top of every prompt.
+1. Read this file first. Confirm you have read it before any action.
+2. Investigation prompt before every build — read actual source files before writing any code.
+3. One task at a time. Never bundle logic changes with styling or copy changes.
+4. Never touch .md files in this repo during code builds.
+5. Never start the dev server.
+6. Never commit — Doug commits via GitHub Desktop only.
+7. Opus for complex multi-file builds. Sonnet for small edits and investigations.
+8. Plan mode always on — present plan, wait for approval before executing.
 
-## BROWSER AND PORT REFERENCE
-- Firefox — code/build testing, OS default.
-- Brave — daily DOP/PIT entries only (auto-opens 5174 on 
-  startup — stop Brave before starting dev server).
-- Edge — Claude.ai chat sessions.
-- vite.config.js carries server: { open: false, port: 5174 }.
+## BROWSER AND PORT
 
-## CURRENT BUILD STATE (confirmed in source 07/17/2026)
+- Firefox is the test browser (localhost:5174)
+- Brave auto-opens 5174 on startup — do not assume Brave is closed during dev work
 
-### Built and verified
-- Two-tier gold color system (GOLD_LIGHT #ddb94a action / 
-  GOLD #B8860B informational)
-- Login system — case-insensitive, hub_user URL param auto-login
-- Wake Up Time combobox with validation (15-min increments, AM/PM)
-- Fitness Yesterday multi-entry (Yes/No/Rest Day, recurring + 
-  manual entries)
-- Configure Recurring Fitness tab (daysOfWeek scheduler, 
-  tab-open sync)
-- To Accomplish carryover system (identity-preserving, 
-  origin-day memorialization)
-- Appointments carryover (past-due carry-forward, resolve checkbox)
-- Future Tasks unlimited slots (20-slot tasks array, effective 
-  cap 18, indices 2-19)
-- Move to Daily Task (Future to Daily promotion, identity preserved)
-- Reverse-move system (One Thing and Daily Tasks Move buttons, 
-  destination modal, four move handlers: moveOneThingToDaily / 
-  moveOneThingToFuture / moveDailyToOneThing / moveDailyToFuture)
-- oneThingSetup carry on move — appended in parentheses to moved 
-  task text; oneThingSetup explicitly zeroed in both 
-  moveOneThing* handlers
-- Compaction system — compactTasks helper (identity-preserving, 
-  lockstep toAccomplishItems re-keying, one_thing passthrough); 
-  wired into loadToday existing-record branch, removeTask early 
-  branch (indices 0-1), updTask done-branch (non-carried only), 
-  all four move handlers
-- removeTask: early branch (indices 0-1) clears and compacts; 
-  future-range branch (indices 2-19) retains original shift + 
-  futureTasksVisible decrement
-- Clear Items modal — "Cleared items" wording confirmed
-- Daily Tasks rows — restructured to match Future Tasks layout 
-  (Move + Remove buttons, both disable when row empty)
-- Future Tasks Remove — now disables when row empty
-- Day Complete system (10-field gate, read-only lock, header 
-  pill, archive indicator)
-- AI Summary (today + 7 prior days, once-per-7-day rate limit, 
-  cross-app DOP read)
-- HelpPanel 16-section instructions (includes Day Complete section)
-- Important Discoveries with Other topic tag
-- Daily Book Study carryover
-- Appointments rebuild (real ISO dates, cap 5, Past Due badge)
-- SMS reminder (UI placeholder only — no backend)
-- Persistent Prayer/Silence preference
-- Vitest Tier 1: 1 passing smoke test
+## CURRENT BUILD STATE (as of 07/28/2026)
 
-### Held (do not touch without explicit direction)
-- Instructions-panel combined copy pass (Q2/Q3 copy, Daily 
-  Trackables sub-heading, panel-wide layout restructure, 
-  auto-save reminder, AI Summary description update)
-- Coach Data Transmission Spec — design locked in PIT Code 
-  Logic Section F2, pre-build scoping required before any code
+### Built and committed
 
-### Known credentials
-- test / JPG2026
+- Full daily tracking form — all 10 required fields
+- Fitness Yesterday — multi-entry, Rest and Recovery option, Track By hidden for Rest and Recovery, confirmation on Yes→No with data
+- Configure Recurring Fitness — confirmation dialog on Remove
+- To Accomplish system — One Thing, Daily Tasks (2), Future Tasks (18)
+- compactTasks() compaction at 6 sites
+- Reverse-move system — all four directions
+- One Thing manual check-off — First Action Step appended in parentheses, field cleared
+- One Thing Remove button — two-stage inline confirmation, clears both text and First Action / Set-Up field
+- Daily Tasks Remove — two-stage inline "Task will not be recorded" confirmation
+- Future Tasks Remove — two-stage inline "Task will not be recorded" confirmation
+- removeOneThing() function in PITApp.jsx
+- Future Tasks cap message at 18 slots
+- Move modal shows task text (40-char truncation)
+- Clear Items nothing-selected inline red guard
+- Appointments — lock/unlock, LOCKED badge in header, gold left border, date/time disabled when locked
+- Important Discoveries — empty state message, add validation, edit cancel confirmation
+- Book Study — page number min=0, green border + Completed badge when complete
+- Devotional — scripture search preserves query on close, toggle colon removed
+- Quotes — search preserves query on close
+- WeekTracker — GREEN_COMPLETE constant wired (was hardcoded `#2ecc71`)
+- BookSection — GREEN_COMPLETE constant wired (was hardcoded `#2ecc71`)
+- GREEN_COMPLETE = `#2ecc71` in constants.js
+- HelpPanel — Lock Appointment paragraph updated: "in the appointment header," LOCKED badge mentioned
+- Never Twice fontSize 11
+- Set-Up and Instructions button GOLD_LIGHT
+- One Thing checkbox accentColor GOLD_LIGHT
+- BrandBar "Never Twice" readable at fontSize 11
+- Open DOP button — localhost:5173 with hub_user param
+- AI Summary — 7-day fixed lookback, once per rolling 7-day window
+- Day complete system — 10 required fields gate
+- Archive view, Books view
+- Vitest — 1 passing test
 
-## KEY ARCHITECTURAL FACTS
-- React + Vite, npm run dev port 5174, localStorage, no backend
-- Case-insensitive login matching per CS v1.8 §8.2
-- compactTasks(tasks, toAccomplishItems) — module-level helper, 
-  returns { tasks, toAccomplishItems }. All compaction routes 
-  through this function. Non-grid items (one_thing) pass through 
-  untouched.
-- rebuildToAccomplishItems matches by slot position — always run 
-  compactTasks and re-key items before save() when slots shift
-- tasks array: index 0 = daily_2, index 1 = daily_3, 
-  indices 2-19 = future_4 through future_21
-- futureTasksVisible: incremented by Add button, decremented by 
-  removeTask future-range branch, overridden to filled-future 
-  count by all compaction sites
-- DOP to PIT data transfer not possible until Supabase migration
-- PIT is best used on desktop — more typing than DOP
+### Known open items (not yet built)
 
-## REFERENCED GOVERNING DOCUMENTS
-Core Standard v1.8, Troubleshooting Guide v4.8, 
-PIT Code Logic v2.3, Session Handoff Primer v3.0.
+- Appointment cap inconsistency (Add button vs addAppt() guard mismatch)
+- ArchiveView/BooksView Today button can leave archiveMode stuck
+- Dead code cleanup pass — held for combined pass
+- pit_instructions_seen not user-scoped — post-multi-user
+- Stale AI model ID in services/ai.js
+- Rate limit message styling — defer until AI key live
+- RED constant vs `#b02020` inline literal — future cleanup pass
+- Instructions-panel combined pass — ALL HELD until Doug says ready
 
-## SESSION START PROTOCOL
-First instruction is always read-only:
-"Read CLAUDE.md and confirm you understand — 
-do not run any commands yet."
+### Post-Supabase (do not build)
+
+- SMS reminder
+- Coach-facing archive
+- pit_instructions_seen user-scoping
+
+## GOVERNING DOCUMENT
+
+Code Logic doc: JPG-SYS-PIT-CodeLogic-WRK-v2.9
+This file is a context loader only — do not reproduce the full Code Logic doc here.
