@@ -14,7 +14,6 @@ function isDistanceActivity(a) {
 }
 
 function calcHoursSlept(sleepTime, wakeTime) {
-  console.log('[calcHoursSlept] called with:', sleepTime, wakeTime);
   if (!sleepTime || !wakeTime) return '';
   function toMinutes(t) {
     const m = t.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -54,7 +53,6 @@ export default function DailyTrackingSection({
   }, [fd.sleepTime]);
 
   function commitSleep(rawVal) {
-    console.log('[commitSleep] rawVal received:', rawVal);
     const val = (rawVal !== undefined ? String(rawVal) : sleepInput).trim();
     if (val === '') {
       setSleepError('');
@@ -80,7 +78,6 @@ export default function DailyTrackingSection({
   }, [fd.wakeTime]);
 
   function commitWake(rawVal) {
-    console.log('[commitWake] rawVal received:', rawVal);
     const val = (rawVal !== undefined ? String(rawVal) : wakeInput).trim();
     if (val === '') {
       setWakeError('');
@@ -400,7 +397,6 @@ export default function DailyTrackingSection({
               <label style={reqFieldLbl}>* Total Hours Slept</label>
               <div style={descStyle}>Auto calculated</div>
             </div>
-            {console.log('[render] fd.sleepTime:', fd.sleepTime, 'fd.wakeTime:', fd.wakeTime, 'calc:', calcHoursSlept(fd.sleepTime, fd.wakeTime))}
             <div style={{ ...inp, height: 34, display: 'flex', alignItems: 'center', background: '#2a2a2a', color: calcHoursSlept(fd.sleepTime, fd.wakeTime) ? '#ffffff' : 'rgba(255,255,255,0.3)', fontSize: calcHoursSlept(fd.sleepTime, fd.wakeTime) ? 14 : 12, fontWeight: calcHoursSlept(fd.sleepTime, fd.wakeTime) ? 700 : 400 }}>
               {calcHoursSlept(fd.sleepTime, fd.wakeTime) || '—'}
             </div>
