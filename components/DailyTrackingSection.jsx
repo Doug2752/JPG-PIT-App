@@ -14,6 +14,7 @@ function isDistanceActivity(a) {
 }
 
 function calcHoursSlept(sleepTime, wakeTime) {
+  console.log('[calcHoursSlept] called with:', sleepTime, wakeTime);
   if (!sleepTime || !wakeTime) return '';
   function toMinutes(t) {
     const m = t.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -52,8 +53,9 @@ export default function DailyTrackingSection({
     setSleepError('');
   }, [fd.sleepTime]);
 
-  function commitSleep() {
-    const val = sleepInput.trim();
+  function commitSleep(rawVal) {
+    console.log('[commitSleep] rawVal received:', rawVal);
+    const val = (rawVal !== undefined ? String(rawVal) : sleepInput).trim();
     if (val === '') {
       setSleepError('');
       if (fd.sleepTime) upd('sleepTime', '');
@@ -77,8 +79,9 @@ export default function DailyTrackingSection({
     setWakeError('');
   }, [fd.wakeTime]);
 
-  function commitWake() {
-    const val = wakeInput.trim();
+  function commitWake(rawVal) {
+    console.log('[commitWake] rawVal received:', rawVal);
+    const val = (rawVal !== undefined ? String(rawVal) : wakeInput).trim();
     if (val === '') {
       setWakeError('');
       if (fd.wakeTime) upd('wakeTime', '');
@@ -373,7 +376,7 @@ export default function DailyTrackingSection({
             </div>
             <input list="sleep-time-options" style={{ ...inp, height: 34, ...lockStyle }} value={sleepInput}
               onChange={e => { setSleepInput(e.target.value); if (sleepError) setSleepError(''); }}
-              onBlur={commitSleep} placeholder="e.g. 11:00 PM" disabled={isDayCompleteMarked} />
+              onBlur={e => commitSleep(e.target.value)} placeholder="e.g. 11:00 PM" disabled={isDayCompleteMarked} />
             <datalist id="sleep-time-options">
               {WAKE_TIMES.map(t => <option key={t} value={t} />)}
             </datalist>
@@ -386,7 +389,7 @@ export default function DailyTrackingSection({
             </div>
             <input list="wake-time-options" style={{ ...inp, height: 34, ...lockStyle }} value={wakeInput}
               onChange={e => { setWakeInput(e.target.value); if (wakeError) setWakeError(''); }}
-              onBlur={commitWake} placeholder="e.g. 7:30 AM" disabled={isDayCompleteMarked} />
+              onBlur={e => commitWake(e.target.value)} placeholder="e.g. 7:30 AM" disabled={isDayCompleteMarked} />
             <datalist id="wake-time-options">
               {WAKE_TIMES.map(t => <option key={t} value={t} />)}
             </datalist>
@@ -397,8 +400,9 @@ export default function DailyTrackingSection({
               <label style={reqFieldLbl}>* Total Hours Slept</label>
               <div style={descStyle}>Auto calculated</div>
             </div>
-            <div style={{ ...inp, height: 34, display: 'flex', alignItems: 'center', color: fd.hoursSlept ? '#ffffff' : 'rgba(255,255,255,0.3)', fontSize: fd.hoursSlept ? 14 : 12, fontWeight: fd.hoursSlept ? 700 : 400 }}>
-              {fd.hoursSlept || '—'}
+            {console.log('[render] fd.sleepTime:', fd.sleepTime, 'fd.wakeTime:', fd.wakeTime, 'calc:', calcHoursSlept(fd.sleepTime, fd.wakeTime))}
+            <div style={{ ...inp, height: 34, display: 'flex', alignItems: 'center', background: '#2a2a2a', color: calcHoursSlept(fd.sleepTime, fd.wakeTime) ? '#ffffff' : 'rgba(255,255,255,0.3)', fontSize: calcHoursSlept(fd.sleepTime, fd.wakeTime) ? 14 : 12, fontWeight: calcHoursSlept(fd.sleepTime, fd.wakeTime) ? 700 : 400 }}>
+              {calcHoursSlept(fd.sleepTime, fd.wakeTime) || '—'}
             </div>
           </div>
           <div>
