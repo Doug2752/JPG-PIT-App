@@ -140,8 +140,8 @@ export function emptyForm(date) {
   return {
     date: date || todayStr(),
     wakeTime: '', weight: '', fitnessYesterday: '', workOff: '', sleepScore: '',
-    location: '', pitTimeFrame: '', amWorkout: '', energyLevel: '',
-    meditation: '', meditationDuration: '',
+    location: '', pitTimeFrame: '', energyLevel: '',
+    meditation: '',
     fitnessEntries: [emptyFitnessEntry()],
     thankful1: '', thankful2: '', thankful3: '',
     oneThing: '', oneThingDone: false, oneThingSetup: '',

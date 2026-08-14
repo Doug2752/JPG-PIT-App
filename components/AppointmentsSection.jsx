@@ -4,7 +4,7 @@ import { SMS_TIMES } from '../utils/constants';
 import { todayStr } from '../utils/date';
 import { card, secTitle, lbl, inp, sel } from './styles';
 
-export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt, resolveAppt }) {
+export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt, resolveAppt, canAddAppt }) {
   return (
     <div style={card}>
       <div style={secTitle}>Appointments</div>
@@ -106,7 +106,7 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
         </div>
       ))}
 
-      {appointments.length < 5 && (
+      {canAddAppt && (
         <button
           onClick={addAppt}
           style={{ width: '100%', padding: '9px', borderRadius: 5, border: '1.5px solid #000', background: GOLD_LIGHT, color: '#000', fontSize: 12, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, marginTop: 6 }}

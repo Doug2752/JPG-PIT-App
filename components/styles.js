@@ -57,16 +57,4 @@ export const gbtn = (extra = {}) => ({
   ...extra,
 });
 
-export const dbtn = (extra = {}) => ({
-  padding: '8px 18px',
-  borderRadius: 5,
-  border: '1.5px solid #000',
-  cursor: 'pointer',
-  fontSize: 12,
-  fontWeight: 700,
-  background: GOLD_LIGHT,
-  color: '#000',
-  letterSpacing: 0.5,
-  whiteSpace: 'nowrap',
-  ...extra,
-});
+export const dbtn = gbtn;

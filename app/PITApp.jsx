@@ -1083,12 +1083,10 @@ export default function PITApp() {
     save(n);
   }
 
-  function removeFitnessEntry(idOrIdx, isRecurring) {
+  function removeFitnessEntry(idOrIdx) {
     if (archiveMode) return;
     if (fd.fitnessEntries.length <= 1) return;
-    const fitnessEntries = fd.fitnessEntries.filter((e, j) =>
-      isRecurring ? e.recurringId !== idOrIdx : j !== idOrIdx
-    );
+    const fitnessEntries = fd.fitnessEntries.filter((e, j) => j !== idOrIdx);
     const n = { ...fd, fitnessEntries };
     setFd(n);
     save(n);
@@ -1394,6 +1392,7 @@ export default function PITApp() {
         setView={setView}
         openArchive={openArchive}
         dayCompleteDates={dayCompleteDates}
+        backToday={backToday}
       />
     );
   }
@@ -1406,6 +1405,7 @@ export default function PITApp() {
         currentUser={currentUser}
         setCU={setCU}
         setView={setView}
+        backToday={backToday}
       />
     );
   }
@@ -1455,6 +1455,7 @@ export default function PITApp() {
   const visibleAppointments = appointments
     .filter(a => a.resolved !== true)
     .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const canAddAppt = appointments.filter(a => a.date >= todayStr()).length < 5;
 
   return (
     <div style={{ minHeight: '100vh', background: BG, fontFamily: 'sans-serif', overflowX: 'hidden' }}>
@@ -1579,6 +1580,7 @@ export default function PITApp() {
           addAppt={addAppt}
           removeAppt={removeAppt}
           resolveAppt={resolveAppt}
+          canAddAppt={canAddAppt}
         />
 
         <SummarySection

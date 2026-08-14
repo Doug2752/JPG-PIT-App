@@ -3,7 +3,7 @@ import { GOLD, GOLD_LIGHT, RED } from '../utils/constants';
 import {
   LOCATIONS, PIT_TIMES, ACTIVITY_TYPES, DISTANCE_ACTIVITIES,
   TERRAIN_OPTIONS, YOGA_TYPES, SWIM_ENVIRONMENTS, SWIM_STROKES,
-  MEDITATION_DURATIONS, WORK_OPTS, DAYS_OF_WEEK,
+  WORK_OPTS, DAYS_OF_WEEK,
 } from '../utils/constants';
 import { WAKE_TIMES, normalizeWakeTime, to12Hour } from '../utils/date';
 import { emptyFitnessEntry } from '../utils/form';
@@ -444,7 +444,7 @@ export default function DailyTrackingSection({
             </select>
           </div>
           <div style={{ gridRow: 3 }}>
-            <select style={{ ...sel, width: '100%' }} value={fd.meditation} onChange={e => updMulti([['meditation', e.target.value], ['meditationDuration', '']])}>
+            <select style={{ ...sel, width: '100%' }} value={fd.meditation} onChange={e => upd('meditation', e.target.value)}>
               <option value="">Select</option>
               <option>Yes</option>
               <option>No</option>
