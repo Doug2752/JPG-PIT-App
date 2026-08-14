@@ -40,6 +40,7 @@ const devTypeKey  = (uid)    => `pit_devtype_${uid}`;
 const fcKey       = (uid)    => `pit_fitness_config_${uid}`;
 const discKey     = (uid)    => `pit_discoveries_${uid}`;
 const dayCompleteKey = (uid) => `pit_day_complete_${uid}`;
+const coachKey       = (uid, d) => `pit_coach_${uid}_${d}`;
 
 // Compact tasks AND toAccomplishItems in lockstep so filled items
 // float to the top of each group (daily 0–1, future 2–19) with no
@@ -363,6 +364,36 @@ export default function PITApp() {
     if (!currentUser) return;
     try {
       await storage.set(apptKey(currentUser.id), JSON.stringify(list));
+      saveCoachSnapshot(currentUser.id, todayStr(), fd, list);
+    } catch {}
+  }
+
+  async function saveCoachSnapshot(uid, date, formData, appts) {
+    try {
+      const snapshot = {
+        date: date,
+        sleepTime: formData.sleepTime || '',
+        wakeTime: formData.wakeTime || '',
+        hoursSlept: formData.hoursSlept || '',
+        sleepScore: formData.sleepScore || '',
+        weight: formData.weight || '',
+        energyLevel: formData.energyLevel || '',
+        fitnessYesterday: formData.fitnessYesterday || '',
+        fitnessEntries: formData.fitnessEntries || [],
+        thankful1Done: !!(formData.thankful1 && formData.thankful1.trim()),
+        thankful2Done: !!(formData.thankful2 && formData.thankful2.trim()),
+        thankful3Done: !!(formData.thankful3 && formData.thankful3.trim()),
+        oneThingDone: formData.oneThingDone || false,
+        tasksDone: (formData.tasks || []).map(t => ({ done: t.done })),
+        nitWordCount: formData.nit ? formData.nit.trim().split(/\s+/).filter(Boolean).length : 0,
+        devotionalDone: formData.prayerDone || false,
+        devotionalWordCount: formData.devotionalNotes ? formData.devotionalNotes.trim().split(/\s+/).filter(Boolean).length : 0,
+        bookStudyWordCount: formData.bookNotes ? formData.bookNotes.trim().split(/\s+/).filter(Boolean).length : 0,
+        discoveriesWordCount: (formData.discoveries || []).reduce((acc, d) => acc + (d.text ? d.text.trim().split(/\s+/).filter(Boolean).length : 0), 0),
+        quotesWordCount: formData.quotes ? formData.quotes.trim().split(/\s+/).filter(Boolean).length : 0,
+        appointmentsUsed: (appts || []).length > 0,
+      };
+      await storage.set(coachKey(uid, date), JSON.stringify(snapshot));
     } catch {}
   }
 
@@ -489,6 +520,7 @@ export default function PITApp() {
         await storage.set(ak(currentUser.id), JSON.stringify(list));
         setArchive(list);
       }
+      saveCoachSnapshot(currentUser.id, todayStr(), data, appointments);
     } catch {}
   }
 

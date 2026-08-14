@@ -1,6 +1,6 @@
 import { todayStr } from './date';
 
-export const REQUIRED_TOTAL = 10;
+export const REQUIRED_TOTAL = 13;
 
 // One fitness activity entry. Days now hold an array of these under
 // `fitnessEntries` instead of the seven flat fitness fields.
@@ -139,9 +139,9 @@ export function rebuildToAccomplishItems(d) {
 export function emptyForm(date) {
   return {
     date: date || todayStr(),
-    wakeTime: '', weight: '', fitnessYesterday: '', workOff: '', sleepScore: '',
-    location: '', pitTimeFrame: '', energyLevel: '',
-    meditation: '',
+    sleepTime: '', wakeTime: '', hoursSlept: '',
+    weight: '', fitnessYesterday: '', workOff: '', sleepScore: '',
+    location: '', energyLevel: '',
     fitnessEntries: [emptyFitnessEntry()],
     thankful1: '', thankful2: '', thankful3: '',
     oneThing: '', oneThingDone: false, oneThingSetup: '',
@@ -161,7 +161,8 @@ export function emptyForm(date) {
 export function isDayComplete(d) {
   if (!d) return false;
   return !!(
-    d.wakeTime && d.weight && d.fitnessYesterday && d.workOff && d.sleepScore &&
+    (d.sleepTime || '').trim() && d.wakeTime && d.weight && d.fitnessYesterday &&
+    d.workOff && d.sleepScore && d.energyLevel && d.location &&
     (d.thankful1 || '').trim() && (d.thankful2 || '').trim() && (d.thankful3 || '').trim() &&
     (d.oneThing || '').trim() && (d.nit || '').trim()
   );
@@ -170,7 +171,8 @@ export function isDayComplete(d) {
 export function countComplete(d) {
   if (!d) return 0;
   return [
-    !!d.wakeTime, !!d.weight, !!d.workOff, !!d.sleepScore, !!d.fitnessYesterday,
+    !!(d.sleepTime || '').trim(), !!d.wakeTime, !!d.weight, !!d.workOff,
+    !!d.sleepScore, !!d.fitnessYesterday, !!d.energyLevel, !!d.location,
     !!(d.thankful1 || '').trim(), !!(d.thankful2 || '').trim(), !!(d.thankful3 || '').trim(),
     !!(d.oneThing || '').trim(), !!(d.nit || '').trim()
   ].filter(Boolean).length;
