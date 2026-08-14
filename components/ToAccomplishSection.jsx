@@ -313,7 +313,7 @@ export default function ToAccomplishSection({
               >Confirm</button>
             </div>
             {nothingSelectedErr && (
-              <div style={{ fontSize: 11, color: '#b02020', marginTop: 8, textAlign: 'center' }}>
+              <div style={{ fontSize: 11, color: RED, marginTop: 8, textAlign: 'center' }}>
                 No items selected — please check at least one item to clear.
               </div>
             )}

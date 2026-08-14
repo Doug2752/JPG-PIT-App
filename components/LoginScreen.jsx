@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DEFAULT_USERS, GOLD_LIGHT } from '../utils/constants';
+import { DEFAULT_USERS, GOLD_LIGHT, RED } from '../utils/constants';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -79,7 +79,7 @@ export default function Login({ onLogin }) {
             </label>
 
             {error && (
-              <div style={{ color: '#B02020', fontSize: '12px', textAlign: 'center', marginTop: '10px' }}>
+              <div style={{ color: RED, fontSize: '12px', textAlign: 'center', marginTop: '10px' }}>
                 {error}
               </div>
             )}

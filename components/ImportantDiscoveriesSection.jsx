@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GOLD, GOLD_LIGHT, DARK } from '../utils/constants';
+import { GOLD, GOLD_LIGHT, DARK, RED } from '../utils/constants';
 
 const DISCOVERY_TAGS = [
   'General Info', 'Business', 'Personal Development', 'Education & Learning',
@@ -214,7 +214,7 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
               <option value="">Select topic tag...</option>
               {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
             </select>
-            {errTag && !newTag && <div style={{ fontSize: 11, color: '#b02020', marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
+            {errTag && !newTag && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
             {newTag === 'Other' && (
               <>
                 <input
@@ -223,7 +223,7 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
                   value={newTagOther}
                   onChange={e => { setNewTagOther(e.target.value); setErrTag(''); }}
                 />
-                {errTag && <div style={{ fontSize: 11, color: '#b02020', marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
+                {errTag && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
               </>
             )}
             <textarea
@@ -232,7 +232,7 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
               onChange={e => { setNewText(e.target.value); setErrText(''); }}
               placeholder="Write your discovery here..."
             />
-            {errText && <div style={{ fontSize: 11, color: '#b02020', marginTop: 4, marginBottom: 4 }}>{errText}</div>}
+            {errText && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errText}</div>}
             <button
               style={{
                 width: '100%', padding: '9px', borderRadius: 5,
