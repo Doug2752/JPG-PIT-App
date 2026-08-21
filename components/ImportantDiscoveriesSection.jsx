@@ -169,7 +169,7 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
         {discoveries.length > 0 && (
           <div style={{ maxHeight: 320, overflowY: 'auto', marginBottom: 14 }}>
             {discoveries.map(d => (
-              <div key={d.id} style={{ background: '#111', border: `1px solid ${GOLD}`, borderRadius: 6, padding: 12, marginBottom: 8 }}>
+              <div key={d.id} style={{ background: '#111', border: `1px solid ${GOLD}`, borderRadius: 6, padding: 12, marginBottom: 8, maxHeight: 200, overflowY: 'auto' }}>
                 {editingId === d.id ? (
                   <div>
                     <select style={{ ...sel, marginBottom: 8 }} value={editTag} onChange={e => setEditTag(e.target.value)}>
@@ -207,46 +207,47 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
           </div>
         )}
 
-        {/* Add new entry — hidden in archive mode */}
-        {!archiveMode && (
-          <div>
-            <select style={{ ...sel, marginBottom: 4 }} value={newTag} onChange={e => { setNewTag(e.target.value); setErrTag(''); }}>
-              <option value="">Select topic tag...</option>
-              {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
-            </select>
-            {errTag && !newTag && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
-            {newTag === 'Other' && (
-              <>
-                <input
-                  style={{ ...sel, marginBottom: 4, marginTop: 4 }}
-                  placeholder="Enter your own category..."
-                  value={newTagOther}
-                  onChange={e => { setNewTagOther(e.target.value); setErrTag(''); }}
-                />
-                {errTag && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
-              </>
-            )}
-            <textarea
-              style={{ ...textarea, marginBottom: 4, marginTop: 8 }}
-              value={newText}
-              onChange={e => { setNewText(e.target.value); setErrText(''); }}
-              placeholder="Write your discovery here..."
-            />
-            {errText && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errText}</div>}
-            <button
-              style={{
-                width: '100%', padding: '9px', borderRadius: 5,
-                border: '1.5px solid #000', background: GOLD_LIGHT,
-                color: '#000', fontSize: 12, fontWeight: 700,
-                cursor: 'pointer', letterSpacing: 0.5,
-              }}
-              onClick={handleAdd}
-            >
-              + Add Another Discovery
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Add new entry — hidden in archive mode */}
+      {!archiveMode && (
+        <div>
+          <select style={{ ...sel, marginBottom: 4 }} value={newTag} onChange={e => { setNewTag(e.target.value); setErrTag(''); }}>
+            <option value="">Select topic tag...</option>
+            {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
+          </select>
+          {errTag && !newTag && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
+          {newTag === 'Other' && (
+            <>
+              <input
+                style={{ ...sel, marginBottom: 4, marginTop: 4 }}
+                placeholder="Enter your own category..."
+                value={newTagOther}
+                onChange={e => { setNewTagOther(e.target.value); setErrTag(''); }}
+              />
+              {errTag && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errTag}</div>}
+            </>
+          )}
+          <textarea
+            style={{ ...textarea, marginBottom: 4, marginTop: 8 }}
+            value={newText}
+            onChange={e => { setNewText(e.target.value); setErrText(''); }}
+            placeholder="Write your discovery here..."
+          />
+          {errText && <div style={{ fontSize: 11, color: RED, marginTop: 4, marginBottom: 4 }}>{errText}</div>}
+          <button
+            style={{
+              width: '100%', padding: '9px', borderRadius: 5,
+              border: '1.5px solid #000', background: GOLD_LIGHT,
+              color: '#000', fontSize: 12, fontWeight: 700,
+              cursor: 'pointer', letterSpacing: 0.5,
+            }}
+            onClick={handleAdd}
+          >
+            + Add Another Discovery
+          </button>
+        </div>
+      )}
     </div>
   );
 }
