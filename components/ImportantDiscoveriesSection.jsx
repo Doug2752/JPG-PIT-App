@@ -211,7 +211,7 @@ export default function ImportantDiscoveriesSection({ fd, archiveMode, onAdd, on
 
       {/* Add new entry — hidden in archive mode */}
       {!archiveMode && (
-        <div>
+        <div style={{ marginTop: 10 }}>
           <select style={{ ...sel, marginBottom: 4 }} value={newTag} onChange={e => { setNewTag(e.target.value); setErrTag(''); }}>
             <option value="">Select topic tag...</option>
             {DISCOVERY_TAGS.map(t => <option key={t}>{t}</option>)}
