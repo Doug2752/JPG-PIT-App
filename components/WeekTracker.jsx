@@ -13,7 +13,7 @@ export default function WeekTracker({ weekData, submitting, doSubmit, submitMsg 
       borderRadius: 8,
       padding: '18px 20px',
       marginBottom: 14,
-      border: canSend ? '2px solid #2ecc71' : `1px solid ${BORDER}`,
+      border: canSend ? `2px solid ${GREEN_COMPLETE}` : `1px solid ${BORDER}`,
       boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
