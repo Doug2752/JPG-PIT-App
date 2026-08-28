@@ -1095,6 +1095,74 @@ export default function PITApp() {
     setMoveModalSource(null);
   }
 
+  function moveFutureToOneThing(futureIndex) {
+    if (archiveMode) return;
+    if ((fd.oneThing || '').trim() !== '') {
+      setToastMessage('One Thing is already filled');
+      setTimeout(() => setToastMessage(''), 2500);
+      return;
+    }
+    const srcSlot = `future_${futureIndex + 2}`;
+    const targetSlot = 'one_thing';
+    const srcItem = (fd.toAccomplishItems || [])
+      .find(it => it && it.slot === srcSlot);
+    const text = fd.tasks[futureIndex]?.text || '';
+    const tasks = [...fd.tasks];
+    let lastFilled = -1;
+    for (let j = 2; j <= 19; j++) {
+      if (tasks[j] && (tasks[j].text || tasks[j].done)) lastFilled = j;
+    }
+    const end = Math.max(futureIndex, lastFilled);
+    for (let j = futureIndex; j < end; j++) tasks[j] = { ...tasks[j + 1] };
+    tasks[end] = { text: '', done: false };
+    const futureTasksVisible = Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
+    const items = (fd.toAccomplishItems || [])
+      .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
+    if (srcItem) {
+      items.push({
+        ...srcItem,
+        slot: targetSlot,
+        text,
+        done: false,
+        resolution_status: null,
+        resolution_date: null,
+        carried_dates: Array.isArray(srcItem.carried_dates)
+          ? [...srcItem.carried_dates] : [],
+      });
+    }
+    let n = {
+      ...fd, tasks, oneThing: text, oneThingDone: false,
+      futureTasksVisible, toAccomplishItems: items,
+    };
+    {
+      const { tasks: compacted,
+              toAccomplishItems: compactedItems } = compactTasks(
+        n.tasks, n.toAccomplishItems
+      );
+      const fv = Math.max(
+        0,
+        compacted.slice(2).filter(
+          t => (t.text || '').trim() !== '' || t.done
+        ).length
+      );
+      n = {
+        ...n,
+        tasks: compacted,
+        toAccomplishItems: compactedItems,
+        futureTasksVisible: fv,
+      };
+    }
+    setFd(n);
+    save(n);
+    setMoveModalSource(null);
+  }
+
+  function moveFutureToDaily(futureIndex) {
+    if (archiveMode) return;
+    promoteFutureTask(futureIndex);
+    setMoveModalSource(null);
+  }
+
   function updFitnessEntry(idOrIdx, patch, isRecurring) {
     if (archiveMode) return;
     const fitnessEntries = fd.fitnessEntries.map((e, j) =>
@@ -1551,6 +1619,8 @@ export default function PITApp() {
           moveOneThingToFuture={moveOneThingToFuture}
           moveDailyToOneThing={moveDailyToOneThing}
           moveDailyToFuture={moveDailyToFuture}
+          moveFutureToOneThing={moveFutureToOneThing}
+          moveFutureToDaily={moveFutureToDaily}
           showClearModal={showClearModal}
           onClearModalOpen={() => setShowClearModal(true)}
           clearModalItems={clearModalItems}
