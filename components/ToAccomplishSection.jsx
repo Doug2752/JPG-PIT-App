@@ -7,6 +7,7 @@ export default function ToAccomplishSection({
   moveModalSource, setMoveModalSource,
   moveOneThingToDaily, moveOneThingToFuture,
   moveDailyToOneThing, moveDailyToFuture,
+  moveFutureToOneThing, moveFutureToDaily,
   showClearModal, onClearModalOpen, clearModalItems = [],
   onClearConfirm, onClearCancel, toastMessage,
   archiveMode, archiveDateStr, isDayCompleteMarked,
@@ -26,6 +27,7 @@ export default function ToAccomplishSection({
     cursor: disabled ? 'not-allowed' : 'pointer',
     padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap',
     opacity: disabled ? 0.4 : 1,
+    minWidth: 190,
   });
 
   // Small "Remove" button style, shared by Daily and Future rows.
@@ -224,14 +226,15 @@ export default function ToAccomplishSection({
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <input type="checkbox" checked={t.done}
                       onChange={e => updTask(i + 2, 'done', e.target.checked)}
-                      style={{ width: 14, height: 14, cursor: 'pointer' }} />
-                    <input style={{ ...inp, fontSize: 12 }} value={t.text}
+                      style={{ width: 16, height: 16, cursor: 'pointer', accentColor: GOLD }} />
+                    <input style={{ ...inp, flex: 1 }} value={t.text}
                       onChange={e => updTask(i + 2, 'text', e.target.value)}
                       placeholder={`Future task ${i + 4}`} />
                     <button
-                      onClick={() => promoteFutureTask(i + 2)}
-                      style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: dailySlotsFull ? 'not-allowed' : 'pointer', padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap', opacity: dailySlotsFull ? 0.4 : 1 }}
-                    >Move to Daily Task</button>
+                      onClick={() => setMoveModalSource({ type: 'future', index: i + 2 })}
+                      disabled={(t.text || '').trim() === ''}
+                      style={moveBtn((t.text || '').trim() === '')}
+                    >Move to One Thing or Daily Task</button>
                     {confirmRemoveFuture !== i ? (
                       <button
                         onClick={() => setConfirmRemoveFuture(i)}
@@ -395,6 +398,21 @@ export default function ToAccomplishSection({
                     onClick={() =>
                       moveDailyToFuture(moveModalSource.index)}
                   >Move to Future Task</button>
+                </>
+              )}
+
+              {moveModalSource.type === 'future' && (
+                <>
+                  <button
+                    disabled={oneThingFilled}
+                    style={optBtn(oneThingFilled)}
+                    onClick={() => moveFutureToOneThing(moveModalSource.index)}
+                  >Move to One Thing</button>
+                  <button
+                    disabled={dailySlotsFull}
+                    style={optBtn(dailySlotsFull)}
+                    onClick={() => moveFutureToDaily(moveModalSource.index)}
+                  >Move to Daily Task</button>
                 </>
               )}
 
