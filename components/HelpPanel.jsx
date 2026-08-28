@@ -38,23 +38,30 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>How to use it:</div>
-          <div style={{ ...tBody, marginBottom: 6 }}>Each day, complete the 10 Required Fields and any additional fields you choose. There is substantial personal value in going above the 10, but that is your choice. Fields marked with an asterisk (*) are required to mark a day complete. The 10 Required Fields, in order:</div>
-          <div style={groupLbl}>Daily Trackables (Items 1–5, Required)</div>
+          <div style={{ ...tBody, marginBottom: 6 }}>Each day, complete the 12 Required Fields and any additional fields you choose. There is substantial personal value in going above the 12, but that is your choice. Fields marked with an asterisk (*) are required to mark a day complete. The 12 Required Fields, in order:</div>
+          <div style={groupLbl}>Daily Tracking (Items 1–8, Required)</div>
           <ol style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0, paddingLeft: 32, marginTop: 0 }}>
+            <li>Time Asleep Last Night</li>
             <li>Wake Up Time</li>
-            <li>Weight</li>
-            <li>Work / Off</li>
             <li>Sleep Score</li>
+            <li>Weight</li>
+            <li>Energy Level</li>
+            <li>Work / Off</li>
+            <li>Location</li>
             <li>Fitness Yesterday</li>
           </ol>
-          <div style={{ ...groupLbl, marginTop: 6 }}>Reflection &amp; Priorities (Items 6–10, Required)</div>
-          <ol start={6} style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0, paddingLeft: 32, marginTop: 0 }}>
+          <div style={{ ...groupLbl, marginTop: 6 }}>Reflection &amp; Priorities (Items 9–12, Required)</div>
+          <ol start={9} style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0, paddingLeft: 32, marginTop: 0 }}>
             <li>Thankful For #1</li>
             <li>Thankful For #2</li>
             <li>Thankful For #3</li>
-            <li>The One Thing</li>
             <li>Notes — Ideas — Thoughts</li>
           </ol>
+          <div style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginTop: 6 }}>
+            The One Thing is required for day completion and is listed
+            in the To Accomplish section. Total Hours Slept is
+            auto-calculated from your sleep and wake times.
+          </div>
         </div>
       </div>
 
@@ -67,7 +74,7 @@ export default function HelpPanel({ onClose }) {
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Fitness Yesterday</div>
-                <div style={tBody}>Log what you did for fitness the previous day. Use the + Add Fitness Activity button if you have more than one activity to log. Select Rest Day only if you intentionally took a rest day. If you had a planned fitness day and missed it, select No.</div>
+                <div style={tBody}>Log what you did for fitness the previous day. Use the + Add Fitness Activity button if you have more than one activity to log. Select Rest Day only if you intentionally took a rest day. Within your fitness activity details, Rest and Recovery is also available as an activity type if you want to log recovery work specifically. If you had a planned fitness day and missed it, select No.</div>
               </div>
             </div>
             <div style={{ ...subItem, marginBottom: 0 }}>
@@ -113,7 +120,7 @@ export default function HelpPanel({ onClose }) {
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Future Tasks:</div>
-                <div style={tBody}>Future tasks are for items not directly tied to today. Use the Add button to create a new slot. Tasks can be moved in any direction — One Thing, Daily, or Future — in any combination.</div>
+                <div style={tBody}>Future tasks are for items not directly tied to today. Use the Add button to create a new slot. Tasks can be moved in any direction. Use the Move button on any task to relocate it — One Thing, Daily Task, or Future Task — provided space is available in the destination.</div>
               </div>
             </div>
           </div>
@@ -141,36 +148,12 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Additional Tracking</div>
-          <div style={{ paddingLeft: 16 }}>
-            <div style={{ ...subItem, marginBottom: 6 }}>
-              <span style={hyp}>–</span>
-              <div style={{ flex: 1 }}>
-                <div style={sTitle}>Location:</div>
-                <div style={tBody}>Where you completed PIT today. Location matters more than it seems — if you always work at home, try going outside when you're able. Mixing up your environment can sharpen focus and shift your mental state.</div>
-              </div>
-            </div>
-            <div style={{ ...subItem, marginBottom: 6 }}>
-              <span style={hyp}>–</span>
-              <div style={{ flex: 1 }}>
-                <div style={sTitle}>PIT Time Frame:</div>
-                <div style={tBody}>Approximate time spent on PIT. Helps you balance and memorialize the days you're able to commit more time to the process.</div>
-              </div>
-            </div>
-            <div style={{ ...subItem, marginBottom: 6 }}>
-              <span style={hyp}>–</span>
-              <div style={{ flex: 1 }}>
-                <div style={sTitle}>Energy Level:</div>
-                <div style={tBody}>Rate your energy 1–10. 10 is highest.</div>
-              </div>
-            </div>
-            <div style={{ ...subItem, marginBottom: 0 }}>
-              <span style={hyp}>–</span>
-              <div style={{ flex: 1 }}>
-                <div style={sTitle}>Mental Alignment:</div>
-                <div style={tBody}>Completing PIT in full is sufficient to mark this positive. Some clients also incorporate personal practices such as meditation or other routines as their own baseline — that is entirely up to you.</div>
-              </div>
-            </div>
-          </div>
+          <div style={tBody}>Beyond the 12 required fields, PIT includes optional
+          sections for deeper tracking: Daily Devotional, Book Study,
+          Important Discoveries, Quotes &amp; Inspiration, and
+          Appointments. Complete as many as are useful to you — there
+          is substantial personal value in going beyond the minimum,
+          but the choice is yours.</div>
         </div>
       </div>
 
