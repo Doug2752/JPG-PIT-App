@@ -1591,7 +1591,36 @@ export default function PITApp() {
 
         {showHelp && <HelpPanel onClose={toggleHelp} />}
 
-        <DOPBtn top />
+        <div style={{
+          width: '100%',
+          background: GOLD_LIGHT,
+          border: '1.5px solid #000',
+          borderRadius: 5,
+          padding: '5px 14px',
+          marginBottom: 14,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxSizing: 'border-box',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 15, fontWeight: 900, color: '#000',
+              letterSpacing: 1, textTransform: 'uppercase' }}>Never Twice</span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#000',
+              letterSpacing: 0.3 }}>Miss one — never miss the second.</span>
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6,
+            cursor: 'pointer', fontSize: 11, fontWeight: 700, color: '#000',
+            letterSpacing: 0.3, userSelect: 'none', whiteSpace: 'nowrap' }}>
+            <input
+              type="checkbox"
+              checked={fd.neverTwiceRead || false}
+              onChange={e => upd('neverTwiceRead', e.target.checked)}
+              style={{ width: 13, height: 13, cursor: 'pointer', accentColor: GOLD }}
+            />
+            I've read this. Never twice.
+          </label>
+        </div>
 
         <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti}
           updFitnessEntry={updFitnessEntry} addFitnessEntry={addFitnessEntry} removeFitnessEntry={removeFitnessEntry}

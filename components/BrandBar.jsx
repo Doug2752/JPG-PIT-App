@@ -8,20 +8,26 @@ const LOGO_SRC = '/jpglogo.png';
 export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker }) {
   return (
     <div
-      style={{ background: '#fff', borderBottom: `4px solid ${GOLD}`, padding: '10px 20px' }}
+      style={{ background: '#fff', borderBottom: `2px solid ${GOLD}`, padding: '10px 20px' }}
       onClick={() => setShowDatePicker(false)}
     >
-      <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-        {/* Logo */}
-        <img src={LOGO_SRC} alt="Jones Performance Group" style={{ width: 260, height: 'auto', display: 'block' }} />
+        {/* LEFT — Logo */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+          <img src={LOGO_SRC} alt="Jones Performance Group" style={{ width: 260, height: 'auto', display: 'block' }} />
+        </div>
 
-        {/* Center: PIT title + date picker */}
-        <div style={{ textAlign: 'center' }}>
+        {/* CENTER — PIT title and subtitle */}
+        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ marginBottom: 8, textAlign: 'center' }}>
-            <div style={{ fontSize: 38, fontWeight: 900, color: '#000', lineHeight: 1 }}>PIT</div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.5, marginTop: 3 }}>Personal Investment Time</div>
+            <div style={{ fontSize: 52, fontWeight: 900, color: '#000', lineHeight: 1 }}>PIT</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#000', letterSpacing: 0.5, marginTop: 3 }}>Personal Investment Time</div>
           </div>
+        </div>
+
+        {/* RIGHT — Date picker, Never Twice pill, checkbox */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: 6 }}>
 
           <div style={{ position: 'relative', display: 'inline-block', marginBottom: 10 }} onClick={e => e.stopPropagation()}>
             <button
@@ -48,26 +54,8 @@ export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker })
             )}
           </div>
 
-          {/* Never Twice */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, border: '1.5px solid #000', borderRadius: 5, padding: '5px 14px', background: '#B8860B' }}>
-              <span style={{ fontSize: 15, fontWeight: 900, color: '#000', letterSpacing: 1, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Never Twice</span>
-              <span style={{ fontSize: 11, fontWeight: 600, color: '#000', letterSpacing: 0.3, whiteSpace: 'nowrap' }}>Miss one — never miss the second.</span>
-            </div>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: 'pointer', fontSize: 10, fontWeight: 700, color: DARK, letterSpacing: 0.3, marginTop: 6, userSelect: 'none' }}>
-              <input
-                type="checkbox"
-                checked={fd.neverTwiceRead || false}
-                onChange={e => upd('neverTwiceRead', e.target.checked)}
-                style={{ width: 13, height: 13, cursor: 'pointer', accentColor: GOLD }}
-              />
-              I've read this. Never twice.
-            </label>
-          </div>
-        </div>
+</div>
 
-        {/* Right spacer */}
-        <div style={{ width: 76 }} />
       </div>
     </div>
   );
