@@ -33,44 +33,33 @@ export default function Header({
         height: 52,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              style={gbtn({ background: (!archiveMode && view === 'form') ? GOLD : '#333', fontSize: 12, color: '#fff', border: 'none' })}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span
+              style={(!archiveMode && view === 'form') ? { color: GOLD, fontWeight: 700, fontSize: 13, cursor: 'pointer', borderBottom: '2px solid #B8860B', paddingBottom: 2 } : { color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
               onClick={() => { if (archiveMode) backToday(); setView('form'); }}
-            >Today</button>
-            <button
-              style={gbtn({ background: view === 'archive' ? GOLD : '#333', fontSize: 12, color: '#fff', border: 'none' })}
+            >Today</span>
+            <span
+              style={view === 'archive' ? { color: GOLD, fontWeight: 700, fontSize: 13, cursor: 'pointer', borderBottom: '2px solid #B8860B', paddingBottom: 2 } : { color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
               onClick={() => setView('archive')}
-            >Archive</button>
-            <button
-              style={gbtn({ background: view === 'books' ? GOLD : '#333', fontSize: 12, color: '#fff', border: 'none' })}
+            >Archive</span>
+            <span
+              style={view === 'books' ? { color: GOLD, fontWeight: 700, fontSize: 13, cursor: 'pointer', borderBottom: '2px solid #B8860B', paddingBottom: 2 } : { color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: 13, cursor: 'pointer' }}
               onClick={() => setView('books')}
-            >Book Log ({completedBooks.length})</button>
+            >Book Log ({completedBooks.length})</span>
+            {streak > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 1.5, height: 16, background: 'rgba(255,255,255,0.25)' }} />
+                <span style={{
+                  color: GOLD, fontSize: 12, fontWeight: 700, letterSpacing: 0.5
+                }}>
+                  {streak} Day Streak
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        <div style={{
-          background: isDayCompleteMarked ? '#333' : complete && !fd.sent ? GOLD : '#333',
-          color: '#fff',
-          borderRadius: 6,
-          padding: '5px 14px',
-          fontSize: 12,
-          fontWeight: 700,
-          letterSpacing: 0.3,
-          transition: 'background 0.3s ease',
-          whiteSpace: 'nowrap',
-          marginLeft: 120,
-          marginRight: 16,
-        }}>
-          {isDayCompleteMarked ? 'PIT Completed Today' : complete && !fd.sent ? 'Required Fields Done' : `${countComplete(fd)} of ${REQUIRED_TOTAL} Fields Done`}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {streak > 0 && (
-            <div style={{ background: GOLD, color: '#000', borderRadius: 20, padding: '3px 12px', fontSize: 11, fontWeight: 900, letterSpacing: 1 }}>
-              {streak} Day Streak
-            </div>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {archiveMode && (
             <span style={{ color: GOLD, fontSize: 11 }}>
               {fd.date}{' '}
@@ -80,16 +69,23 @@ export default function Header({
               >Today</button>
             </span>
           )}
-          <button
-            style={{ padding: '6px 14px', borderRadius: 5, border: `1.5px solid ${GOLD_LIGHT}`, background: 'transparent', color: GOLD_LIGHT, fontSize: 11, fontWeight: 700, cursor: 'pointer', letterSpacing: 0.5, whiteSpace: 'nowrap' }}
+          <span
             onClick={onHelpToggle}
+            style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}
           >
             {showHelp ? 'Close Help' : 'Set-Up and Instructions'}
-          </button>
-          <span style={{ color: '#aaa', fontSize: 12 }}>{firstName(currentUser.name)}</span>
-          <button style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer', fontSize: 12 }} onClick={() => setCU(null)}>
+          </span>
+          <div style={{ width: 1.5, height: 16, background: 'rgba(255,255,255,0.25)' }} />
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>
+            {firstName(currentUser.name)}
+          </span>
+          <div style={{ width: 1.5, height: 16, background: 'rgba(255,255,255,0.25)' }} />
+          <span
+            onClick={() => setCU(null)}
+            style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer' }}
+          >
             Logout
-          </button>
+          </span>
         </div>
       </div>
 
