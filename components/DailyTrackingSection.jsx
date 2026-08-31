@@ -29,7 +29,7 @@ function calcHoursSlept(sleepTime, wakeTime) {
 
 export default function DailyTrackingSection({
   fd, upd, updMulti,
-  isDayCompleteMarked, fitnessParseMsg,
+  isDayCompleteMarked, fitnessParseMsg, onFitnessParseMsg,
 }) {
   const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
 
@@ -98,6 +98,11 @@ export default function DailyTrackingSection({
     if (!(fd.fitnessNotesText || '').trim()) return;
     const result = await parseFitnessAI(fd.fitnessNotesText);
     updMulti({ fitnessActivityType: result.fitnessActivityType, fitnessDuration: result.fitnessDuration });
+    if (result.fitnessActivityType || result.fitnessDuration) {
+      onFitnessParseMsg('');
+    } else {
+      onFitnessParseMsg('Could not identify fitness activity — try adding more detail.');
+    }
   };
 
   return (

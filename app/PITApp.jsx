@@ -9,6 +9,7 @@ import {
   fetchBookAI as fetchBookAIService,
   fetchQuotesInspirationAI,
   parseAppointmentsAI,
+  parseGratitudeAI,
 } from '../services/ai';
 
 import LoginScreen        from '../components/LoginScreen';
@@ -1138,6 +1139,21 @@ export default function PITApp() {
   const handleFitnessParseMsg = (msg) => setFitnessParseMsg(msg);
   const handleGratitudeParseMsg = (msg) => setGratitudeParseMsg(msg);
 
+  const handleGratitudeBlur = async () => {
+    if (!fd.gratitudeText) return;
+    const result = await parseGratitudeAI(fd.gratitudeText);
+    if (result && (result.thankful1 || result.thankful2 || result.thankful3)) {
+      updMulti({
+        thankful1: result.thankful1 ?? '',
+        thankful2: result.thankful2 ?? '',
+        thankful3: result.thankful3 ?? '',
+      });
+      setGratitudeParseMsg('');
+    } else {
+      setGratitudeParseMsg('Could not identify three items — try listing them with commas.');
+    }
+  };
+
   function updAppt(id, f, v) {
     if (archiveMode) return;
     const updated = appointments.map(a => a.id === id ? { ...a, [f]: v } : a);
@@ -1497,14 +1513,15 @@ export default function PITApp() {
 
         <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti}
           fitnessParseMsg={fitnessParseMsg}
+          onFitnessParseMsg={handleFitnessParseMsg}
           isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
 
         <GratitudeSection
           fd={fd}
-          upd={upd}
           updMulti={updMulti}
           isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
           gratitudeParseMsg={gratitudeParseMsg}
+          onGratitudeBlur={handleGratitudeBlur}
         />
 
         <ToAccomplishSection

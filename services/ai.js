@@ -23,7 +23,8 @@ async function anthropic(prompt, maxTokens = 1000) {
     }),
   });
   const d = await r.json();
-  return d.content ? d.content.map(b => b.text || '').join('') : 'No response.';
+  if (!d.content) return null;
+  return d.content.map(b => b.text || '').join('');
 }
 
 export async function fetchScriptureAI(query) {
@@ -100,7 +101,8 @@ export async function parseFitnessAI(fitnessText) {
   const prompt = `Extract fitness details from this text and respond with JSON only — no preamble, no markdown, no backticks.\nFormat: {"fitnessActivityType": "Running", "fitnessDuration": 45}\nIf you cannot confidently identify either value, return: {"fitnessActivityType": null, "fitnessDuration": null}\nfitnessDuration must be an integer number of minutes.\n\nText: "${fitnessText}"`;
   try {
     const raw = await anthropic(prompt, 100);
-    const parsed = JSON.parse(raw.trim());
+const cleaned = raw.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const parsed = JSON.parse(cleaned);
     return {
       fitnessActivityType: parsed.fitnessActivityType ?? null,
       fitnessDuration: parsed.fitnessDuration !== undefined && parsed.fitnessDuration !== null ? parseInt(parsed.fitnessDuration, 10) : null,
@@ -114,7 +116,8 @@ export async function parseGratitudeAI(gratitudeText) {
   const prompt = `Extract exactly three gratitude items from this text and respond with JSON only — no preamble, no markdown, no backticks.\nFormat: {"thankful1": "item one", "thankful2": "item two", "thankful3": "item three"}\nIf you cannot confidently identify all three items, return whatever you can find and use null for any you cannot:\n{"thankful1": "item one", "thankful2": null, "thankful3": null}\n\nText: "${gratitudeText}"`;
   try {
     const raw = await anthropic(prompt, 150);
-    const parsed = JSON.parse(raw.trim());
+    const cleaned = raw.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const parsed = JSON.parse(cleaned);
     return {
       thankful1: parsed.thankful1 ?? null,
       thankful2: parsed.thankful2 ?? null,
@@ -129,7 +132,8 @@ export async function parseAppointmentsAI(text) {
   const prompt = `Extract one or more appointments from this text and respond with JSON only — no preamble, no markdown, no backticks.\nEach appointment has four fields: title, date (YYYY-MM-DD format), time (HH:MM 24-hour format), location. Use null for any field you cannot confidently identify.\nAlways return an array even if only one appointment is found.\nFormat: [{"title": "Doctor", "date": "2026-09-05", "time": "14:00", "location": "Downtown Clinic"}, {"title": "Dentist", "date": null, "time": "09:00", "location": null}]\n\nText: "${text}"`;
   try {
     const raw = await anthropic(prompt, 300);
-    const parsed = JSON.parse(raw.trim());
+    const cleaned = raw.trim().replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const parsed = JSON.parse(cleaned);
     return parsed.map(a => ({
       title:    a.title    ?? null,
       date:     a.date     ?? null,
