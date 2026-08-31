@@ -43,9 +43,6 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
         <div>
           <label style={lbl}>Current Book Reading</label>
-          <div style={{ fontSize: 11, color: '#888', marginTop: -4, marginBottom: 6, fontStyle: 'italic' }}>
-            Book you are actively reading right now
-          </div>
           <input style={inp} value={fd.bookName} onChange={e => upd('bookName', e.target.value)} />
         </div>
         <div>
@@ -60,6 +57,15 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
           <label style={lbl}>Topic</label>
           <input style={inp} value={fd.bookTopic} onChange={e => upd('bookTopic', e.target.value)} />
         </div>
+      </div>
+
+      <div style={{ marginBottom: 10 }}>
+        <label style={lbl}>NOTES</label>
+        <textarea
+          style={{ ...inp, minHeight: 70, resize: 'vertical' }}
+          value={fd.bookNotes ?? ''}
+          onChange={e => upd('bookNotes', e.target.value)}
+        />
       </div>
 
       {/* Book AI */}

@@ -5,24 +5,10 @@ import { card, secTitle, lbl, inp, gbtn, dbtn } from './styles';
 export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, aiLoadScripture }) {
   return (
     <div style={card}>
-      <div style={secTitle}>Daily Devotional or Silence and Reflection</div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <input
-            type="checkbox"
-            checked={fd.prayerDone}
-            onChange={e => upd('prayerDone', e.target.checked)}
-            style={{ width: 18, height: 18, cursor: 'pointer', accentColor: GOLD }}
-          />
-          <span style={{ fontWeight: 700, fontSize: 13, color: DARK }}>
-            {fd.prayerType === 'prayer'
-              ? 'Two-Minute Prayer — Completed'
-              : 'Two-Minute Silence and Self-Reflection — Completed'}
-          </span>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={secTitle}>Daily Devotional or Silence and Reflection</div>
         <button
-          style={{ ...dbtn({ padding: '4px 12px', fontSize: 10 }), marginLeft: 'auto' }}
+          style={{ ...dbtn({ padding: '4px 12px', fontSize: 10 }) }}
           onClick={() => upd('prayerType', fd.prayerType === 'prayer' ? 'silence' : 'prayer')}
         >
           Switch to {fd.prayerType === 'prayer' ? 'Silence & Reflection' : 'Prayer'}
