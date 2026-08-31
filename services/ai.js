@@ -124,3 +124,19 @@ export async function parseGratitudeAI(gratitudeText) {
     return { thankful1: null, thankful2: null, thankful3: null };
   }
 }
+
+export async function parseAppointmentsAI(text) {
+  const prompt = `Extract one or more appointments from this text and respond with JSON only — no preamble, no markdown, no backticks.\nEach appointment has four fields: title, date (YYYY-MM-DD format), time (HH:MM 24-hour format), location. Use null for any field you cannot confidently identify.\nAlways return an array even if only one appointment is found.\nFormat: [{"title": "Doctor", "date": "2026-09-05", "time": "14:00", "location": "Downtown Clinic"}, {"title": "Dentist", "date": null, "time": "09:00", "location": null}]\n\nText: "${text}"`;
+  try {
+    const raw = await anthropic(prompt, 300);
+    const parsed = JSON.parse(raw.trim());
+    return parsed.map(a => ({
+      title:    a.title    ?? null,
+      date:     a.date     ?? null,
+      time:     a.time     ?? null,
+      location: a.location ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
