@@ -80,8 +80,8 @@ export default function ToAccomplishSection({
 
   return (
     <div style={card}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={secTitle}>To Accomplish</div>
+      <div style={{ ...secTitle, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>To Accomplish</span>
         {hasContent && (
           <button
             onClick={openModal}

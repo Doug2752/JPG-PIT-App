@@ -55,16 +55,8 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
               <input style={inp} type="time" value={a.time || ''} onChange={e => updAppt(a.id, 'time', e.target.value)} />
             </div>
             <div>
-              <label style={lbl}>Duration</label>
-              <input style={inp} value={a.duration} onChange={e => updAppt(a.id, 'duration', e.target.value)} placeholder="1 hr" />
-            </div>
-            <div>
               <label style={lbl}>Location</label>
               <input style={inp} value={a.location} onChange={e => updAppt(a.id, 'location', e.target.value)} placeholder="Location" />
-            </div>
-            <div>
-              <label style={lbl}>Prep Needed</label>
-              <input style={inp} value={a.prep} onChange={e => updAppt(a.id, 'prep', e.target.value)} placeholder="Preparation needed..." />
             </div>
           </div>
 
