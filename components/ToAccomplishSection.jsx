@@ -148,15 +148,6 @@ export default function ToAccomplishSection({
             carried, unresolved
           </div>
         )}
-        <div style={{ marginTop: 8 }}>
-          <label style={lbl}>First Action / Set-Up</label>
-          <input
-            style={inp}
-            value={fd.oneThingSetup}
-            onChange={e => upd('oneThingSetup', e.target.value)}
-            placeholder="The first action to begin this..."
-          />
-        </div>
       </div>
 
       {/* Daily Tasks #2-3 */}

@@ -62,14 +62,6 @@ export default function BookSection({ fd, upd, updMulti, markBookComplete, fetch
         </div>
       </div>
 
-      <label style={lbl}>Notes</label>
-      <textarea
-        style={{ ...inp, minHeight: 80, resize: 'vertical', marginBottom: 14 }}
-        value={fd.bookNotes}
-        onChange={e => upd('bookNotes', e.target.value)}
-        placeholder="Key takeaways, highlights..."
-      />
-
       {/* Book AI */}
       <div style={{ padding: 14, background: GOLD, border: '1.5px solid #000', borderRadius: 6 }}>
         <div style={{ fontWeight: 800, fontSize: 12, color: DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
