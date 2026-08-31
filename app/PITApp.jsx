@@ -130,6 +130,7 @@ export default function PITApp() {
   const [moveModalSource, setMoveModalSource] = useState(null);
   const [toastMessage,   setToastMessage]   = useState('');
   const [fitnessParseMsg,  setFitnessParseMsg]  = useState('');
+  const [gratitudeParseMsg, setGratitudeParseMsg] = useState('');
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
 
   useEffect(() => {
@@ -1123,6 +1124,7 @@ export default function PITApp() {
   }
 
   const handleFitnessParseMsg = (msg) => setFitnessParseMsg(msg);
+  const handleGratitudeParseMsg = (msg) => setGratitudeParseMsg(msg);
 
   function updAppt(id, f, v) {
     if (archiveMode) return;
@@ -1452,9 +1454,11 @@ export default function PITApp() {
           isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
 
         <GratitudeSection
-          thankful1={fd.thankful1} thankful2={fd.thankful2} thankful3={fd.thankful3}
+          fd={fd}
           upd={upd}
+          updMulti={updMulti}
           isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
+          gratitudeParseMsg={gratitudeParseMsg}
         />
 
         <ToAccomplishSection
