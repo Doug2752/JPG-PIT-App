@@ -95,3 +95,17 @@ export async function generateSummaryAI(entries, appointments = []) {
   console.log('[AI Summary Prompt]', prompt);
   return anthropic(prompt, 1500);
 }
+
+export async function parseFitnessAI(fitnessText) {
+  const prompt = `Extract fitness details from this text and respond with JSON only — no preamble, no markdown, no backticks.\nFormat: {"fitnessActivityType": "Running", "fitnessDuration": 45}\nIf you cannot confidently identify either value, return: {"fitnessActivityType": null, "fitnessDuration": null}\nfitnessDuration must be an integer number of minutes.\n\nText: "${fitnessText}"`;
+  try {
+    const raw = await anthropic(prompt, 100);
+    const parsed = JSON.parse(raw.trim());
+    return {
+      fitnessActivityType: parsed.fitnessActivityType ?? null,
+      fitnessDuration: parsed.fitnessDuration !== undefined && parsed.fitnessDuration !== null ? parseInt(parsed.fitnessDuration, 10) : null,
+    };
+  } catch {
+    return { fitnessActivityType: null, fitnessDuration: null };
+  }
+}
