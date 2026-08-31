@@ -209,7 +209,7 @@ export default function DailyTrackingSection({
 
         {/* Fitness Notes */}
         <div>
-          <label style={goldLbl}>FITNESS NOTES</label>
+          <label style={goldLbl}>FITNESS ACTIVITY — YESTERDAY</label>
           <textarea
             style={{ ...inp, resize: 'vertical', ...lockStyle }}
             rows={3}
