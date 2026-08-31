@@ -495,7 +495,8 @@ export default function PITApp() {
 
   function updMulti(pairs) {
     if (archiveMode) return;
-    const n = { ...fd, ...Object.fromEntries(pairs) };
+    const patch = Array.isArray(pairs) ? Object.fromEntries(pairs) : pairs;
+    const n = { ...fd, ...patch };
     setFd(n);
     save(n);
   }
