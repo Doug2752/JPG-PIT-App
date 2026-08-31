@@ -10,7 +10,7 @@ export const GREEN_COMPLETE = '#2ecc71';
 export const LOGO = 'jpglogo.png';
 
 export const WEBAPP_URL = 'PASTE_YOUR_WEBAPP_URL_HERE';
-export const ANTHROPIC_API_KEY = 'PASTE_YOUR_API_KEY_HERE';
+export const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? '';
 
 export const DEFAULT_USERS = {
   doug: { name: 'Doug Jones', password: 'jpg2026', role: 'admin' },
