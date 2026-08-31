@@ -5,13 +5,13 @@ import { card, secTitle, lbl, inp, gbtn, dbtn } from './styles';
 export default function DevotionalSection({ fd, upd, updMulti, fetchScripture, aiLoadScripture }) {
   return (
     <div style={card}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={secTitle}>Daily Devotional or Silence and Reflection</div>
+      <div style={{ ...secTitle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span>{fd.prayerType === 'silence' ? 'Silence and Reflection' : 'Daily Devotional'}</span>
         <button
           style={{ ...dbtn({ padding: '4px 12px', fontSize: 10 }) }}
-          onClick={() => upd('prayerType', fd.prayerType === 'prayer' ? 'silence' : 'prayer')}
+          onClick={() => upd('prayerType', fd.prayerType === 'silence' ? 'prayer' : 'silence')}
         >
-          Switch to {fd.prayerType === 'prayer' ? 'Silence & Reflection' : 'Prayer'}
+          {fd.prayerType === 'silence' ? 'Switch to Devotional' : 'Switch to Silence & Reflection'}
         </button>
       </div>
 
