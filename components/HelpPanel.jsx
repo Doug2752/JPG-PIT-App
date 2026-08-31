@@ -70,18 +70,11 @@ export default function HelpPanel({ onClose }) {
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Fitness</div>
           <div style={{ paddingLeft: 16 }}>
-            <div style={{ ...subItem, marginBottom: 6 }}>
-              <span style={hyp}>–</span>
-              <div style={{ flex: 1 }}>
-                <div style={sTitle}>Fitness Yesterday</div>
-                <div style={tBody}>Log what you did for fitness the previous day. Use the + Add Fitness Activity button if you have more than one activity to log. Select Rest Day only if you intentionally took a rest day. Within your fitness activity details, Rest and Recovery is also available as an activity type if you want to log recovery work specifically. If you had a planned fitness day and missed it, select No.</div>
-              </div>
-            </div>
             <div style={{ ...subItem, marginBottom: 0 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
-                <div style={sTitle}>Recurring Fitness</div>
-                <div style={tBody}>Use the Configure tab to set up activities that repeat on a schedule. To get started, open the Configure tab and add a recurring activity. Give it a name, select the activity type, and choose which days of the week it should appear. Once saved, that activity will automatically show up on your Fitness Yesterday screen on its scheduled days. On those days you will see a confirm-done checkbox — check it if you completed the activity. To stop an activity from appearing or to change its scheduled days, return to the Configure tab. Recurring activities cannot be removed from the daily screen.</div>
+                <div style={sTitle}>Fitness Yesterday</div>
+                <div style={tBody}>Log what you did for fitness the previous day in the Fitness Notes field. Describe your activity in plain text — for example, "Ran 3 miles, 28 minutes" or "45-minute yoga session." When you leave the field, PIT will attempt to parse the activity type and duration automatically. Select Rest Day only if you intentionally took a rest day. If you had a planned fitness day and missed it, select No.</div>
               </div>
             </div>
           </div>
@@ -106,7 +99,7 @@ export default function HelpPanel({ onClose }) {
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>The One Thing:</div>
-                <div style={tBody}>The single task that, if completed, makes everything else easier or unnecessary. Include a First Action/Set-Up step to define exactly how you'll begin.</div>
+                <div style={tBody}>The single task that, if completed, makes everything else easier or unnecessary.</div>
               </div>
             </div>
             <div style={{ ...subItem, marginBottom: 6 }}>
@@ -169,7 +162,7 @@ export default function HelpPanel({ onClose }) {
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Daily Book Study</div>
-          <div style={tBody}>Track the book you're currently reading: page, author, and topic. Use Notes for key takeaways, and Ask About This Book to explore concepts or questions about it. Quotes discovered while reading are often worth adding to the Quotes &amp; Inspiration section below, referenced by author. Check "Finished book" only once you complete it, to add it to your log.</div>
+          <div style={tBody}>Track the book you're currently reading: page, author, and topic. Use Ask About This Book to explore concepts or questions about it. Quotes discovered while reading are often worth adding to the Quotes &amp; Inspiration section below, referenced by author. Check "Finished book" only once you complete it, to add it to your log.</div>
         </div>
       </div>
 
@@ -195,15 +188,6 @@ export default function HelpPanel({ onClose }) {
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Today's Appointments</div>
           <div style={tBody}>Track upcoming appointments by date. Each appointment includes a title, time, duration, location, and prep needed. Appointments persist going forward and will automatically drop off once their date has passed. If an appointment date passes without being resolved, it will carry forward with a Past Due badge until you check it off. Use the Add button to create a new appointment.</div>
-          <div style={{ ...tBody, marginTop: 6 }}>Each appointment has a Lock Appointment button in the appointment header. Tap it to lock all fields so nothing can be accidentally changed. A gold left border and LOCKED badge appear on the card when locked. Tap Unlock Appointment to edit again. The Remove button is always available regardless of lock state.</div>
-        </div>
-      </div>
-
-      <div style={topItem}>
-        <span style={bul}>•</span>
-        <div style={{ flex: 1 }}>
-          <div style={tTitle}>AI Summary</div>
-          <div style={tBody}>Generates a summary pulling from every section of your PIT entry — today plus your last 7 days. Available once per 7-day rolling window from your last use.</div>
         </div>
       </div>
 
@@ -221,11 +205,10 @@ export default function HelpPanel({ onClose }) {
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Mark Day Complete</div>
                 <div style={tBody}>
-                  Appears at the bottom of PIT after the AI Summary
-                  section. Active only when all 10 required fields
-                  are filled. Clicking it locks the 10 required
-                  fields to read-only for the day — your work is
-                  preserved.
+                  Appears at the bottom of PIT. Active only when all
+                  12 required fields are filled. Clicking it locks
+                  the required fields to read-only for the day —
+                  your work is preserved.
                 </div>
               </div>
             </div>
