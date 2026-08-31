@@ -109,3 +109,18 @@ export async function parseFitnessAI(fitnessText) {
     return { fitnessActivityType: null, fitnessDuration: null };
   }
 }
+
+export async function parseGratitudeAI(gratitudeText) {
+  const prompt = `Extract exactly three gratitude items from this text and respond with JSON only — no preamble, no markdown, no backticks.\nFormat: {"thankful1": "item one", "thankful2": "item two", "thankful3": "item three"}\nIf you cannot confidently identify all three items, return whatever you can find and use null for any you cannot:\n{"thankful1": "item one", "thankful2": null, "thankful3": null}\n\nText: "${gratitudeText}"`;
+  try {
+    const raw = await anthropic(prompt, 150);
+    const parsed = JSON.parse(raw.trim());
+    return {
+      thankful1: parsed.thankful1 ?? null,
+      thankful2: parsed.thankful2 ?? null,
+      thankful3: parsed.thankful3 ?? null,
+    };
+  } catch {
+    return { thankful1: null, thankful2: null, thankful3: null };
+  }
+}
