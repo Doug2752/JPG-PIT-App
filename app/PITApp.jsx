@@ -8,7 +8,6 @@ import {
   fetchScriptureAI,
   fetchBookAI as fetchBookAIService,
   fetchQuotesInspirationAI,
-  generateSummaryAI,
 } from '../services/ai';
 
 import LoginScreen        from '../components/LoginScreen';
@@ -37,7 +36,6 @@ const sentKey     = (uid)    => `pit_sent_${uid}`;
 const booksKey    = (uid)    => `pit_books_${uid}`;
 const apptKey     = (uid)    => `pit_appts_${uid}`;
 const devTypeKey  = (uid)    => `pit_devtype_${uid}`;
-const fcKey       = (uid)    => `pit_fitness_config_${uid}`;
 const discKey     = (uid)    => `pit_discoveries_${uid}`;
 const dayCompleteKey = (uid) => `pit_day_complete_${uid}`;
 const coachKey       = (uid, d) => `pit_coach_${uid}_${d}`;
@@ -131,7 +129,7 @@ export default function PITApp() {
   const [showClearModal, setShowClearModal] = useState(false);
   const [moveModalSource, setMoveModalSource] = useState(null);
   const [toastMessage,   setToastMessage]   = useState('');
-  const [recurringFitness, setRecurringFitness] = useState([]);
+  const [fitnessParseMsg,  setFitnessParseMsg]  = useState('');
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
 
   useEffect(() => {
@@ -140,7 +138,6 @@ export default function PITApp() {
       loadArchive();
       loadCompletedBooks();
       loadAppointments();
-      loadRecurringFitness();
       loadDayComplete();
     }
   }, [currentUser]);
@@ -199,8 +196,7 @@ export default function PITApp() {
         const pref = await storage.get(devTypeKey(currentUser.id));
         const carried = await applyCarryover(currentUser.id, todayStr());
         const base = carried || emptyForm();
-        const seeded = await seedRecurringFitness(base);
-        setFd({ ...seeded, prayerType: pref ? pref.value : 'prayer' });
+        setFd({ ...base, prayerType: pref ? pref.value : 'prayer' });
       }
     } catch {
       setFd(emptyForm());
@@ -289,49 +285,6 @@ export default function PITApp() {
     }
   }
 
-  // Seed a fresh day's fitnessEntries from the user's recurring fitness
-  // config (read directly from storage — mirrors applyCarryover — so it
-  // fires reliably on first load rather than depending on React state).
-  // Only applies when the incoming form has no fitness content; when it
-  // seeds, fitnessYesterday is set to 'Yes' so the detail block opens.
-  // Returns the (possibly) seeded form. Called only in loadToday's
-  // no-record (new-day) branch.
-  async function seedRecurringFitness(form) {
-    try {
-      const fcr = await storage.get(fcKey(currentUser.id)).catch(() => null);
-      const config = fcr ? JSON.parse(fcr.value) : [];
-      if (!Array.isArray(config) || config.length === 0) return form;
-
-      const hasContent = Array.isArray(form.fitnessEntries) &&
-        form.fitnessEntries.some(e => e && (
-          (e.fitnessActivity || '').trim() !== '' ||
-          (e.fitnessActivityOther || '').trim() !== '' ||
-          (e.cardioDistance || '').trim() !== ''
-        ));
-      if (hasContent) return form;
-
-      const todayCode = ['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()];
-      const todayConfig = config.filter(item => Array.isArray(item.daysOfWeek) && item.daysOfWeek.includes(todayCode));
-      if (todayConfig.length === 0) return form;
-
-      const seededEntries = todayConfig.map(activity => ({
-        ...emptyFitnessEntry(),
-        fitnessActivity: activity.activityType,
-        terrain: activity.terrain,
-        cardioDistance: activity.defaultDistance,
-        recurringId: activity.id,
-        recurringName: activity.name,
-        distanceOrDuration: activity.distanceOrDuration,
-        defaultDuration: activity.defaultDuration,
-        confirmedDone: false,
-      }));
-
-      return { ...form, fitnessEntries: seededEntries, fitnessYesterday: 'Yes' };
-    } catch {
-      return form;
-    }
-  }
-
   async function loadArchive() {
     try {
       const r = await storage.get(ak(currentUser.id));
@@ -394,29 +347,6 @@ export default function PITApp() {
         appointmentsUsed: (appts || []).length > 0,
       };
       await storage.set(coachKey(uid, date), JSON.stringify(snapshot));
-    } catch {}
-  }
-
-  async function loadRecurringFitness() {
-    try {
-      const r = await storage.get(fcKey(currentUser.id));
-      const list = r ? JSON.parse(r.value) : [];
-      const migrated = list.map(a =>
-        !Array.isArray(a.daysOfWeek)
-          ? { ...a, daysOfWeek: ['SUN','MON','TUE','WED','THU','FRI','SAT'] }
-          : a
-      );
-      setRecurringFitness(migrated);
-    } catch {
-      setRecurringFitness([]);
-    }
-  }
-
-  async function saveRecurringFitness(list) {
-    if (!currentUser) return;
-    try {
-      await storage.set(fcKey(currentUser.id), JSON.stringify(list));
-      setRecurringFitness(list);
     } catch {}
   }
 
@@ -1192,72 +1122,7 @@ export default function PITApp() {
     save(n);
   }
 
-  function addRecurringActivity() {
-    if (archiveMode) return;
-    const updated = [...recurringFitness, {
-      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      name: '',
-      activityType: '',
-      fitnessActivityOther: '',
-      terrain: '',
-      distanceOrDuration: 'distance',
-      defaultDistance: '',
-      defaultDuration: '',
-      daysOfWeek: [],
-    }];
-    saveRecurringFitness(updated);
-  }
-
-  function updateRecurringActivity(id, patch) {
-    if (archiveMode) return;
-    const updated = recurringFitness.map(a => a.id === id ? { ...a, ...patch } : a);
-    saveRecurringFitness(updated);
-  }
-
-  function removeRecurringActivity(id) {
-    if (archiveMode) return;
-    const updated = recurringFitness.filter(a => a.id !== id);
-    saveRecurringFitness(updated);
-  }
-
-  async function syncRecurringForToday() {
-    try {
-      const fcr = await storage.get(fcKey(currentUser.id)).catch(() => null);
-      const config = fcr ? JSON.parse(fcr.value) : [];
-      if (!Array.isArray(config) || config.length === 0) return;
-
-      const todayCode = ['SUN','MON','TUE','WED','THU','FRI','SAT'][new Date().getDay()];
-      const todayConfig = config.filter(item => Array.isArray(item.daysOfWeek) && item.daysOfWeek.includes(todayCode));
-      if (todayConfig.length === 0) return;
-
-      setFd(prev => {
-        const entries = Array.isArray(prev.fitnessEntries) ? prev.fitnessEntries : [];
-        const newEntries = [...entries];
-        let added = false;
-        for (const item of todayConfig) {
-          if (entries.some(e => e.recurringId === item.id)) continue;
-          newEntries.push({
-            ...emptyFitnessEntry(),
-            recurringId: item.id,
-            recurringName: item.name,
-            fitnessActivity: item.activityType,
-            terrain: item.terrain,
-            distanceOrDuration: item.distanceOrDuration,
-            defaultDistance: item.defaultDistance,
-            defaultDuration: item.defaultDuration,
-            confirmedDone: false,
-          });
-          added = true;
-        }
-        if (!added) return prev;
-        return {
-          ...prev,
-          fitnessEntries: newEntries,
-          ...(prev.fitnessYesterday !== 'Yes' ? { fitnessYesterday: 'Yes' } : {}),
-        };
-      });
-    } catch {}
-  }
+  const handleFitnessParseMsg = (msg) => setFitnessParseMsg(msg);
 
   function updAppt(id, f, v) {
     if (archiveMode) return;
@@ -1393,46 +1258,6 @@ export default function PITApp() {
   function fetchQuotesInspiration() {
     if (!fd.quotesInspirationQuery.trim()) return;
     callAI(fetchQuotesInspirationAI, 'quotesInspirationResult', fd.quotesInspirationQuery);
-  }
-
-  async function genSummary(onLimitHit) {
-    const limitKey = `pit_ai_summary_last_used_${currentUser.id}`;
-    try {
-      const raw = await storage.get(limitKey).catch(() => null);
-      if (raw) {
-        const lastDate = new Date(raw.value);
-        const nextDate = new Date(lastDate);
-        nextDate.setDate(nextDate.getDate() + 7);
-        if (new Date() < nextDate) {
-          const formatted = nextDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-          if (typeof onLimitHit === 'function') onLimitHit(formatted);
-          return;
-        }
-      }
-    } catch {}
-    setAL(p => ({ ...p, aiSummary: true }));
-    try {
-      const dopUser  = currentUser.id.charAt(0).toUpperCase() + currentUser.id.slice(1);
-      const dates    = [fd.date, ...archive.filter(d => d !== fd.date)].slice(0, 8);
-      const entries  = await Promise.all(dates.map(async d => {
-        try {
-          const r    = await storage.get(sk(currentUser.id, d));
-          const rDop = await storage.get(`${dopUser}_dop7_form_${d}`).catch(() => null);
-          return r ? { date: d, data: JSON.parse(r.value), dop: rDop ? JSON.parse(rDop.value) : null } : null;
-        } catch { return null; }
-      }));
-      const rAppts       = await storage.get(apptKey(currentUser.id)).catch(() => null);
-      const allAppts     = rAppts ? JSON.parse(rAppts.value) : [];
-      const upcomingAppts = allAppts
-        .filter(a => a.date >= todayStr())
-        .sort((a, b) => a.date.localeCompare(b.date));
-      const result = await generateSummaryAI(entries, upcomingAppts);
-      upd('aiSummary', result);
-      await storage.set(limitKey, new Date().toISOString()).catch(() => {});
-    } catch (e) {
-      upd('aiSummary', 'Error: ' + e.message);
-    }
-    setAL(p => ({ ...p, aiSummary: false }));
   }
 
   // ── Archive navigation ────────────────────────────────────────────────────
@@ -1623,13 +1448,7 @@ export default function PITApp() {
         </div>
 
         <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti}
-          updFitnessEntry={updFitnessEntry} addFitnessEntry={addFitnessEntry} removeFitnessEntry={removeFitnessEntry}
-          recurringFitness={recurringFitness}
-          onAddRecurring={addRecurringActivity}
-          onUpdateRecurring={updateRecurringActivity}
-          onRemoveRecurring={removeRecurringActivity}
-          onSyncRecurring={syncRecurringForToday}
-          saveRecurringFitness={saveRecurringFitness}
+          fitnessParseMsg={fitnessParseMsg}
           isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
 
         <GratitudeSection
@@ -1716,8 +1535,6 @@ export default function PITApp() {
 
         <SummarySection
           fd={fd}
-          genSummary={genSummary}
-          aiLoadSummary={!!aiLoad.aiSummary}
           weekData={weekData}
           submitting={submitting}
           submitMsg={submitMsg}
