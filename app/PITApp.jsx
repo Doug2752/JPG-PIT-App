@@ -8,6 +8,7 @@ import {
   fetchScriptureAI,
   fetchBookAI as fetchBookAIService,
   fetchQuotesInspirationAI,
+  parseAppointmentsAI,
 } from '../services/ai';
 
 import LoginScreen        from '../components/LoginScreen';
@@ -126,6 +127,9 @@ export default function PITApp() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showHelp,       setShowHelp]      = useState(false);
   const [appointments,   setAppointments]  = useState([]);
+  const [appointmentText,      setAppointmentText]      = useState('');
+  const [apptParseMsg,         setApptParseMsg]         = useState('');
+  const [parsedAppointments,   setParsedAppointments]   = useState([]);
   const [showClearModal, setShowClearModal] = useState(false);
   const [moveModalSource, setMoveModalSource] = useState(null);
   const [toastMessage,   setToastMessage]   = useState('');
@@ -311,6 +315,13 @@ export default function PITApp() {
       setAppointments(parsed.filter(a => !(a.title === '' && (a.date === '' || a.date === todayStr()))));
     } catch {
       setAppointments([]);
+    }
+    try {
+      const dateStr = todayStr();
+      const saved = localStorage.getItem(`pit_appt_text_${currentUser.id}_${dateStr}`);
+      setAppointmentText(saved ?? '');
+    } catch {
+      setAppointmentText('');
     }
   }
 
@@ -1156,6 +1167,40 @@ export default function PITApp() {
     saveAppointments(updated);
   }
 
+  const updAppointmentText = (val) => {
+    if (archiveMode) return;
+    setAppointmentText(val);
+    try {
+      localStorage.setItem(`pit_appt_text_${currentUser.id}_${fd.date}`, val);
+    } catch {}
+  };
+
+  const handleApptBlur = async () => {
+    const text = appointmentText ?? '';
+    if (!text.trim()) return;
+    const results = await parseAppointmentsAI(text);
+    if (!results || results.length === 0) {
+      setApptParseMsg('Could not identify appointments — try adding more detail.');
+    } else {
+      setApptParseMsg('');
+      setParsedAppointments(results);
+      const mapped = results.map(a => ({
+        id: Date.now() + Math.random(),
+        date: a.date || todayStr(),
+        title: a.title || '',
+        time: a.time || '',
+        duration: '',
+        location: a.location || '',
+        prep: '',
+        smsReminder: false,
+        smsTime: '',
+        resolved: false,
+      }));
+      setAppointments(mapped);
+      saveAppointments(mapped);
+    }
+  };
+
   async function markBookComplete() {
     if (archiveMode) return;
     if (!fd.bookName.trim()) return;
@@ -1529,12 +1574,12 @@ export default function PITApp() {
         />
 
         <AppointmentsSection
-          appointments={visibleAppointments}
-          updAppt={updAppt}
-          addAppt={addAppt}
-          removeAppt={removeAppt}
-          resolveAppt={resolveAppt}
-          canAddAppt={canAddAppt}
+          appointmentText={appointmentText}
+          updAppointmentText={updAppointmentText}
+          parsedAppointments={parsedAppointments}
+          apptParseMsg={apptParseMsg}
+          onApptBlur={handleApptBlur}
+          isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
         />
 
         <SummarySection
