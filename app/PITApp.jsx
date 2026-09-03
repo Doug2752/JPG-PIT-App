@@ -105,10 +105,9 @@ function compactTasks(tasks, toAccomplishItems) {
 export default function PITApp() {
   const [currentUser,    setCU]            = useState(() => {
     const username = new URLSearchParams(window.location.search).get('hub_user');
-    if (username) {
-      const id = username.toLowerCase();
-      const u = DEFAULT_USERS[id];
-      return u ? { ...u, id } : null;
+    if (username && username.trim()) {
+      const trimmed = username.trim();
+      return { id: trimmed.toLowerCase(), name: trimmed };
     }
     return null;
   });
