@@ -44,7 +44,7 @@
 
 | Component | File | Notes |
 |---|---|---|
-| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. |
+| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. hub_user URL passthrough built 09/03/2026 — currentUser set directly from hub_user param as { id: trimmed.toLowerCase(), name: trimmed }. No DEFAULT_USERS lookup for HUB clients. |
 | AppointmentsSection | components/AppointmentsSection.jsx | Lock feature. No useEffect — no auto-add-on-mount. canAddAppt prop wired 08/14/2026. |
 | ArchiveView | components/ArchiveView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
 | BookSection | components/BookSection.jsx | GREEN_COMPLETE wired 07/28/2026. page number min=0. |
@@ -58,6 +58,9 @@
 | SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). |
 | ToAccomplishSection | components/ToAccomplishSection.jsx | Pure rendering component. Future Task move button opens modal (type: 'future') 08/28/2026. Future Task modal case added — Move to One Thing or Daily Task. Future Task checkbox 16x16, accentColor GOLD 08/28/2026. moveFutureToOneThing and moveFutureToDaily props added. |
 | WeekTracker | components/WeekTracker.jsx | GREEN_COMPLETE wired 07/28/2026. Hardcoded #2ecc71 replaced with GREEN_COMPLETE constant in card border 08/28/2026. |
+
+### hub_user URL Passthrough (BUILT 09/03/2026 — master branch only)
+PITApp.jsx currentUser useState initializer reads hub_user from URL on mount. If present and non-empty after trim, returns { id: trimmed.toLowerCase(), name: trimmed } — no DEFAULT_USERS lookup. HUB has already authenticated the client. Falls through to null and shows login screen if absent or empty. Note: PIT-phase2-guided branch does NOT have this fix — still uses DEFAULT_USERS lookup. Fix needed when Guided branch work resumes.
 
 ### ImportantDiscoveriesSection Layout (UPDATED 08/22/2026)
 - **Entry card:** maxHeight: 200, overflowY: 'auto' — individual entries capped.
@@ -270,7 +273,8 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 | v3.1 | 08/14/2026 | Dead code cleanup. Logic bug fixes (ArchiveView/BooksView backToday wired, canAddAppt prop synced). RED constant reconciliation. Daily Tracking full restructure — two rows of 4 boxes, sleepTime and hoursSlept added, PIT Time Frame and Mental Alignment removed, REQUIRED_TOTAL updated to 13. Coach transmission snapshot built — saveCoachSnapshot(), coachKey helper, pit_coach_{uid}_{date} storage key. Full Coach Data Transmission spec locked. |
 | v3.2 | 08/22/2026 | ImportantDiscoveriesSection layout fixes. Design decisions locked: no completed-tasks lookback, no past-appointments history. Post-Supabase item added: Tredict/Garmin auto-import. Future Tasks delete/remove button confirmed gap — added to active backlog. |
 | v3.3 | 08/28/2026 | Full symmetric move system built — moveFutureToOneThing() and moveFutureToDaily() added to PITApp.jsx. Future Task move button opens modal matching Daily Task pattern. Future Task checkbox updated to 16x16 with GOLD accentColor. WeekTracker hardcoded #2ecc71 replaced with GREEN_COMPLETE constant. HelpPanel instructions corrected — 12 required fields, field list rewritten, Additional Tracking rewritten, Future Tasks move description updated, Rest and Recovery noted. Header redesigned — flat text nav, grey separators, gold streak text, PIT Completed Today removed. BrandBar redesigned — three-zone layout, 52px title, 15px subtitle, date picker right only, 2px bottom border. Never Twice moved to full-width GOLD_LIGHT bar in PITApp.jsx replacing top DOPBtn. Phase One complete — zero active build items. |
+| v1.6 | 09/03/2026 | hub_user URL passthrough built — PITApp.jsx currentUser useState initializer now trusts hub_user URL param directly, returns { id, name } object. No DEFAULT_USERS lookup for HUB clients. master branch only. PIT-phase2-guided branch fix deferred. No new storage keys. No new components. |
 
 ---
 
-*JPG-SYS-PIT-CodeLogic-WRK-v3.3 | Jones Performance Group LLC | CONFIDENTIAL | 08/28/2026*
+*JPG-SYS-PIT-CodeLogic-WRK-v1.6 | Jones Performance Group LLC | CONFIDENTIAL | 09/03/2026*
