@@ -10,7 +10,8 @@
 ## SECTION A — APP IDENTITY
 
 - **App name:** Personal Investment Time (PIT)
-- **Dev port:** 5174
+- **Dev port:** 5179
+- **Branch:** PIT-phase2-open
 - **Repo:** Doug2752/JPG-PIT-App
 - **Local folder:** C:\JPG-PROJECTS\JPG-PIT-App
 - **Framework:** React + Vite, Class 3 modular structure
@@ -44,19 +45,15 @@
 
 | Component | File | Notes |
 |---|---|---|
-| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. hub_user URL passthrough built 09/03/2026 — currentUser set directly from hub_user param as { id: trimmed.toLowerCase(), name: trimmed }. No DEFAULT_USERS lookup for HUB clients. |
-| AppointmentsSection | components/AppointmentsSection.jsx | Lock feature. No useEffect — no auto-add-on-mount. canAddAppt prop wired 08/14/2026. |
+| PITApp | app/PITApp.jsx | Root orchestrator — Open version. Nine section components removed. OpenEntrySection mounted. sections state object (10 keys: tracking, fitness, gratitude, oneThing, notes, devotional, bookStudy, discoveries, quotes, appointments). handleSectionChange() handler. onMarkDayComplete() rewritten with AI parse flow. parseError and parsePending states. hub_user URL passthrough built 09/03/2026. |
 | ArchiveView | components/ArchiveView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
-| BookSection | components/BookSection.jsx | GREEN_COMPLETE wired 07/28/2026. page number min=0. |
 | BooksView | components/BooksView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
 | BrandBar | components/BrandBar.jsx | Three-zone flex layout 08/28/2026 — logo left (flex:1), PIT title center (flex:2), date picker right (flex:1). PIT heading 52px. Subtitle 15px. Bottom border 2px. Never Twice removed from BrandBar. |
-| DailyTrackingSection | components/DailyTrackingSection.jsx | Full restructure 08/14/2026. Two rows of 4 tracking boxes. sleepTime field added. hoursSlept auto-calculated inline from fd.sleepTime and fd.wakeTime. PIT Time Frame removed. Mental Alignment removed. calcHoursSlept() module-level pure function. commitSleep() mirrors commitWake() pattern. Track By hidden for Rest and Recovery. |
 | Header | components/Header.jsx | Flat text nav 08/28/2026 — Today, Archive, Book Log as spans. Active: GOLD underline. Inactive: rgba(255,255,255,0.5). Streak: gold text inline after Book Log with grey separator. Right group: Set-Up and Instructions / Doug / Logout with grey separator bars. PIT Completed Today status div removed. |
 | HelpPanel | components/HelpPanel.jsx | Required field count corrected to 12 08/28/2026. Required fields list rewritten — 8 Daily Tracking + 4 Reflection & Priorities. Additional Tracking section rewritten — PIT Time Frame and Mental Alignment removed. Future Tasks move description updated. Rest and Recovery noted in Fitness section. Lock Appointment paragraph updated 07/28/2026. |
-| ImportantDiscoveriesSection | components/ImportantDiscoveriesSection.jsx | Empty state, add validation, edit cancel confirmation. RED constant imported 08/14/2026. Layout fixes 08/22/2026. |
 | LoginScreen | components/LoginScreen.jsx | RED constant imported 08/14/2026. |
-| SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). |
-| ToAccomplishSection | components/ToAccomplishSection.jsx | Pure rendering component. Future Task move button opens modal (type: 'future') 08/28/2026. Future Task modal case added — Move to One Thing or Daily Task. Future Task checkbox 16x16, accentColor GOLD 08/28/2026. moveFutureToOneThing and moveFutureToDaily props added. |
+| OpenEntrySection | components/OpenEntrySection.jsx | NEW 09/03/2026. Ten separate auto-expanding textareas styled as one continuous box. PIT DAILY RECORD title bar — black background, GOLD (#B8860B) text, fontWeight 800, uppercase. Gold accent line (3px, #ddb94a) between title bar and textareas. Per-section ghost text (#999). borderStyle() helper for seamless joins. SECTIONS array at module scope. |
+| SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). canMarkComplete prop used — Day Complete enabled when sections.oneThing non-empty. |
 | WeekTracker | components/WeekTracker.jsx | GREEN_COMPLETE wired 07/28/2026. Hardcoded #2ecc71 replaced with GREEN_COMPLETE constant in card border 08/28/2026. |
 
 ### hub_user URL Passthrough (BUILT 09/03/2026 — master branch only)
@@ -69,47 +66,31 @@ PITApp.jsx currentUser useState initializer reads hub_user from URL on mount. If
 
 ---
 
-## SECTION D — TO ACCOMPLISH SYSTEM
+## SECTION D — OPEN ENTRY SYSTEM (PIT-PHASE2-OPEN)
 
-- One Thing (required for day completion), Daily Tasks (2, hard cap), Future Tasks (18 effective slots)
-- **One Thing manual check-off (BUILT 07/23/2026):** when user checks One Thing, if oneThingSetup has text it is appended in parentheses to oneThing text, then oneThingSetup cleared to ''.
-- **One Thing checkbox color (BUILT 07/28/2026):** accentColor GOLD_LIGHT.
-- **One Thing Remove button (BUILT 07/28/2026):** two-stage confirmation. Confirm fires removeOneThing() — clears oneThing, oneThingSetup, sets oneThingDone: false.
-- **Daily Tasks Remove button:** two-stage confirmation added 07/28/2026. Confirm fires removeTask(i).
-- **Future Tasks Remove button:** two-stage confirmation added 07/28/2026. Confirm fires removeTask(i + 2).
-- **compactTasks()** — module-level, identity-preserving compaction. Wired at 6 confirmed sites.
-- **Full symmetric move system (BUILT 08/28/2026):** all six directions supported.
-  - One Thing → Daily Task: moveOneThingToDaily()
-  - One Thing → Future Task: moveOneThingToFuture()
-  - Daily Task → One Thing: moveDailyToOneThing()
-  - Daily Task → Future Task: moveDailyToFuture()
-  - Future Task → One Thing: moveFutureToOneThing() — added 08/28/2026
-  - Future Task → Daily Task: moveFutureToDaily() — added 08/28/2026
-- **moveFutureToOneThing(futureIndex):** guards on archiveMode and oneThing already filled. Uses shift pattern to clear source future slot. Runs compactTasks. Closes modal.
-- **moveFutureToDaily(futureIndex):** thin wrapper — calls promoteFutureTask, closes modal.
-- **Future Task move button (UPDATED 08/28/2026):** opens modal (type: 'future'). Label: "Move to One Thing or Daily Task". Disabled when empty. Uses moveBtn() style.
-- **Future Task modal (BUILT 08/28/2026):** Move to One Thing (disabled if oneThingFilled) + Move to Daily Task (disabled if dailySlotsFull).
-- **Future Task checkbox (UPDATED 08/28/2026):** 16x16, accentColor GOLD — matches Daily Task exactly.
-- **Future Tasks cap message:** when visibleFuture >= 18, cap message renders.
-- **Move modal item name:** displays moving item text truncated at 40 characters.
-- **Clear Items nothing-selected guard:** inline red error message if Confirm clicked with nothing checked.
+This branch uses OpenEntrySection.jsx instead of the structured To Accomplish system. There is no One Thing field, no Daily Tasks, no Future Tasks, no carryover, and no Task Detail overlay on this branch.
 
-### Carryover System (BUILT — confirmed in code 08/12/2026)
+**Ten sections (key — placeholder):**
+1. tracking — Sleep time / Wake time / Sleep score / Weight / Energy level / Workday (yes or no) / Location
+2. fitness — Fitness activity — type, duration
+3. gratitude — What are you thankful for today? List three things.
+4. oneThing — One Thing — your single most important task today
+5. notes — Notes, ideas, thoughts — anything on your mind
+6. devotional — Devotional or reflection notes
+7. bookStudy — Book you are reading — title, author, notes
+8. discoveries — Important discovery — something worth capturing
+9. quotes — Quote or inspiration that landed today
+10. appointments — Appointments — day, time, what, where
 
-**applyCarryover(uid, todayStr)** — called in PITApp on new day load when no record exists for today.
-- Reads archive list, finds most recent prior date with a record
-- Reads that prior day's toAccomplishItems array
-- Filters to items where resolution_status === null (unresolved/unchecked)
-- Copies unresolved items forward: One Thing → oneThing, Daily/Future slots → tasks array
-- Preserves original id, origin_date, carried_dates, resolution_status for audit trail
-- Stamps prior day record with today's date in each item's carried_dates array
-- Book data (title/author/page) also carries forward if book not completed
+**Day Complete gating:** sections.oneThing must be non-empty (trimmed). No other fields required.
 
-**Checked/completed items:** resolveCarriedItem() writes resolution_status: 'done' to origin day. Items with non-null resolution_status excluded from next day's carryover.
-
-**Result:** unresolved items carry forward. Checked items disappear next day. Archive is only lookback.
-
-**HelpPanel copy is correct** — matches live code. Do not change carryover copy.
+**AI parse on Day Complete:**
+- Combined entry: Object.values(sections).filter(Boolean).join('\n\n')
+- Calls parseOpenEntryAI(combinedEntry) in services/ai.js
+- Extracts 16 fields: sleepTime, wakeTime, sleepScore, weight, energyLevel, workday, location, fitnessActivity, gratitude, oneThing, notes, devotional, bookNotes, discoveries, quotes, appointments
+- On success: day marked complete, parsed result written to pit_open_parsed_{uid}_{date}
+- On null return: setParseError(true) — amber message shown
+- parsePending state: "Processing your entry..." shown during call
 
 ---
 
@@ -237,6 +218,8 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 | pit_ai_summary_last_used_{uid} | AI Summary rate-limit timestamp |
 | pit_coach_{uid}_{date} | Coach transmission snapshot — filtered daily data per client per day |
 | pit_instructions_seen | Global (not user-scoped — acceptable pre-Supabase) |
+| pit_open_{uid}_{date} | Open version sections object as JSON — ten keys |
+| pit_open_parsed_{uid}_{date} | AI-parsed field extraction result — written on successful Day Complete |
 
 ---
 
@@ -254,6 +237,11 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 - BrandBar: three-zone flex layout. Logo left flex:1, title center flex:2, date picker right flex:1. Bottom border 2px. (locked 08/28/2026)
 - HelpPanel required fields: 12 listed (Total Hours Slept auto-calculated, excluded from client list). (locked 08/28/2026)
 - No completed-tasks lookback view. No past-appointments history view. (locked 08/22/2026)
+- PIT Open version port: 5179. Branch: PIT-phase2-open. (locked 09/03/2026)
+- Day Complete gating on Open version: sections.oneThing non-empty only — not all 13 fields. (locked 09/03/2026)
+- AI parse fires once on Day Complete — single consolidated call, all 16 fields. (locked 09/03/2026)
+- Ten separate textareas styled as one continuous box — preserves per-section ghost text. (locked 09/03/2026)
+- PIT DAILY RECORD title bar: black background, GOLD (#B8860B) text, fontWeight 800, uppercase, matches WEEKLY PROGRESS visual weight. (locked 09/03/2026)
 
 ---
 
@@ -274,6 +262,7 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 | v3.2 | 08/22/2026 | ImportantDiscoveriesSection layout fixes. Design decisions locked: no completed-tasks lookback, no past-appointments history. Post-Supabase item added: Tredict/Garmin auto-import. Future Tasks delete/remove button confirmed gap — added to active backlog. |
 | v3.3 | 08/28/2026 | Full symmetric move system built — moveFutureToOneThing() and moveFutureToDaily() added to PITApp.jsx. Future Task move button opens modal matching Daily Task pattern. Future Task checkbox updated to 16x16 with GOLD accentColor. WeekTracker hardcoded #2ecc71 replaced with GREEN_COMPLETE constant. HelpPanel instructions corrected — 12 required fields, field list rewritten, Additional Tracking rewritten, Future Tasks move description updated, Rest and Recovery noted. Header redesigned — flat text nav, grey separators, gold streak text, PIT Completed Today removed. BrandBar redesigned — three-zone layout, 52px title, 15px subtitle, date picker right only, 2px bottom border. Never Twice moved to full-width GOLD_LIGHT bar in PITApp.jsx replacing top DOPBtn. Phase One complete — zero active build items. |
 | v1.6 | 09/03/2026 | hub_user URL passthrough built — PITApp.jsx currentUser useState initializer now trusts hub_user URL param directly, returns { id, name } object. No DEFAULT_USERS lookup for HUB clients. master branch only. PIT-phase2-guided branch fix deferred. No new storage keys. No new components. |
+| v1.0-open | 09/03/2026 | PIT Open version built on PIT-phase2-open branch. vite.config.js port changed to 5179. BrandBar Open Version subtitle added. OpenEntrySection.jsx created — ten auto-expanding textareas, PIT DAILY RECORD title bar, gold accent line, per-section ghost text. PITApp.jsx — nine section components removed, OpenEntrySection mounted, sections state, handleSectionChange, onMarkDayComplete with AI parse. services/ai.js — parseOpenEntryAI added. SummarySection.jsx — canMarkComplete prop used. New storage keys: pit_open_{uid}_{date}, pit_open_parsed_{uid}_{date}. |
 
 ---
 
