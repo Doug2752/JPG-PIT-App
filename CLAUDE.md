@@ -44,7 +44,7 @@
 
 | Component | File | Notes |
 |---|---|---|
-| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. hub_user URL passthrough built 09/03/2026 — currentUser set directly from hub_user param as { id: trimmed.toLowerCase(), name: trimmed }. No DEFAULT_USERS lookup for HUB clients. |
+| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. hub_user URL passthrough built 09/03/2026 — currentUser set directly from hub_user param as { id: trimmed.toLowerCase(), name: trimmed }. No DEFAULT_USERS lookup for HUB clients. updOneThingDetail() and updTaskDetail() handlers added 09/03/2026. Both wired as props to ToAccomplishSection. |
 | AppointmentsSection | components/AppointmentsSection.jsx | Lock feature. No useEffect — no auto-add-on-mount. canAddAppt prop wired 08/14/2026. |
 | ArchiveView | components/ArchiveView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
 | BookSection | components/BookSection.jsx | GREEN_COMPLETE wired 07/28/2026. page number min=0. |
@@ -55,8 +55,9 @@
 | HelpPanel | components/HelpPanel.jsx | Required field count corrected to 12 08/28/2026. Required fields list rewritten — 8 Daily Tracking + 4 Reflection & Priorities. Additional Tracking section rewritten — PIT Time Frame and Mental Alignment removed. Future Tasks move description updated. Rest and Recovery noted in Fitness section. Lock Appointment paragraph updated 07/28/2026. |
 | ImportantDiscoveriesSection | components/ImportantDiscoveriesSection.jsx | Empty state, add validation, edit cancel confirmation. RED constant imported 08/14/2026. Layout fixes 08/22/2026. |
 | LoginScreen | components/LoginScreen.jsx | RED constant imported 08/14/2026. |
-| SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). |
-| ToAccomplishSection | components/ToAccomplishSection.jsx | Pure rendering component. Future Task move button opens modal (type: 'future') 08/28/2026. Future Task modal case added — Move to One Thing or Daily Task. Future Task checkbox 16x16, accentColor GOLD 08/28/2026. moveFutureToOneThing and moveFutureToDaily props added. |
+| SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). canMarkComplete prop added 09/03/2026 — accepts external override of isDayComplete(fd). If prop passed and not undefined, uses it; else falls back to isDayComplete(fd). |
+| ToAccomplishSection | components/ToAccomplishSection.jsx | Pure rendering component. Future Task move button opens modal (type: 'future') 08/28/2026. Future Task modal case added — Move to One Thing or Daily Task. Future Task checkbox 16x16, accentColor GOLD 08/28/2026. moveFutureToOneThing and moveFutureToDaily props added. Task Detail overlay triggers added 09/03/2026. noteBtn helper takes (disabled, hasDet) params. Pencil button indicator: dark border (1.5px solid #222) when detail exists, faint border (1px solid #aaa) when empty. |
+| TaskDetailOverlay | components/TaskDetailOverlay.jsx | NEW 09/03/2026. Modal overlay for task detail text. Props: taskName, detailText, onChange, onClose. Dark card, GOLD border, auto-save textarea, X close button. |
 | WeekTracker | components/WeekTracker.jsx | GREEN_COMPLETE wired 07/28/2026. Hardcoded #2ecc71 replaced with GREEN_COMPLETE constant in card border 08/28/2026. |
 
 ### hub_user URL Passthrough (BUILT 09/03/2026 — master branch only)
@@ -110,6 +111,15 @@ PITApp.jsx currentUser useState initializer reads hub_user from URL on mount. If
 **Result:** unresolved items carry forward. Checked items disappear next day. Archive is only lookback.
 
 **HelpPanel copy is correct** — matches live code. Do not change carryover copy.
+
+### Task Detail Overlay (BUILT 09/03/2026)
+- TaskDetailOverlay.jsx — new component. Modal overlay, centered, dark backdrop.
+- Pencil button (✎) added to One Thing, Daily Tasks (fd.tasks[0] and fd.tasks[1]), and Future Tasks (fd.tasks[2] through fd.tasks[19]).
+- Detail text storage: fd.oneThingDetail (string, default '') for One Thing. detail property (string, default '') added to each fd.tasks[i] object.
+- No new storage keys — detail text rides existing pit_{uid}_{date} blob.
+- Carryover: detail text carries forward with the task via applyCarryover().
+- Auto-saves on every keystroke via updOneThingDetail(val) and updTaskDetail(i, val).
+- Pencil button active only when task has text. Disabled on empty slots.
 
 ---
 
@@ -238,6 +248,8 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 | pit_coach_{uid}_{date} | Coach transmission snapshot — filtered daily data per client per day |
 | pit_instructions_seen | Global (not user-scoped — acceptable pre-Supabase) |
 
+No new keys added 09/03/2026. fd.oneThingDetail and tasks[].detail ride the existing pit_{uid}_{date} blob.
+
 ---
 
 ## SECTION J — LOCKED DECISIONS
@@ -254,6 +266,7 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 - BrandBar: three-zone flex layout. Logo left flex:1, title center flex:2, date picker right flex:1. Bottom border 2px. (locked 08/28/2026)
 - HelpPanel required fields: 12 listed (Total Hours Slept auto-calculated, excluded from client list). (locked 08/28/2026)
 - No completed-tasks lookback view. No past-appointments history view. (locked 08/22/2026)
+- Task Detail overlay: auto-save, pencil button dark-border indicator when detail exists, faint border when empty. No new storage keys. SummarySection canMarkComplete prop added — external override of isDayComplete(fd). (locked 09/03/2026)
 
 ---
 
@@ -274,6 +287,7 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 | v3.2 | 08/22/2026 | ImportantDiscoveriesSection layout fixes. Design decisions locked: no completed-tasks lookback, no past-appointments history. Post-Supabase item added: Tredict/Garmin auto-import. Future Tasks delete/remove button confirmed gap — added to active backlog. |
 | v3.3 | 08/28/2026 | Full symmetric move system built — moveFutureToOneThing() and moveFutureToDaily() added to PITApp.jsx. Future Task move button opens modal matching Daily Task pattern. Future Task checkbox updated to 16x16 with GOLD accentColor. WeekTracker hardcoded #2ecc71 replaced with GREEN_COMPLETE constant. HelpPanel instructions corrected — 12 required fields, field list rewritten, Additional Tracking rewritten, Future Tasks move description updated, Rest and Recovery noted. Header redesigned — flat text nav, grey separators, gold streak text, PIT Completed Today removed. BrandBar redesigned — three-zone layout, 52px title, 15px subtitle, date picker right only, 2px bottom border. Never Twice moved to full-width GOLD_LIGHT bar in PITApp.jsx replacing top DOPBtn. Phase One complete — zero active build items. |
 | v1.6 | 09/03/2026 | hub_user URL passthrough built — PITApp.jsx currentUser useState initializer now trusts hub_user URL param directly, returns { id, name } object. No DEFAULT_USERS lookup for HUB clients. master branch only. PIT-phase2-guided branch fix deferred. No new storage keys. No new components. |
+| v3.5 | 09/03/2026 | Task Detail overlay built — TaskDetailOverlay.jsx new component. ToAccomplishSection.jsx updated with noteBtn indicator and overlay triggers for all three areas. PITApp.jsx: updOneThingDetail and updTaskDetail handlers added. SummarySection.jsx: canMarkComplete prop added. fd.oneThingDetail and tasks[].detail fields added to form data. Carryover carries detail text forward. No new storage keys. |
 
 ---
 
