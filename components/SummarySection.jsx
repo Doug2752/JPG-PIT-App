@@ -3,10 +3,10 @@ import { GOLD, GOLD_LIGHT, MID, BORDER } from '../utils/constants';
 import { isDayComplete } from '../utils/form';
 import { card, secTitle, gbtn } from './styles';
 
-export default function SummarySection({ fd, genSummary, aiLoadSummary, weekData, submitting, submitMsg, doSubmit, setSMsg, isDayCompleteMarked, onMarkDayComplete, onUnlockDay }) {
+export default function SummarySection({ fd, genSummary, aiLoadSummary, weekData, submitting, submitMsg, doSubmit, setSMsg, isDayCompleteMarked, onMarkDayComplete, onUnlockDay, canMarkComplete: canMarkCompleteProp }) {
   const { completeDays } = weekData;
   const [limitMsg, setLimitMsg] = useState('');
-  const canMarkComplete = isDayComplete(fd);
+  const canMarkComplete = canMarkCompleteProp !== undefined ? canMarkCompleteProp : isDayComplete(fd);
 
   return (
     <>

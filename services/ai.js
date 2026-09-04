@@ -95,3 +95,39 @@ export async function generateSummaryAI(entries, appointments = []) {
   console.log('[AI Summary Prompt]', prompt);
   return anthropic(prompt, 1500);
 }
+
+export async function parseOpenEntryAI(entryText) {
+  const prompt = `You are parsing a free-text daily journal entry written by a performance coaching client. Extract the following fields and return ONLY a valid JSON object with no preamble, no explanation, and no markdown fences.
+
+Fields to extract:
+- sleepTime (string, e.g. "10:00 PM")
+- wakeTime (string, e.g. "6:00 AM")
+- sleepScore (number 1-10)
+- weight (number, lbs)
+- energyLevel (number 1-10)
+- workday (boolean — true if yes, false if no)
+- location (string)
+- fitnessActivity (string — type and duration)
+- gratitude (string — all thankful items as one string)
+- oneThing (string — the single most important task)
+- notes (string — notes, ideas, thoughts)
+- devotional (string — devotional or reflection notes)
+- bookNotes (string — book title, author, notes)
+- discoveries (string — important discovery)
+- quotes (string — quote or inspiration)
+- appointments (string — all appointments as one string)
+
+If a field cannot be determined from the entry, return null for that field.
+
+Journal entry:
+${entryText}`;
+
+  try {
+    const raw = await anthropic(prompt, 1000);
+    if (!raw || raw === 'No response.') return null;
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean);
+  } catch {
+    return null;
+  }
+}

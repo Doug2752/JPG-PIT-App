@@ -23,6 +23,7 @@ export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker })
           <div style={{ marginBottom: 8, textAlign: 'center' }}>
             <div style={{ fontSize: 52, fontWeight: 900, color: '#000', lineHeight: 1 }}>PIT</div>
             <div style={{ fontSize: 15, fontWeight: 600, color: '#000', letterSpacing: 0.5, marginTop: 3 }}>Personal Investment Time</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: '#555', letterSpacing: 0.5, marginTop: 2 }}>Open Version</div>
           </div>
         </div>
 

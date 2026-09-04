@@ -9,6 +9,7 @@ import {
   fetchBookAI as fetchBookAIService,
   fetchQuotesInspirationAI,
   generateSummaryAI,
+  parseOpenEntryAI,
 } from '../services/ai';
 
 import LoginScreen        from '../components/LoginScreen';
@@ -16,15 +17,7 @@ import Header             from '../components/Header';
 import BrandBar           from '../components/BrandBar';
 import WeekTracker        from '../components/WeekTracker';
 import HelpPanel          from '../components/HelpPanel';
-import DailyTrackingSection from '../components/DailyTrackingSection';
-import GratitudeSection   from '../components/GratitudeSection';
-import ToAccomplishSection from '../components/ToAccomplishSection';
-import NotesSection       from '../components/NotesSection';
-import DevotionalSection  from '../components/DevotionalSection';
-import BookSection        from '../components/BookSection';
-import ImportantDiscoveriesSection from '../components/ImportantDiscoveriesSection';
-import QuotesSection      from '../components/QuotesSection';
-import AppointmentsSection from '../components/AppointmentsSection';
+import OpenEntrySection   from '../components/OpenEntrySection';
 import SummarySection     from '../components/SummarySection';
 import ArchiveView        from '../components/ArchiveView';
 import BooksView          from '../components/BooksView';
@@ -132,6 +125,9 @@ export default function PITApp() {
   const [toastMessage,   setToastMessage]   = useState('');
   const [recurringFitness, setRecurringFitness] = useState([]);
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
+  const [sections, setSections] = useState({ tracking: '', fitness: '', gratitude: '', oneThing: '', notes: '', devotional: '', bookStudy: '', discoveries: '', quotes: '', appointments: '' });
+  const [parseError, setParseError] = useState(false);
+  const [parsePending, setParsePending] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -204,6 +200,8 @@ export default function PITApp() {
     } catch {
       setFd(emptyForm());
     }
+    const savedEntry = localStorage.getItem(`pit_open_${currentUser.id}_${todayStr()}`);
+    if (savedEntry) { try { setSections(JSON.parse(savedEntry)); } catch {} }
   }
 
   // Pull unresolved To Accomplish items forward from the most recent
@@ -431,11 +429,32 @@ export default function PITApp() {
   }
 
   const onMarkDayComplete = async () => {
-    if (!isDayComplete(fd)) return; // guard — required fields must be filled
-    const today = todayStr();
-    const next = dayCompleteDates.includes(today) ? dayCompleteDates : [...dayCompleteDates, today];
-    setDayCompleteDates(next);
-    await storage.set(dayCompleteKey(currentUser.id), JSON.stringify(next));
+    if (!sections.oneThing || sections.oneThing.trim() === '') return;
+    setParsePending(true);
+    setParseError(false);
+    try {
+      const combinedEntry = Object.values(sections).filter(Boolean).join('\n\n');
+      const parsed = await parseOpenEntryAI(combinedEntry);
+      if (!parsed) {
+        setParseError(true);
+        setParsePending(false);
+        return;
+      }
+      const today = todayStr();
+      const next = dayCompleteDates.includes(today)
+        ? dayCompleteDates
+        : [...dayCompleteDates, today];
+      setDayCompleteDates(next);
+      await storage.set(dayCompleteKey(currentUser.id), JSON.stringify(next));
+      localStorage.setItem(
+        `pit_open_parsed_${currentUser.id}_${today}`,
+        JSON.stringify(parsed)
+      );
+    } catch {
+      setParseError(true);
+    } finally {
+      setParsePending(false);
+    }
   };
 
   const onUnlockDay = async () => {
@@ -1315,6 +1334,14 @@ export default function PITApp() {
     upd('bookCompleted', true);
   }
 
+  const handleSectionChange = (key, val) => {
+    setSections(prev => {
+      const next = { ...prev, [key]: val };
+      localStorage.setItem(`pit_open_${currentUser.id}_${todayStr()}`, JSON.stringify(next));
+      return next;
+    });
+  };
+
   function toggleHelp() {
     setShowHelp(prev => {
       if (prev) localStorage.setItem('pit_instructions_seen', '1');
@@ -1552,7 +1579,7 @@ export default function PITApp() {
   }
 
   // Main form view
-  const complete = isDayComplete(fd);
+  const complete = sections.oneThing.trim().length > 0;
   const isDayCompleteMarked = dayCompleteDates.includes(todayStr());
   const clearSlotDefs = [
     { slot: 'one_thing', label: 'The One Thing', text: fd.oneThing || '' },
@@ -1638,99 +1665,31 @@ export default function PITApp() {
           </label>
         </div>
 
-        <DailyTrackingSection fd={fd} upd={upd} updMulti={updMulti}
-          updFitnessEntry={updFitnessEntry} addFitnessEntry={addFitnessEntry} removeFitnessEntry={removeFitnessEntry}
-          recurringFitness={recurringFitness}
-          onAddRecurring={addRecurringActivity}
-          onUpdateRecurring={updateRecurringActivity}
-          onRemoveRecurring={removeRecurringActivity}
-          onSyncRecurring={syncRecurringForToday}
-          saveRecurringFitness={saveRecurringFitness}
-          isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
+        <OpenEntrySection sections={sections} onSectionChange={handleSectionChange} />
 
-        <GratitudeSection
-          thankful1={fd.thankful1} thankful2={fd.thankful2} thankful3={fd.thankful3}
-          upd={upd}
-          isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
-        />
+        {parseError && (
+          <div style={{
+            color: '#B8860B',
+            fontSize: 13,
+            textAlign: 'center',
+            padding: '8px 16px',
+            marginBottom: 8
+          }}>
+            Your entry could not be processed. Please check your entry and try again.
+          </div>
+        )}
 
-        <ToAccomplishSection
-          fd={fd} upd={upd} updTask={updTask} removeTask={removeTask}
-          removeOneThing={removeOneThing}
-          promoteFutureTask={promoteFutureTask}
-          moveModalSource={moveModalSource}
-          setMoveModalSource={setMoveModalSource}
-          moveOneThingToDaily={moveOneThingToDaily}
-          moveOneThingToFuture={moveOneThingToFuture}
-          moveDailyToOneThing={moveDailyToOneThing}
-          moveDailyToFuture={moveDailyToFuture}
-          moveFutureToOneThing={moveFutureToOneThing}
-          moveFutureToDaily={moveFutureToDaily}
-          updOneThingDetail={updOneThingDetail}
-          updTaskDetail={updTaskDetail}
-          showClearModal={showClearModal}
-          onClearModalOpen={() => setShowClearModal(true)}
-          clearModalItems={clearModalItems}
-          onClearConfirm={handleClearConfirm}
-          onClearCancel={() => setShowClearModal(false)}
-          toastMessage={toastMessage}
-          archiveMode={archiveMode}
-          archiveDateStr={archiveMode ? (fd.date || '') : ''}
-          isDayCompleteMarked={isDayCompleteMarked && !archiveMode}
-        />
-
-        <NotesSection nit={fd.nit} upd={upd} isDayCompleteMarked={isDayCompleteMarked && !archiveMode} />
-
-        <DevotionalSection
-          fd={fd} upd={upd} updMulti={updMulti}
-          fetchScripture={fetchScripture}
-          aiLoadScripture={!!aiLoad.scriptureResult}
-        />
-
-        <BookSection
-          fd={fd} upd={upd} updMulti={updMulti}
-          markBookComplete={markBookComplete}
-          fetchBookAI={fetchBookAI}
-          aiLoadBook={!!aiLoad.bookAiResult}
-        />
-
-        <ImportantDiscoveriesSection
-          fd={fd}
-          archiveMode={archiveMode}
-          onAdd={(entry) => {
-            if (archiveMode) return;
-            const updated = [...(fd.discoveries || []), entry];
-            setFd(f => ({ ...f, discoveries: updated }));
-            save({ ...fd, discoveries: updated });
-          }}
-          onUpdate={(id, patch) => {
-            if (archiveMode) return;
-            const updated = (fd.discoveries || []).map(d => d.id === id ? { ...d, ...patch } : d);
-            setFd(f => ({ ...f, discoveries: updated }));
-            save({ ...fd, discoveries: updated });
-          }}
-          onRemove={(id) => {
-            if (archiveMode) return;
-            const updated = (fd.discoveries || []).filter(d => d.id !== id);
-            setFd(f => ({ ...f, discoveries: updated }));
-            save({ ...fd, discoveries: updated });
-          }}
-        />
-
-        <QuotesSection
-          fd={fd} upd={upd} updMulti={updMulti}
-          fetchQuotesInspiration={fetchQuotesInspiration}
-          aiLoadQuotes={!!aiLoad.quotesInspirationResult}
-        />
-
-        <AppointmentsSection
-          appointments={visibleAppointments}
-          updAppt={updAppt}
-          addAppt={addAppt}
-          removeAppt={removeAppt}
-          resolveAppt={resolveAppt}
-          canAddAppt={canAddAppt}
-        />
+        {parsePending && (
+          <div style={{
+            color: '#555',
+            fontSize: 13,
+            textAlign: 'center',
+            padding: '8px 16px',
+            marginBottom: 8
+          }}>
+            Processing your entry...
+          </div>
+        )}
 
         <SummarySection
           fd={fd}
@@ -1744,6 +1703,7 @@ export default function PITApp() {
           isDayCompleteMarked={isDayCompleteMarked}
           onMarkDayComplete={onMarkDayComplete}
           onUnlockDay={onUnlockDay}
+          canMarkComplete={sections.oneThing.trim().length > 0}
         />
 
         <DOPBtn />
