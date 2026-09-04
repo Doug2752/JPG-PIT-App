@@ -44,7 +44,7 @@ export default function ToAccomplishSection({
   });
 
   const noteBtn = (disabled, hasDet) => ({
-    background: 'transparent',
+    background: hasDet ? 'rgba(184, 134, 11, 0.15)' : 'transparent',
     border: hasDet ? '1.5px solid #222' : '1px solid #aaa',
     borderRadius: 4, color: disabled ? '#ccc' : GOLD,
     fontSize: 13, cursor: disabled ? 'default' : 'pointer',
