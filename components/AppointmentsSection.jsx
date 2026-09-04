@@ -4,7 +4,7 @@ import { SMS_TIMES } from '../utils/constants';
 import { todayStr } from '../utils/date';
 import { card, secTitle, lbl, inp, sel } from './styles';
 
-export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt, resolveAppt, canAddAppt }) {
+export default function AppointmentsSection({ appointments, updAppt, addAppt, removeAppt, resolveAppt, canAddAppt, onToggleCollapse }) {
   return (
     <div style={card}>
       <div style={secTitle}>Appointments</div>
@@ -13,7 +13,9 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
       </div>
 
       {appointments.map((a, i) => (
-        <div key={a.id} style={{ marginBottom: 12, padding: 12, background: '#f8f8f6', borderRadius: 6, border: `1px solid ${BORDER}`, ...(a.locked ? { borderLeft: `3px solid ${GOLD}` } : {}) }}>
+        <div key={a.id}
+          onClick={a.collapsed ? () => onToggleCollapse(a.id) : undefined}
+          style={{ marginBottom: 12, padding: 12, background: '#f8f8f6', borderRadius: 6, border: `1px solid ${BORDER}`, ...(a.locked ? { borderLeft: `3px solid ${GOLD}` } : {}), ...(a.collapsed ? { cursor: 'pointer' } : {}) }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input
@@ -26,12 +28,22 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
               <div style={{ fontWeight: 700, fontSize: 11, color: GOLD, textTransform: 'uppercase', letterSpacing: 1 }}>
                 Appointment {i + 1}
               </div>
+              {a.collapsed && a.date && (
+                <span style={{ fontSize: 11, color: '#555', marginLeft: 8 }}>
+                  {a.date}
+                </span>
+              )}
+              {a.collapsed && (
+                <span style={{ fontSize: 11, color: '#333', fontWeight: 600, marginLeft: 6 }}>
+                  {a.title || '—'}
+                </span>
+              )}
               {a.date && a.date < todayStr() && (
                 <span style={{ background: '#cc2222', color: '#fff', borderRadius: 4, fontSize: 10, fontWeight: 700, padding: '2px 8px', marginLeft: 8 }}>
                   PAST DUE
                 </span>
               )}
-              {a.locked && (
+              {a.locked && !a.collapsed && (
                 <span style={{ fontSize: 9, fontWeight: 700, color: GOLD, letterSpacing: 0.5, textTransform: 'uppercase', marginLeft: 8 }}>
                   LOCKED
                 </span>
@@ -45,6 +57,12 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
                 {a.locked ? 'Unlock Appointment' : 'Lock Appointment'}
               </button>
               <button
+                onClick={e => { e.stopPropagation(); onToggleCollapse(a.id); }}
+                style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600 }}
+              >
+                {a.collapsed ? 'Show' : 'Hide'}
+              </button>
+              <button
                 onClick={() => removeAppt(a.id)}
                 style={{ background: 'transparent', border: '1px solid #ccc', borderRadius: 4, color: '#999', fontSize: 10, cursor: 'pointer', padding: '2px 8px', fontWeight: 600 }}
               >
@@ -53,7 +71,7 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {!a.collapsed && <><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Date</label>
               <input style={inp} type="date" value={a.date || ''} onChange={e => updAppt(a.id, 'date', e.target.value)} disabled={a.locked || false} />
@@ -102,7 +120,7 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
                 {SMS_TIMES.map(t => <option key={t}>{t}</option>)}
               </select>
             )}
-          </div>
+          </div></>}
         </div>
       ))}
 

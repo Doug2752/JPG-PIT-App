@@ -355,7 +355,8 @@ export default function PITApp() {
     try {
       const r = await storage.get(apptKey(currentUser.id));
       const parsed = r ? JSON.parse(r.value) : [];
-      setAppointments(parsed.filter(a => !(a.title === '' && (a.date === '' || a.date === todayStr()))));
+      const migrated = parsed.map(a => ({ collapsed: false, ...a }));
+      setAppointments(migrated.filter(a => !(a.title === '' && (a.date === '' || a.date === todayStr()))));
     } catch {
       setAppointments([]);
     }
@@ -1286,7 +1287,7 @@ export default function PITApp() {
     if (archiveMode) return;
     const today = todayStr();
     if (appointments.filter(a => a.date >= today).length >= 5) return;
-    const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '', resolved: false }];
+    const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '', resolved: false, collapsed: false }];
     setAppointments(updated);
     saveAppointments(updated);
   }
@@ -1301,6 +1302,12 @@ export default function PITApp() {
   function resolveAppt(id) {
     if (archiveMode) return;
     const updated = appointments.map(a => a.id === id ? { ...a, resolved: true, resolution_date: todayStr() } : a);
+    setAppointments(updated);
+    saveAppointments(updated);
+  }
+
+  function toggleCollapseAppt(id) {
+    const updated = appointments.map(a => a.id === id ? { ...a, collapsed: !(a.collapsed ?? false) } : a);
     setAppointments(updated);
     saveAppointments(updated);
   }
@@ -1730,6 +1737,7 @@ export default function PITApp() {
           removeAppt={removeAppt}
           resolveAppt={resolveAppt}
           canAddAppt={canAddAppt}
+          onToggleCollapse={toggleCollapseAppt}
         />
 
         <SummarySection
