@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GOLD, RED, BORDER, MID, GOLD_LIGHT } from '../utils/constants';
 import { card, secTitle, lbl, inp } from './styles';
+import TaskDetailOverlay from './TaskDetailOverlay';
 
 export default function ToAccomplishSection({
   fd, upd, updTask, removeTask, removeOneThing, promoteFutureTask,
@@ -8,6 +9,7 @@ export default function ToAccomplishSection({
   moveOneThingToDaily, moveOneThingToFuture,
   moveDailyToOneThing, moveDailyToFuture,
   moveFutureToOneThing, moveFutureToDaily,
+  updOneThingDetail, updTaskDetail,
   showClearModal, onClearModalOpen, clearModalItems = [],
   onClearConfirm, onClearCancel, toastMessage,
   archiveMode, archiveDateStr, isDayCompleteMarked,
@@ -17,6 +19,7 @@ export default function ToAccomplishSection({
   const [confirmRemoveOne, setConfirmRemoveOne] = useState(false);
   const [confirmRemoveDaily, setConfirmRemoveDaily] = useState(null);  // holds index (0 or 1) or null
   const [confirmRemoveFuture, setConfirmRemoveFuture] = useState(null); // holds index or null
+  const [detailOverlay, setDetailOverlay] = useState(null); // null | { type: 'oneThing' } | { type: 'task', index: i }
   const lockStyle = isDayCompleteMarked ? { opacity: 0.6, cursor: 'not-allowed' } : {};
 
   // Small "Move" button style, shared by One Thing and Daily rows.
@@ -38,6 +41,15 @@ export default function ToAccomplishSection({
     cursor: disabled ? 'not-allowed' : 'pointer',
     padding: '2px 8px', fontWeight: 600, whiteSpace: 'nowrap',
     opacity: disabled ? 0.4 : 1,
+  });
+
+  const noteBtn = (disabled, hasDet) => ({
+    background: 'transparent',
+    border: hasDet ? '1.5px solid #222' : '1px solid #aaa',
+    borderRadius: 4, color: disabled ? '#ccc' : GOLD,
+    fontSize: 13, cursor: disabled ? 'default' : 'pointer',
+    padding: '1px 7px', fontWeight: 600, lineHeight: 1.4,
+    flexShrink: 0,
   });
 
   // Both daily slots filled? (same rule as rebuildToAccomplishItems)
@@ -136,13 +148,21 @@ export default function ToAccomplishSection({
         <div style={{ fontSize: 10, color: '#999', fontStyle: 'italic', marginBottom: 8 }}>
           By completing this one thing, everything else becomes easier or unnecessary.
         </div>
-        <input
-          style={{ ...inp, fontSize: 15, fontWeight: 700, borderColor: RED, ...lockStyle }}
-          value={fd.oneThing}
-          onChange={e => upd('oneThing', e.target.value)}
-          placeholder="The ONE THING I must accomplish today..."
-          disabled={isDayCompleteMarked}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <input
+            style={{ ...inp, flex: 1, fontSize: 15, fontWeight: 700, borderColor: RED, ...lockStyle }}
+            value={fd.oneThing}
+            onChange={e => upd('oneThing', e.target.value)}
+            placeholder="The ONE THING I must accomplish today..."
+            disabled={isDayCompleteMarked}
+          />
+          <button
+            onClick={() => setDetailOverlay({ type: 'oneThing' })}
+            disabled={(fd.oneThing || '').trim() === ''}
+            style={noteBtn((fd.oneThing || '').trim() === '', (fd.oneThingDetail || '').trim() !== '')}
+            title="Task notes"
+          >✎</button>
+        </div>
         {isCarriedUnresolved('one_thing') && (
           <div style={{ fontStyle: 'italic', fontSize: 12, color: '#888', marginTop: 3 }}>
             carried, unresolved
@@ -173,6 +193,12 @@ export default function ToAccomplishSection({
                 <input style={{ ...inp, flex: 1 }} value={fd.tasks[i].text}
                   onChange={e => updTask(i, 'text', e.target.value)}
                   placeholder={`Daily task ${i + 2}`} />
+                <button
+                  onClick={() => setDetailOverlay({ type: 'task', index: i })}
+                  disabled={empty}
+                  style={noteBtn(empty, (fd.tasks[i].detail || '').trim() !== '')}
+                  title="Task notes"
+                >✎</button>
                 <button
                   onClick={() => setMoveModalSource({ type: 'daily', index: i })}
                   disabled={empty}
@@ -230,6 +256,12 @@ export default function ToAccomplishSection({
                     <input style={{ ...inp, flex: 1 }} value={t.text}
                       onChange={e => updTask(i + 2, 'text', e.target.value)}
                       placeholder={`Future task ${i + 4}`} />
+                    <button
+                      onClick={() => setDetailOverlay({ type: 'task', index: i + 2 })}
+                      disabled={(t.text || '').trim() === ''}
+                      style={noteBtn((t.text || '').trim() === '', (t.detail || '').trim() !== '')}
+                      title="Task notes"
+                    >✎</button>
                     <button
                       onClick={() => setMoveModalSource({ type: 'future', index: i + 2 })}
                       disabled={(t.text || '').trim() === ''}
@@ -323,6 +355,26 @@ export default function ToAccomplishSection({
           </div>
         </div>
       )}
+
+      {detailOverlay && (() => {
+        const isOT = detailOverlay.type === 'oneThing';
+        const taskName = isOT ? (fd.oneThing || '') : (fd.tasks[detailOverlay.index]?.text || '');
+        const detailText = isOT
+          ? (fd.oneThingDetail || '')
+          : (fd.tasks[detailOverlay.index]?.detail || '');
+        const handleChange = (val) => {
+          if (isOT) updOneThingDetail(val);
+          else updTaskDetail(detailOverlay.index, val);
+        };
+        return (
+          <TaskDetailOverlay
+            taskName={taskName}
+            detailText={detailText}
+            onChange={handleChange}
+            onClose={() => setDetailOverlay(null)}
+          />
+        );
+      })()}
 
       {toastMessage && (
         <div style={{ position: 'fixed', bottom: 30, left: '50%', transform: 'translateX(-50%)', background: GOLD, color: '#000', borderRadius: 5, padding: '10px 20px', fontSize: 13, fontWeight: 700, zIndex: 1100, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>

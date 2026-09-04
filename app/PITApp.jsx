@@ -248,8 +248,9 @@ export default function PITApp() {
         if (it.slot === 'one_thing') {
           today.oneThing = it.text;
           today.oneThingDone = false;
+          today.oneThingDetail = it.detail || '';
         } else if (slotToTaskIndex[it.slot] != null) {
-          today.tasks[slotToTaskIndex[it.slot]] = { text: it.text, done: false };
+          today.tasks[slotToTaskIndex[it.slot]] = { text: it.text, done: false, detail: it.detail || '' };
         } else {
           continue;
         }
@@ -258,6 +259,7 @@ export default function PITApp() {
           slot: it.slot,
           text: it.text,
           done: false,
+          detail: it.detail || '',
           origin_date: it.origin_date,
           resolution_status: it.resolution_status,
           resolution_date: it.resolution_date,
@@ -597,6 +599,21 @@ export default function PITApp() {
       save(n);
       return;
     }
+    const n = { ...fd, tasks };
+    setFd(n);
+    save(n);
+  }
+
+  function updOneThingDetail(val) {
+    if (archiveMode) return;
+    const n = { ...fd, oneThingDetail: val };
+    setFd(n);
+    save(n);
+  }
+
+  function updTaskDetail(i, val) {
+    if (archiveMode) return;
+    const tasks = fd.tasks.map((x, j) => j === i ? { ...x, detail: val } : x);
     const n = { ...fd, tasks };
     setFd(n);
     save(n);
@@ -1649,6 +1666,8 @@ export default function PITApp() {
           moveDailyToFuture={moveDailyToFuture}
           moveFutureToOneThing={moveFutureToOneThing}
           moveFutureToDaily={moveFutureToDaily}
+          updOneThingDetail={updOneThingDetail}
+          updTaskDetail={updTaskDetail}
           showClearModal={showClearModal}
           onClearModalOpen={() => setShowClearModal(true)}
           clearModalItems={clearModalItems}
