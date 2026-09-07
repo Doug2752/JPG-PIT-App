@@ -10,14 +10,14 @@
 ## SECTION A — APP IDENTITY
 
 - **App name:** Personal Investment Time (PIT)
-- **Dev port:** 5174
+- **Dev port:** 5173
 - **Repo:** Doug2752/JPG-PIT-App
 - **Local folder:** C:\JPG-PROJECTS\JPG-PIT-App
 - **Framework:** React + Vite, Class 3 modular structure
 - **Storage:** localStorage (pre-Supabase)
 - **Coach login:** Doug / JPG2026
 - **Test login:** test / JPG2026
-- **Browser for testing:** Firefox (localhost:5174)
+- **Browser for testing:** Firefox (localhost:5173)
 - **Daily-use browser:** Brave — stop Brave before dev server during work hours
 
 ---
@@ -44,19 +44,19 @@
 
 | Component | File | Notes |
 |---|---|---|
-| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. hub_user URL passthrough built 09/03/2026 — currentUser set directly from hub_user param as { id: trimmed.toLowerCase(), name: trimmed }. No DEFAULT_USERS lookup for HUB clients. updOneThingDetail() and updTaskDetail() handlers added 09/03/2026. Both wired as props to ToAccomplishSection. |
-| AppointmentsSection | components/AppointmentsSection.jsx | Lock feature. No useEffect — no auto-add-on-mount. canAddAppt prop wired 08/14/2026. |
+| PITApp | app/PITApp.jsx | Root orchestrator. compactTasks at module level. removeOneThing function added 07/28/2026. applyCarryover() built — carries unresolved To Accomplish items forward. saveCoachSnapshot() added 08/14/2026. coachKey helper added 08/14/2026. moveFutureToOneThing() added 08/28/2026. moveFutureToDaily() added 08/28/2026. Never Twice full-width bar renders here replacing top DOPBtn 08/28/2026. hub_user URL passthrough built 09/03/2026 — currentUser set directly from hub_user param as { id: trimmed.toLowerCase(), name: trimmed }. No DEFAULT_USERS lookup for HUB clients. updOneThingDetail() and updTaskDetail() handlers added 09/03/2026. Both wired as props to ToAccomplishSection. toggleCollapseAppt(id) handler added 09/06/2026 — toggles collapsed boolean on appointment object, calls saveAppointments(). collapsed: false added to addAppt() new object. Migration pass added to loadAppointments() — parsed.map(a => ({ collapsed: false, ...a })). onToggleCollapse={toggleCollapseAppt} wired to AppointmentsSection. |
+| AppointmentsSection | components/AppointmentsSection.jsx | Lock feature. No useEffect — no auto-add-on-mount. canAddAppt prop wired 08/14/2026. Hide/Show collapse feature added 09/06/2026 — onToggleCollapse prop wired. Collapsed state suppresses card body. Date and title render inline when collapsed. LOCKED badge suppressed when collapsed. |
 | ArchiveView | components/ArchiveView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
 | BookSection | components/BookSection.jsx | GREEN_COMPLETE wired 07/28/2026. page number min=0. |
 | BooksView | components/BooksView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
-| BrandBar | components/BrandBar.jsx | Three-zone flex layout 08/28/2026 — logo left (flex:1), PIT title center (flex:2), date picker right (flex:1). PIT heading 52px. Subtitle 15px. Bottom border 2px. Never Twice removed from BrandBar. |
+| BrandBar | components/BrandBar.jsx | Three-zone flex layout 08/28/2026 — logo left (flex:1), PIT title center (flex:2), date picker right (flex:1). PIT heading 52px. Subtitle 15px. Bottom border 2px. Never Twice removed from BrandBar. "Structured Version" subtitle added 09/06/2026 — fontSize 12, fontWeight 400, color #555, letterSpacing 0.5, marginTop 2. |
 | DailyTrackingSection | components/DailyTrackingSection.jsx | Full restructure 08/14/2026. Two rows of 4 tracking boxes. sleepTime field added. hoursSlept auto-calculated inline from fd.sleepTime and fd.wakeTime. PIT Time Frame removed. Mental Alignment removed. calcHoursSlept() module-level pure function. commitSleep() mirrors commitWake() pattern. Track By hidden for Rest and Recovery. |
 | Header | components/Header.jsx | Flat text nav 08/28/2026 — Today, Archive, Book Log as spans. Active: GOLD underline. Inactive: rgba(255,255,255,0.5). Streak: gold text inline after Book Log with grey separator. Right group: Set-Up and Instructions / Doug / Logout with grey separator bars. PIT Completed Today status div removed. |
 | HelpPanel | components/HelpPanel.jsx | Required field count corrected to 12 08/28/2026. Required fields list rewritten — 8 Daily Tracking + 4 Reflection & Priorities. Additional Tracking section rewritten — PIT Time Frame and Mental Alignment removed. Future Tasks move description updated. Rest and Recovery noted in Fitness section. Lock Appointment paragraph updated 07/28/2026. |
 | ImportantDiscoveriesSection | components/ImportantDiscoveriesSection.jsx | Empty state, add validation, edit cancel confirmation. RED constant imported 08/14/2026. Layout fixes 08/22/2026. |
 | LoginScreen | components/LoginScreen.jsx | RED constant imported 08/14/2026. |
 | SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). canMarkComplete prop added 09/03/2026 — accepts external override of isDayComplete(fd). If prop passed and not undefined, uses it; else falls back to isDayComplete(fd). |
-| ToAccomplishSection | components/ToAccomplishSection.jsx | Pure rendering component. Future Task move button opens modal (type: 'future') 08/28/2026. Future Task modal case added — Move to One Thing or Daily Task. Future Task checkbox 16x16, accentColor GOLD 08/28/2026. moveFutureToOneThing and moveFutureToDaily props added. Task Detail overlay triggers added 09/03/2026. noteBtn helper takes (disabled, hasDet) params. Pencil button indicator: dark border (1.5px solid #222) when detail exists, faint border (1px solid #aaa) when empty. |
+| ToAccomplishSection | components/ToAccomplishSection.jsx | Pure rendering component. Future Task move button opens modal (type: 'future') 08/28/2026. Future Task modal case added — Move to One Thing or Daily Task. Future Task checkbox 16x16, accentColor GOLD 08/28/2026. moveFutureToOneThing and moveFutureToDaily props added. Task Detail overlay triggers added 09/03/2026. noteBtn helper takes (disabled, hasDet) params. Pencil button indicator: faint gold tint background rgba(184,134,11,0.15) + dark border (1.5px solid #222) when detail exists; transparent background + faint border (1px solid #aaa) when empty. Updated 09/06/2026. |
 | TaskDetailOverlay | components/TaskDetailOverlay.jsx | NEW 09/03/2026. Modal overlay for task detail text. Props: taskName, detailText, onChange, onClose. Dark card, GOLD border, auto-save textarea, X close button. |
 | WeekTracker | components/WeekTracker.jsx | GREEN_COMPLETE wired 07/28/2026. Hardcoded #2ecc71 replaced with GREEN_COMPLETE constant in card border 08/28/2026. |
 
