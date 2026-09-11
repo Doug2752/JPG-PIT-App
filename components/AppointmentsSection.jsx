@@ -74,7 +74,40 @@ export default function AppointmentsSection({ appointments, updAppt, addAppt, re
           {!a.collapsed && <><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Date</label>
-              <input style={inp} type="date" value={a.date || ''} onChange={e => updAppt(a.id, 'date', e.target.value)} disabled={a.locked || false} />
+              {(() => {
+                const parts = (a.date || '').split('-');
+                const yr = parts[0] || '';
+                const mo = parts[1] || '';
+                const dy = parts[2] || '';
+                function fireDate(y, m, d) {
+                  if (y && m && d) updAppt(a.id, 'date', `${y}-${m}-${d}`);
+                }
+                const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'));
+                const months = [
+                  ['01','January'],['02','February'],['03','March'],['04','April'],
+                  ['05','May'],['06','June'],['07','July'],['08','August'],
+                  ['09','September'],['10','October'],['11','November'],['12','December']
+                ];
+                return (
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <select style={{ ...sel, flex: 2 }} value={mo} disabled={a.locked || false}
+                      onChange={e => fireDate(yr || '2026', e.target.value, dy)}>
+                      <option value=''>Month</option>
+                      {months.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <select style={{ ...sel, flex: 1 }} value={dy} disabled={a.locked || false}
+                      onChange={e => fireDate(yr || '2026', mo, e.target.value)}>
+                      <option value=''>Day</option>
+                      {days.map(d => <option key={d} value={d}>{parseInt(d)}</option>)}
+                    </select>
+                    <select style={{ ...sel, flex: 1 }} value={yr} disabled={a.locked || false}
+                      onChange={e => fireDate(e.target.value, mo, dy)}>
+                      <option value=''>Year</option>
+                      {['2026','2027','2028'].map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                );
+              })()}
             </div>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={lbl}>Title</label>

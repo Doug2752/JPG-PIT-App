@@ -1286,7 +1286,7 @@ export default function PITApp() {
   function addAppt() {
     if (archiveMode) return;
     const today = todayStr();
-    if (appointments.filter(a => a.date >= today).length >= 5) return;
+    if (appointments.filter(a => a.date >= today).length >= 20) return;
     const updated = [...appointments, { id: Date.now(), date: today, title: '', time: '', duration: '', location: '', prep: '', smsReminder: false, smsTime: '', resolved: false, collapsed: false }];
     setAppointments(updated);
     saveAppointments(updated);
@@ -1578,7 +1578,7 @@ export default function PITApp() {
   const visibleAppointments = appointments
     .filter(a => a.resolved !== true)
     .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
-  const canAddAppt = appointments.filter(a => a.date >= todayStr()).length < 5;
+  const canAddAppt = appointments.filter(a => a.date >= todayStr()).length < 20;
 
   return (
     <div style={{ minHeight: '100vh', background: BG, fontFamily: 'sans-serif', overflowX: 'hidden' }}>
