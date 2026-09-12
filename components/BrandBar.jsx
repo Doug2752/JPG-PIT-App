@@ -5,7 +5,7 @@ import { todayStr, makeDateLabel } from '../utils/date';
 
 const LOGO_SRC = '/jpglogo.png';
 
-export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker }) {
+export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker, backToday, openArchive, archiveMode }) {
   return (
     <div
       style={{ background: '#fff', borderBottom: `2px solid ${GOLD}`, padding: '10px 20px' }}
@@ -44,11 +44,15 @@ export default function BrandBar({ fd, upd, showDatePicker, setShowDatePicker })
                 <input
                   type="date"
                   value={fd.date}
-                  onChange={e => { upd('date', e.target.value); setShowDatePicker(false); }}
+                  onChange={e => {
+                    const d = e.target.value;
+                    if (d === todayStr()) { backToday(); } else { openArchive(d); }
+                    setShowDatePicker(false);
+                  }}
                   style={{ ...inp, marginBottom: 8, textAlign: 'center', fontSize: 13 }}
                 />
                 <button
-                  onClick={() => { upd('date', todayStr()); setShowDatePicker(false); }}
+                  onClick={() => { backToday(); setShowDatePicker(false); }}
                   style={gbtn({ width: '100%', padding: '7px', fontSize: 12 })}
                 >Today</button>
               </div>

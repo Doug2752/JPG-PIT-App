@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GOLD, GOLD_LIGHT, DARK, BG, BORDER, DEFAULT_USERS, WEBAPP_URL } from '../utils/constants';
 import { todayStr, localDateStr } from '../utils/date';
 import { emptyForm, emptyFitnessEntry, withFitnessMigration, withCarryoverMigration, withDiscoveriesMigration, rebuildToAccomplishItems, isDayComplete, countComplete, REQUIRED_TOTAL } from '../utils/form';
@@ -132,6 +132,9 @@ export default function PITApp() {
   const [toastMessage,   setToastMessage]   = useState('');
   const [recurringFitness, setRecurringFitness] = useState([]);
   const [dayCompleteDates, setDayCompleteDates] = useState([]);
+
+  const fdRef = useRef(fd);
+  fdRef.current = fd;
 
   useEffect(() => {
     if (currentUser) {
@@ -529,23 +532,23 @@ export default function PITApp() {
   function upd(f, v) {
     if (archiveMode) return;
     if (f === 'oneThingDone') {
-      const item = (fd.toAccomplishItems || []).find(it => it && it.slot === 'one_thing');
+      const item = (fdRef.current.toAccomplishItems || []).find(it => it && it.slot === 'one_thing');
       if (item && item.origin_date < todayStr()) {
         resolveCarriedItem('one_thing', v);
         return;
       }
       if (v) {
-        const setup = fd.oneThingSetup && fd.oneThingSetup.trim();
+        const setup = fdRef.current.oneThingSetup && fdRef.current.oneThingSetup.trim();
         const updatedOneThing = setup
-          ? `${fd.oneThing} (${setup})`
-          : fd.oneThing;
-        const n = { ...fd, oneThingDone: true, oneThing: updatedOneThing, oneThingSetup: '' };
+          ? `${fdRef.current.oneThing} (${setup})`
+          : fdRef.current.oneThing;
+        const n = { ...fdRef.current, oneThingDone: true, oneThing: updatedOneThing, oneThingSetup: '' };
         setFd(n);
         save(n);
         return;
       }
     }
-    const n = { ...fd, [f]: v };
+    const n = { ...fdRef.current, [f]: v };
     setFd(n);
     save(n);
     if (f === 'prayerType' && currentUser) {
@@ -555,7 +558,7 @@ export default function PITApp() {
 
   function updMulti(pairs) {
     if (archiveMode) return;
-    const n = { ...fd, ...Object.fromEntries(pairs) };
+    const n = { ...fdRef.current, ...Object.fromEntries(pairs) };
     setFd(n);
     save(n);
   }
@@ -572,17 +575,17 @@ export default function PITApp() {
         14: 'future_16', 15: 'future_17', 16: 'future_18',
         17: 'future_19', 18: 'future_20', 19: 'future_21',
       }[i];
-      const item = (fd.toAccomplishItems || []).find(it => it && it.slot === slot);
+      const item = (fdRef.current.toAccomplishItems || []).find(it => it && it.slot === slot);
       if (item && item.origin_date < todayStr()) {
         resolveCarriedItem(slot, v);
         return;
       }
     }
-    const tasks = fd.tasks.map((x, j) => j === i ? { ...x, [f]: v } : x);
+    const tasks = fdRef.current.tasks.map((x, j) => j === i ? { ...x, [f]: v } : x);
     if (f === 'done') {
       const { tasks: compacted,
               toAccomplishItems: compactedItems } = compactTasks(
-        tasks, fd.toAccomplishItems
+        tasks, fdRef.current.toAccomplishItems
       );
       const fv = Math.max(
         0,
@@ -591,7 +594,7 @@ export default function PITApp() {
         ).length
       );
       const n = {
-        ...fd,
+        ...fdRef.current,
         tasks: compacted,
         toAccomplishItems: compactedItems,
         futureTasksVisible: fv,
@@ -600,22 +603,22 @@ export default function PITApp() {
       save(n);
       return;
     }
-    const n = { ...fd, tasks };
+    const n = { ...fdRef.current, tasks };
     setFd(n);
     save(n);
   }
 
   function updOneThingDetail(val) {
     if (archiveMode) return;
-    const n = { ...fd, oneThingDetail: val };
+    const n = { ...fdRef.current, oneThingDetail: val };
     setFd(n);
     save(n);
   }
 
   function updTaskDetail(i, val) {
     if (archiveMode) return;
-    const tasks = fd.tasks.map((x, j) => j === i ? { ...x, detail: val } : x);
-    const n = { ...fd, tasks };
+    const tasks = fdRef.current.tasks.map((x, j) => j === i ? { ...x, detail: val } : x);
+    const n = { ...fdRef.current, tasks };
     setFd(n);
     save(n);
   }
@@ -626,7 +629,7 @@ export default function PITApp() {
   // so it is freed and will not re-carry. No in-place uncheck for
   // carried items — once done, the slot is empty and available.
   async function resolveCarriedItem(slot, done) {
-    const items = fd.toAccomplishItems || [];
+    const items = fdRef.current.toAccomplishItems || [];
     const item = items.find(it => it && it.slot === slot);
     const isCarried = !!(item && item.origin_date < todayStr());
     const slotToTaskIndex = {
@@ -640,13 +643,13 @@ export default function PITApp() {
 
     let n;
     if (slot === 'one_thing') {
-      n = done ? { ...fd, oneThing: '', oneThingDone: false } : { ...fd, oneThingDone: false };
+      n = done ? { ...fdRef.current, oneThing: '', oneThingDone: false } : { ...fdRef.current, oneThingDone: false };
     } else {
       const i = slotToTaskIndex[slot];
-      const tasks = fd.tasks.map((x, j) => j === i
+      const tasks = fdRef.current.tasks.map((x, j) => j === i
         ? (done ? { text: '', done: false } : { ...x, done: false })
         : x);
-      n = { ...fd, tasks };
+      n = { ...fdRef.current, tasks };
     }
 
     if (isCarried && done) {
@@ -679,7 +682,7 @@ export default function PITApp() {
       setShowClearModal(false);
       return;
     }
-    const items = fd.toAccomplishItems || [];
+    const items = fdRef.current.toAccomplishItems || [];
     const slotToTaskIndex = {
       daily_2: 0, daily_3: 1,
       future_4: 2, future_5: 3, future_6: 4, future_7: 5,
@@ -688,7 +691,7 @@ export default function PITApp() {
       future_16: 14, future_17: 15, future_18: 16, future_19: 17,
       future_20: 18, future_21: 19,
     };
-    const n = { ...fd, tasks: fd.tasks.map(t => ({ ...t })) };
+    const n = { ...fdRef.current, tasks: fdRef.current.tasks.map(t => ({ ...t })) };
     let cleared = 0;
     for (const slot of slots) {
       if (slot === 'one_thing') {
@@ -729,11 +732,11 @@ export default function PITApp() {
     // Daily slots (0–1) are fixed positions: clear in place with no
     // shift and no futureTasksVisible change.
     if (absoluteIndex < 2) {
-      const tasks = [...fd.tasks];
+      const tasks = [...fdRef.current.tasks];
       tasks[absoluteIndex] = { text: '', done: false };
       const { tasks: compacted,
               toAccomplishItems: compactedItems } = compactTasks(
-        tasks, fd.toAccomplishItems
+        tasks, fdRef.current.toAccomplishItems
       );
       const fv = Math.max(
         0,
@@ -742,7 +745,7 @@ export default function PITApp() {
         ).length
       );
       const n = {
-        ...fd,
+        ...fdRef.current,
         tasks: compacted,
         toAccomplishItems: compactedItems,
         futureTasksVisible: fv,
@@ -751,11 +754,11 @@ export default function PITApp() {
       save(n);
       return;
     }
-    const tasks = [...fd.tasks];
+    const tasks = [...fdRef.current.tasks];
     // Highest filled future slot among indices 2–19 (text or done).
     let lastFilled = -1;
     for (let j = 2; j <= 19; j++) {
-      if (fd.tasks[j] && (fd.tasks[j].text || fd.tasks[j].done)) {
+      if (fdRef.current.tasks[j] && (fdRef.current.tasks[j].text || fdRef.current.tasks[j].done)) {
         lastFilled = j;
       }
     }
@@ -763,18 +766,18 @@ export default function PITApp() {
     // itself rather than a filled slot below it.
     const end = Math.max(absoluteIndex, lastFilled);
     for (let j = absoluteIndex; j < end; j++) {
-      tasks[j] = { ...fd.tasks[j + 1] };
+      tasks[j] = { ...fdRef.current.tasks[j + 1] };
     }
     tasks[end] = { text: '', done: false };
-    const futureTasksVisible = Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
-    const n = { ...fd, tasks, futureTasksVisible };
+    const futureTasksVisible = Math.max(0, (fdRef.current.futureTasksVisible ?? 1) - 1);
+    const n = { ...fdRef.current, tasks, futureTasksVisible };
     setFd(n);
     save(n);
   }
 
   function removeOneThing() {
     if (archiveMode) return;
-    const n = { ...fd, oneThing: '', oneThingSetup: '', oneThingDone: false };
+    const n = { ...fdRef.current, oneThing: '', oneThingSetup: '', oneThingDone: false };
     setFd(n);
     save(n);
   }
@@ -794,8 +797,8 @@ export default function PITApp() {
       ((t?.text || '').trim() !== '') || t?.done === true;
 
     let target;
-    if (!filled(fd.tasks[0])) target = 0;
-    else if (!filled(fd.tasks[1])) target = 1;
+    if (!filled(fdRef.current.tasks[0])) target = 0;
+    else if (!filled(fdRef.current.tasks[1])) target = 1;
     else {
       setToastMessage(
         'Daily Task slots are full — check off or clear ' +
@@ -806,11 +809,11 @@ export default function PITApp() {
     }
 
     const srcSlot = `future_${futureIndex + 2}`;
-    const srcItem = (fd.toAccomplishItems || [])
+    const srcItem = (fdRef.current.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const srcTask = fd.tasks[futureIndex] || { text: '', done: false };
+    const srcTask = fdRef.current.tasks[futureIndex] || { text: '', done: false };
 
-    const tasks = [...fd.tasks];
+    const tasks = [...fdRef.current.tasks];
     tasks[target] = { text: srcTask.text, done: srcTask.done };
 
     // Clear source future with removeTask's shift pattern.
@@ -823,13 +826,13 @@ export default function PITApp() {
     tasks[end] = { text: '', done: false };
 
     const futureTasksVisible =
-      Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
+      Math.max(0, (fdRef.current.futureTasksVisible ?? 1) - 1);
 
     // Preserve promoted item identity on the target daily slot; drop the
     // source future item so save()'s rebuild neither recycles nor
     // duplicates its id onto shifted content.
     const targetSlot = target === 0 ? 'daily_2' : 'daily_3';
-    const items = (fd.toAccomplishItems || [])
+    const items = (fdRef.current.toAccomplishItems || [])
       .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
     if (srcItem) {
       items.push({
@@ -842,7 +845,7 @@ export default function PITApp() {
       });
     }
 
-    const n = { ...fd, tasks, futureTasksVisible, toAccomplishItems: items };
+    const n = { ...fdRef.current, tasks, futureTasksVisible, toAccomplishItems: items };
     setFd(n);
     save(n);
   }
@@ -868,8 +871,8 @@ export default function PITApp() {
     const filled = (t) =>
       ((t?.text || '').trim() !== '') || t?.done === true;
     let target;
-    if (!filled(fd.tasks[0])) target = 0;
-    else if (!filled(fd.tasks[1])) target = 1;
+    if (!filled(fdRef.current.tasks[0])) target = 0;
+    else if (!filled(fdRef.current.tasks[1])) target = 1;
     else {
       setToastMessage('Daily task slots are full');
       setTimeout(() => setToastMessage(''), 2500);
@@ -877,14 +880,14 @@ export default function PITApp() {
     }
     const srcSlot = 'one_thing';
     const targetSlot = target === 0 ? 'daily_2' : 'daily_3';
-    const srcItem = (fd.toAccomplishItems || [])
+    const srcItem = (fdRef.current.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const text = (fd.oneThingSetup || '').trim()
-      ? `${fd.oneThing} (${fd.oneThingSetup.trim()})`
-      : fd.oneThing;
-    const tasks = [...fd.tasks];
+    const text = (fdRef.current.oneThingSetup || '').trim()
+      ? `${fdRef.current.oneThing} (${fdRef.current.oneThingSetup.trim()})`
+      : fdRef.current.oneThing;
+    const tasks = [...fdRef.current.tasks];
     tasks[target] = { text, done: false };
-    const items = (fd.toAccomplishItems || [])
+    const items = (fdRef.current.toAccomplishItems || [])
       .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
     if (srcItem) {
       items.push({
@@ -899,7 +902,7 @@ export default function PITApp() {
       });
     }
     let n = {
-      ...fd, tasks, oneThing: '', oneThingDone: false,
+      ...fdRef.current, tasks, oneThing: '', oneThingDone: false,
       oneThingSetup: '',
       toAccomplishItems: items,
     };
@@ -934,7 +937,7 @@ export default function PITApp() {
   // mirroring promoteFutureTask.
   function moveOneThingToFuture() {
     if (archiveMode) return;
-    const tasks = [...fd.tasks];
+    const tasks = [...fdRef.current.tasks];
     const slot = firstEmptyFutureIndex(tasks);
     if (slot === -1) {
       setToastMessage('Future task slots are full');
@@ -943,16 +946,16 @@ export default function PITApp() {
     }
     const srcSlot = 'one_thing';
     const targetSlot = `future_${slot + 2}`;
-    const srcItem = (fd.toAccomplishItems || [])
+    const srcItem = (fdRef.current.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const text = (fd.oneThingSetup || '').trim()
-      ? `${fd.oneThing} (${fd.oneThingSetup.trim()})`
-      : fd.oneThing;
+    const text = (fdRef.current.oneThingSetup || '').trim()
+      ? `${fdRef.current.oneThing} (${fdRef.current.oneThingSetup.trim()})`
+      : fdRef.current.oneThing;
     tasks[slot] = { text, done: false };
     const futureTasksVisible = Math.min(
-      18, Math.max(fd.futureTasksVisible ?? 1, slot - 1)
+      18, Math.max(fdRef.current.futureTasksVisible ?? 1, slot - 1)
     );
-    const items = (fd.toAccomplishItems || [])
+    const items = (fdRef.current.toAccomplishItems || [])
       .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
     if (srcItem) {
       items.push({
@@ -967,7 +970,7 @@ export default function PITApp() {
       });
     }
     let n = {
-      ...fd, tasks, oneThing: '', oneThingDone: false,
+      ...fdRef.current, tasks, oneThing: '', oneThingDone: false,
       oneThingSetup: '',
       futureTasksVisible, toAccomplishItems: items,
     };
@@ -1001,15 +1004,15 @@ export default function PITApp() {
   // source item's identity onto the one_thing slot.
   function moveDailyToOneThing(dailyIndex) {
     if (archiveMode) return;
-    if ((fd.oneThing || '').trim() !== '') return;
+    if ((fdRef.current.oneThing || '').trim() !== '') return;
     const srcSlot = dailyIndex === 0 ? 'daily_2' : 'daily_3';
     const targetSlot = 'one_thing';
-    const srcItem = (fd.toAccomplishItems || [])
+    const srcItem = (fdRef.current.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const tasks = [...fd.tasks];
+    const tasks = [...fdRef.current.tasks];
     const text = tasks[dailyIndex]?.text || '';
     tasks[dailyIndex] = { text: '', done: false };
-    const items = (fd.toAccomplishItems || [])
+    const items = (fdRef.current.toAccomplishItems || [])
       .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
     if (srcItem) {
       items.push({
@@ -1024,7 +1027,7 @@ export default function PITApp() {
       });
     }
     let n = {
-      ...fd, tasks, oneThing: text, oneThingDone: false,
+      ...fdRef.current, tasks, oneThing: text, oneThingDone: false,
       toAccomplishItems: items,
     };
     {
@@ -1055,7 +1058,7 @@ export default function PITApp() {
   // the source item's identity onto the target future slot.
   function moveDailyToFuture(dailyIndex) {
     if (archiveMode) return;
-    const tasks = [...fd.tasks];
+    const tasks = [...fdRef.current.tasks];
     const slot = firstEmptyFutureIndex(tasks);
     if (slot === -1) {
       setToastMessage('Future task slots are full');
@@ -1064,15 +1067,15 @@ export default function PITApp() {
     }
     const srcSlot = dailyIndex === 0 ? 'daily_2' : 'daily_3';
     const targetSlot = `future_${slot + 2}`;
-    const srcItem = (fd.toAccomplishItems || [])
+    const srcItem = (fdRef.current.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
     const text = tasks[dailyIndex]?.text || '';
     tasks[slot] = { text, done: false };
     tasks[dailyIndex] = { text: '', done: false };
     const futureTasksVisible = Math.min(
-      18, Math.max(fd.futureTasksVisible ?? 1, slot - 1)
+      18, Math.max(fdRef.current.futureTasksVisible ?? 1, slot - 1)
     );
-    const items = (fd.toAccomplishItems || [])
+    const items = (fdRef.current.toAccomplishItems || [])
       .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
     if (srcItem) {
       items.push({
@@ -1087,7 +1090,7 @@ export default function PITApp() {
       });
     }
     let n = {
-      ...fd, tasks, futureTasksVisible, toAccomplishItems: items,
+      ...fdRef.current, tasks, futureTasksVisible, toAccomplishItems: items,
     };
     {
       const { tasks: compacted,
@@ -1114,17 +1117,17 @@ export default function PITApp() {
 
   function moveFutureToOneThing(futureIndex) {
     if (archiveMode) return;
-    if ((fd.oneThing || '').trim() !== '') {
+    if ((fdRef.current.oneThing || '').trim() !== '') {
       setToastMessage('One Thing is already filled');
       setTimeout(() => setToastMessage(''), 2500);
       return;
     }
     const srcSlot = `future_${futureIndex + 2}`;
     const targetSlot = 'one_thing';
-    const srcItem = (fd.toAccomplishItems || [])
+    const srcItem = (fdRef.current.toAccomplishItems || [])
       .find(it => it && it.slot === srcSlot);
-    const text = fd.tasks[futureIndex]?.text || '';
-    const tasks = [...fd.tasks];
+    const text = fdRef.current.tasks[futureIndex]?.text || '';
+    const tasks = [...fdRef.current.tasks];
     let lastFilled = -1;
     for (let j = 2; j <= 19; j++) {
       if (tasks[j] && (tasks[j].text || tasks[j].done)) lastFilled = j;
@@ -1132,8 +1135,8 @@ export default function PITApp() {
     const end = Math.max(futureIndex, lastFilled);
     for (let j = futureIndex; j < end; j++) tasks[j] = { ...tasks[j + 1] };
     tasks[end] = { text: '', done: false };
-    const futureTasksVisible = Math.max(0, (fd.futureTasksVisible ?? 1) - 1);
-    const items = (fd.toAccomplishItems || [])
+    const futureTasksVisible = Math.max(0, (fdRef.current.futureTasksVisible ?? 1) - 1);
+    const items = (fdRef.current.toAccomplishItems || [])
       .filter(it => it && it.slot !== srcSlot && it.slot !== targetSlot);
     if (srcItem) {
       items.push({
@@ -1148,7 +1151,7 @@ export default function PITApp() {
       });
     }
     let n = {
-      ...fd, tasks, oneThing: text, oneThingDone: false,
+      ...fdRef.current, tasks, oneThing: text, oneThingDone: false,
       futureTasksVisible, toAccomplishItems: items,
     };
     {
@@ -1182,29 +1185,29 @@ export default function PITApp() {
 
   function updFitnessEntry(idOrIdx, patch, isRecurring) {
     if (archiveMode) return;
-    const fitnessEntries = fd.fitnessEntries.map((e, j) =>
+    const fitnessEntries = fdRef.current.fitnessEntries.map((e, j) =>
       isRecurring
         ? (e.recurringId === idOrIdx ? { ...e, ...patch } : e)
         : (j === idOrIdx ? { ...e, ...patch } : e)
     );
-    const n = { ...fd, fitnessEntries };
+    const n = { ...fdRef.current, fitnessEntries };
     setFd(n);
     save(n);
   }
 
   function addFitnessEntry() {
     if (archiveMode) return;
-    const fitnessEntries = [...fd.fitnessEntries, emptyFitnessEntry()];
-    const n = { ...fd, fitnessEntries };
+    const fitnessEntries = [...fdRef.current.fitnessEntries, emptyFitnessEntry()];
+    const n = { ...fdRef.current, fitnessEntries };
     setFd(n);
     save(n);
   }
 
   function removeFitnessEntry(idOrIdx) {
     if (archiveMode) return;
-    if (fd.fitnessEntries.length <= 1) return;
-    const fitnessEntries = fd.fitnessEntries.filter((e, j) => j !== idOrIdx);
-    const n = { ...fd, fitnessEntries };
+    if (fdRef.current.fitnessEntries.length <= 1) return;
+    const fitnessEntries = fdRef.current.fitnessEntries.filter((e, j) => j !== idOrIdx);
+    const n = { ...fdRef.current, fitnessEntries };
     setFd(n);
     save(n);
   }
@@ -1601,6 +1604,9 @@ export default function PITApp() {
         fd={fd} upd={upd}
         showDatePicker={showDatePicker}
         setShowDatePicker={setShowDatePicker}
+        backToday={backToday}
+        openArchive={openArchive}
+        archiveMode={archiveMode}
       />
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px 20px', boxSizing: 'border-box', width: '100%' }}>
@@ -1706,21 +1712,21 @@ export default function PITApp() {
           archiveMode={archiveMode}
           onAdd={(entry) => {
             if (archiveMode) return;
-            const updated = [...(fd.discoveries || []), entry];
+            const updated = [...(fdRef.current.discoveries || []), entry];
             setFd(f => ({ ...f, discoveries: updated }));
-            save({ ...fd, discoveries: updated });
+            save({ ...fdRef.current, discoveries: updated });
           }}
           onUpdate={(id, patch) => {
             if (archiveMode) return;
-            const updated = (fd.discoveries || []).map(d => d.id === id ? { ...d, ...patch } : d);
+            const updated = (fdRef.current.discoveries || []).map(d => d.id === id ? { ...d, ...patch } : d);
             setFd(f => ({ ...f, discoveries: updated }));
-            save({ ...fd, discoveries: updated });
+            save({ ...fdRef.current, discoveries: updated });
           }}
           onRemove={(id) => {
             if (archiveMode) return;
-            const updated = (fd.discoveries || []).filter(d => d.id !== id);
+            const updated = (fdRef.current.discoveries || []).filter(d => d.id !== id);
             setFd(f => ({ ...f, discoveries: updated }));
-            save({ ...fd, discoveries: updated });
+            save({ ...fdRef.current, discoveries: updated });
           }}
         />
 
