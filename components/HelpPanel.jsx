@@ -26,20 +26,22 @@ export default function HelpPanel({ onClose }) {
         </button>
       )}
 
+      {/* WHAT IS PIT */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>What is PIT?</div>
-          <div style={tBody}>PIT stands for Personal Investment Time — your daily check-in with yourself and mental alignment. While DOP (Daily Operational Process) is your roadmap for what to do each day — including both AM and PM components — PIT is where you internalize your day's actions and invest a small amount of time in reflection, planning, and personal growth. This is done once per day. It works best when done at a consistent time, ideally on a computer rather than your phone, so you can give it real attention.</div>
+          <div style={tBody}>PIT stands for Personal Investment Time — your daily check-in with yourself. Complete it once per day at a consistent time, ideally on a computer.</div>
         </div>
       </div>
 
+      {/* HOW TO USE IT */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
-          <div style={tTitle}>How to use it:</div>
-          <div style={{ ...tBody, marginBottom: 6 }}>Each day, complete the 12 Required Fields and any additional fields you choose. There is substantial personal value in going above the 12, but that is your choice. Fields marked with an asterisk (*) are required to mark a day complete. The 12 Required Fields, in order:</div>
-          <div style={groupLbl}>Daily Tracking (Items 1–8, Required)</div>
+          <div style={tTitle}>How to use it</div>
+          <div style={{ ...tBody, marginBottom: 6 }}>Complete the 12 required fields each day. Additional sections are optional but valuable. Required fields in order:</div>
+          <div style={groupLbl}>Daily Tracking (1–8)</div>
           <ol style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0, paddingLeft: 32, marginTop: 0 }}>
             <li>Time Asleep Last Night</li>
             <li>Wake Up Time</li>
@@ -50,21 +52,18 @@ export default function HelpPanel({ onClose }) {
             <li>Location</li>
             <li>Fitness Yesterday</li>
           </ol>
-          <div style={{ ...groupLbl, marginTop: 6 }}>Reflection &amp; Priorities (Items 9–12, Required)</div>
+          <div style={{ ...groupLbl, marginTop: 6 }}>Reflection &amp; Priorities (9–12)</div>
           <ol start={9} style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginBottom: 0, paddingLeft: 32, marginTop: 0 }}>
             <li>Thankful For #1</li>
             <li>Thankful For #2</li>
             <li>Thankful For #3</li>
             <li>Notes — Ideas — Thoughts</li>
           </ol>
-          <div style={{ fontSize: 12, color: MID, lineHeight: 1.7, marginTop: 6 }}>
-            The One Thing is required for day completion and is listed
-            in the To Accomplish section. Total Hours Slept is
-            auto-calculated from your sleep and wake times.
-          </div>
+          <div style={{ ...tBody, marginTop: 6 }}>One Thing is also required and is found in the To Accomplish section. Total Hours Slept is auto-calculated.</div>
         </div>
       </div>
 
+      {/* FITNESS */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
@@ -74,60 +73,63 @@ export default function HelpPanel({ onClose }) {
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Fitness Yesterday</div>
-                <div style={tBody}>Log what you did for fitness the previous day. Use the + Add Fitness Activity button if you have more than one activity to log. Select Rest Day only if you intentionally took a rest day. Within your fitness activity details, Rest and Recovery is also available as an activity type if you want to log recovery work specifically. If you had a planned fitness day and missed it, select No.</div>
+                <div style={tBody}>Log yesterday's fitness activity. Use + Add Fitness Activity for multiple activities. Select Rest Day only if you intentionally rested. If you had a planned fitness day and missed it, select No.</div>
               </div>
             </div>
             <div style={{ ...subItem, marginBottom: 0 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Recurring Fitness</div>
-                <div style={tBody}>Use the Configure tab to set up activities that repeat on a schedule. To get started, open the Configure tab and add a recurring activity. Give it a name, select the activity type, and choose which days of the week it should appear. Once saved, that activity will automatically show up on your Fitness Yesterday screen on its scheduled days. On those days you will see a confirm-done checkbox — check it if you completed the activity. To stop an activity from appearing or to change its scheduled days, return to the Configure tab. Recurring activities cannot be removed from the daily screen.</div>
+                <div style={tBody}>Use the Configure tab to set up activities that repeat on a schedule. Give it a name, activity type, and scheduled days. Once saved, it appears automatically on those days with a confirm-done checkbox. Return to Configure to modify or stop a recurring activity.</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* NEVER TWICE */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Never Twice</div>
-          <div style={tBody}>Check the box each day confirming you've read and committed to never missing the same action twice in a row.</div>
+          <div style={tBody}>Check the box each day confirming you have read and committed to never missing the same action twice in a row.</div>
         </div>
       </div>
 
+      {/* TO ACCOMPLISH */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>To Accomplish</div>
-          <div style={{ ...tBody, marginBottom: 6 }}>Your daily task list in priority order. Unchecked items carry forward automatically to the next day until resolved. Checking an item done memorializes it on the day it was completed and removes it from the following day.</div>
+          <div style={{ ...tBody, marginBottom: 6 }}>Your daily task list in priority order. Unchecked items carry forward automatically until resolved. Checking an item done memorializes it on the day completed.</div>
           <div style={{ paddingLeft: 16 }}>
             <div style={{ ...subItem, marginBottom: 6 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
-                <div style={sTitle}>The One Thing:</div>
+                <div style={sTitle}>One Thing</div>
                 <div style={tBody}>The single task that, if completed, makes everything else easier or unnecessary. Include a First Action/Set-Up step to define exactly how you'll begin.</div>
               </div>
             </div>
             <div style={{ ...subItem, marginBottom: 6 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
-                <div style={sTitle}>Daily Tasks:</div>
+                <div style={sTitle}>Daily Tasks</div>
                 <div style={tBody}>Up to two additional tasks for today.</div>
               </div>
             </div>
             <div style={{ ...subItem, marginBottom: 0 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
-                <div style={sTitle}>Future Tasks:</div>
-                <div style={tBody}>Future tasks are for items not directly tied to today. Use the Add button to create a new slot. Tasks can be moved in any direction. Use the Move button on any task to relocate it — One Thing, Daily Task, or Future Task — provided space is available in the destination.</div>
+                <div style={sTitle}>Future Tasks</div>
+                <div style={tBody}>Items not tied to today. Use Move to relocate any task between One Thing, Daily, or Future slots — provided space is available in the destination.</div>
               </div>
             </div>
           </div>
-          <div style={{ ...tBody, marginTop: 6 }}>Use Clear Items to remove all current To Accomplish items at once. Remember the difference — clearing all your items archives them back to the day they were created. This is different than using the check-off box next to each item, and may be important for your tracking purposes.</div>
+          <div style={{ ...tBody, marginTop: 6 }}>Use Clear Items to remove all To Accomplish items at once — this archives them back to the day they were created, which is different from checking them off individually.</div>
         </div>
       </div>
 
+      {/* THANKFUL FOR */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
@@ -136,69 +138,61 @@ export default function HelpPanel({ onClose }) {
         </div>
       </div>
 
+      {/* NOTES */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Notes — Ideas — Thoughts</div>
-          <div style={tBody}>A space to clear mental stress and mental noise by physically writing down your thoughts. Anything can go in here — jot down the first things that come to mind. Action items will often surface during this process; capture them here. Some clients keep a parallel notepad for items they'll later move into Future Tasks, Appointments, or Quotes.</div>
+          <div style={tBody}>Clear mental noise by writing down whatever is on your mind. Action items often surface here — capture them and move them to Future Tasks, Appointments, or Quotes as needed.</div>
         </div>
       </div>
 
-      <div style={topItem}>
-        <span style={bul}>•</span>
-        <div style={{ flex: 1 }}>
-          <div style={tTitle}>Additional Tracking</div>
-          <div style={tBody}>Beyond the 12 required fields, PIT includes optional
-          sections for deeper tracking: Daily Devotional, Book Study,
-          Important Discoveries, Quotes &amp; Inspiration, and
-          Appointments. Complete as many as are useful to you — there
-          is substantial personal value in going beyond the minimum,
-          but the choice is yours.</div>
-        </div>
-      </div>
-
+      {/* DEVOTIONAL */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Daily Devotional / Silence &amp; Reflection</div>
-          <div style={tBody}>Choose either a Two-Minute Prayer or Silence &amp; Reflection, mark it complete, and add any reflections. Use Scripture Search / Reflection Search to find a topic, passage, or theme to focus on. Whichever mode you choose will become your default each day going forward — you can switch back and forth anytime using the toggle.</div>
+          <div style={tBody}>Choose either Two-Minute Prayer or Silence &amp; Reflection, mark it complete, and add any reflections. Use Scripture Search / Reflection Search to find a topic or passage. Your selection becomes the default going forward — switch anytime with the toggle.</div>
         </div>
       </div>
 
+      {/* BOOK STUDY */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Daily Book Study</div>
-          <div style={tBody}>Track the book you're currently reading: page, author, and topic. Use Notes for key takeaways, and Ask About This Book to explore concepts or questions about it. Quotes discovered while reading are often worth adding to the Quotes &amp; Inspiration section below, referenced by author. Check "Finished book" only once you complete it, to add it to your log.</div>
+          <div style={tBody}>Track the book you're reading: page, author, topic, and notes. Use Ask About This Book to explore concepts. Check "Finished book" only once complete to add it to your log.</div>
         </div>
       </div>
 
+      {/* DISCOVERIES */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Important Discoveries</div>
-          <div style={tBody}>Use this section to capture insights, strategies, or information worth saving from your PIT session. Each discovery is tagged by topic and stored both in that day's record and in a running library that builds over time. This is where you put notes, things to remember, or powerful items worth holding onto. This section was built for ease of access — entries are organized by topic so they can be quickly searched and retrieved later.</div>
-          <div style={{ ...tBody, marginTop: 6 }}>To add a discovery, select a topic tag from the dropdown and enter your text. Use Add Discovery to begin a new entry. Entries can be edited or removed after adding. When viewing past days in the Archive, this section is read-only.</div>
+          <div style={tBody}>Capture insights, strategies, or information worth saving. Each entry is tagged by topic and stored in that day's record and a running library. Select a topic tag, enter your text, and use Add Discovery. Entries can be edited or removed. Read-only in Archive view.</div>
         </div>
       </div>
 
+      {/* QUOTES */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Quotes &amp; Inspiration</div>
-          <div style={tBody}>Capture quotes that stand out to you today, or use Quote and Inspiration Research to search by topic, feeling, or author.</div>
+          <div style={tBody}>Capture quotes that stand out today, or use Quote and Inspiration Research to search by topic, feeling, or author.</div>
         </div>
       </div>
 
+      {/* APPOINTMENTS */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Today's Appointments</div>
-          <div style={tBody}>Track upcoming appointments by date. Each appointment includes a title, time, duration, location, and prep needed. Appointments persist going forward and will automatically drop off once their date has passed. If an appointment date passes without being resolved, it will carry forward with a Past Due badge until you check it off. Use the Add button to create a new appointment.</div>
-          <div style={{ ...tBody, marginTop: 6 }}>Each appointment has a Lock Appointment button in the appointment header. Tap it to lock all fields so nothing can be accidentally changed. A gold left border and LOCKED badge appear on the card when locked. Tap Unlock Appointment to edit again. The Remove button is always available regardless of lock state.</div>
+          <div style={tBody}>Track upcoming appointments — title, time, duration, location, prep needed. Appointments persist and drop off once their date passes. Past Due badge appears on overdue items until checked off. Use Lock Appointment in the appointment header to lock all fields — gold border and LOCKED badge confirm the lock. Unlock to edit. Remove is always available regardless of lock state.</div>
         </div>
       </div>
 
+      {/* AI SUMMARY */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
@@ -207,71 +201,55 @@ export default function HelpPanel({ onClose }) {
         </div>
       </div>
 
+      {/* DAY COMPLETE */}
       <div style={topItem}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Day Complete</div>
-          <div style={tBody}>
-            Track your daily completion status and lock in your
-            required fields when your PIT session is done.
-          </div>
           <div style={{ paddingLeft: 16 }}>
             <div style={{ ...subItem, marginBottom: 6 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Mark Day Complete</div>
-                <div style={tBody}>
-                  Appears at the bottom of PIT after the AI Summary
-                  section. Active only when all 10 required fields
-                  are filled. Clicking it locks the 10 required
-                  fields to read-only for the day — your work is
-                  preserved.
-                </div>
+                <div style={tBody}>Active only when all 12 required fields are filled. Locks required fields to read-only for the day.</div>
               </div>
             </div>
             <div style={{ ...subItem, marginBottom: 6 }}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
                 <div style={sTitle}>Unlock</div>
-                <div style={tBody}>
-                  Appears next to the Mark Day Complete button once
-                  the day is marked. Clicking Unlock reverses the
-                  lock — all required fields become editable again
-                  and the day returns to an incomplete state.
-                </div>
+                <div style={tBody}>Reverses the lock — all required fields become editable and the day returns to incomplete.</div>
               </div>
             </div>
             <div style={subItem}>
               <span style={hyp}>–</span>
               <div style={{ flex: 1 }}>
-                <div style={sTitle}>Day Complete in Archive</div>
-                <div style={tBody}>
-                  Any day you marked complete shows a gold ✓ Day
-                  Complete indicator in the Archive list, immediately
-                  left of the Open / Edit button. Days not marked
-                  complete show nothing in that spot.
-                </div>
+                <div style={sTitle}>Archive</div>
+                <div style={tBody}>Days marked complete show a gold ✓ in the Archive list.</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ ...topItem, marginBottom: 8 }}>
+      {/* SUBMIT TO COACH */}
+      <div style={{ ...topItem, marginBottom: 10 }}>
         <span style={bul}>•</span>
         <div style={{ flex: 1 }}>
           <div style={tTitle}>Submit to Coach</div>
-          <div style={tBody}>Once you have 7 complete days in the week, the submit button unlocks. Use Partial Submit if you need to send fewer days.</div>
+          <div style={tBody}>Unlocks after 7 complete days. Use Partial Submit to send fewer days if needed.</div>
         </div>
       </div>
 
-      <div style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.07)', borderRadius: 4, fontSize: 11, color: MID, fontStyle: 'italic', lineHeight: 1.6 }}>
-        <strong style={{ fontStyle: 'normal' }}>NOTES:</strong>
-        <ol style={{ margin: '4px 0 0 0', paddingLeft: 20 }}>
-          <li style={{ marginBottom: 4 }}>Everything you enter in PIT saves automatically as you go — there is no Save button anywhere in this app. Saved information can be accessed with the Archive tab at the top of the page.</li>
-          <li>For the most accurate Sleep Score, a wearable monitor is recommended. If you don't have one, many phone apps can provide a ballpark sleep score as an alternative.</li>
-        </ol>
+      {/* AUTOSAVE */}
+      <div style={topItem}>
+        <span style={bul}>•</span>
+        <div style={{ flex: 1 }}>
+          <div style={tTitle}>Autosave</div>
+          <div style={tBody}>Everything saves automatically — there is no Save button. Access past days via the Archive tab. For the most accurate Sleep Score, a wearable monitor is recommended.</div>
+        </div>
       </div>
+
     </div>
   );
 }
