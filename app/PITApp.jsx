@@ -429,7 +429,12 @@ export default function PITApp() {
   }
 
   const onMarkDayComplete = async () => {
-    if (!sections.oneThing || sections.oneThing.trim() === '') return;
+    if (
+      !sections.tracking || sections.tracking.trim() === '' ||
+      !sections.gratitude || sections.gratitude.trim() === '' ||
+      !sections.oneThing || sections.oneThing.trim() === '' ||
+      !sections.notes || sections.notes.trim() === ''
+    ) return;
     setParsePending(true);
     setParseError(false);
     try {
@@ -1579,7 +1584,11 @@ export default function PITApp() {
   }
 
   // Main form view
-  const complete = sections.oneThing.trim().length > 0;
+  const complete =
+    sections.tracking.trim().length > 0 &&
+    sections.gratitude.trim().length > 0 &&
+    sections.oneThing.trim().length > 0 &&
+    sections.notes.trim().length > 0;
   const isDayCompleteMarked = dayCompleteDates.includes(todayStr());
   const clearSlotDefs = [
     { slot: 'one_thing', label: 'The One Thing', text: fd.oneThing || '' },
@@ -1703,7 +1712,12 @@ export default function PITApp() {
           isDayCompleteMarked={isDayCompleteMarked}
           onMarkDayComplete={onMarkDayComplete}
           onUnlockDay={onUnlockDay}
-          canMarkComplete={sections.oneThing.trim().length > 0}
+          canMarkComplete={
+            sections.tracking.trim().length > 0 &&
+            sections.gratitude.trim().length > 0 &&
+            sections.oneThing.trim().length > 0 &&
+            sections.notes.trim().length > 0
+          }
         />
 
         <DOPBtn />
