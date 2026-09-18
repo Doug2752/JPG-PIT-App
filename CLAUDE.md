@@ -1,9 +1,9 @@
 # JPG — PIT CODE LOGIC
 ## Personal Investment Time — Full App Code Logic and Build Reference
-**Document ID:** JPG-SYS-PIT-CodeLogic-WRK-v3.3
-**Date:** 08/28/2026 | **Prepared by:** Claude | **State:** WRK
+**Document ID:** JPG-SYS-PIT-CodeLogic-WRK-v3.4
+**Date:** 09/18/2026 | **Prepared by:** Claude | **State:** WRK
 **Classification:** CLASS 1 — CONFIDENTIAL
-**Supersedes:** JPG-SYS-PIT-CodeLogic-WRK-v3.2
+**Supersedes:** JPG-SYS-PIT-CodeLogic-WRK-v3.3
 
 ---
 
@@ -52,8 +52,8 @@
 | Header | components/Header.jsx | Flat text nav 08/28/2026 — Today, Archive, Book Log as spans. Active: GOLD underline. Inactive: rgba(255,255,255,0.5). Streak: gold text inline after Book Log with grey separator. Right group: Set-Up and Instructions / Doug / Logout with grey separator bars. PIT Completed Today status div removed. |
 | HelpPanel | components/HelpPanel.jsx | Required field count corrected to 12 08/28/2026. Required fields list rewritten — 8 Daily Tracking + 4 Reflection & Priorities. Additional Tracking section rewritten — PIT Time Frame and Mental Alignment removed. Future Tasks move description updated. Rest and Recovery noted in Fitness section. Lock Appointment paragraph updated 07/28/2026. |
 | LoginScreen | components/LoginScreen.jsx | RED constant imported 08/14/2026. |
-| OpenEntrySection | components/OpenEntrySection.jsx | NEW 09/03/2026. Ten separate auto-expanding textareas styled as one continuous box. PIT DAILY RECORD title bar — black background, GOLD (#B8860B) text, fontWeight 800, uppercase. Gold accent line (3px, #ddb94a) between title bar and textareas. Per-section ghost text (#999). borderStyle() helper for seamless joins. SECTIONS array at module scope. |
-| SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). canMarkComplete prop used — Day Complete enabled when sections.oneThing non-empty. |
+| OpenEntrySection | components/OpenEntrySection.jsx | NEW 09/03/2026. Updated 09/18/2026. Ten separate auto-expanding textareas styled as one continuous box. Uncontrolled textarea implementation — defaultValue + taRef. React never touches textarea after mount. Ghost visibility driven by direct DOM ref writes (ghostRef) only — no React state for focus tracking. Required sections (tracking, gratitude, oneThing, notes) render bold ghost text with "— required" label. Six optional sections render plain italic ghost text. required boolean prop per section. PIT DAILY RECORD title bar — black background, GOLD (#B8860B) text, fontWeight 800, uppercase. Gold accent line (3px, #ddb94a) between title bar and textareas. borderStyle() helper for seamless joins. SECTIONS array at module scope. |
+| SummarySection | components/SummarySection.jsx | onLimitHit prop removed 08/14/2026 (was unused). canMarkComplete prop used — Day Complete enabled when four-field gate passes (tracking, gratitude, oneThing, notes all non-empty after trim). |
 | WeekTracker | components/WeekTracker.jsx | GREEN_COMPLETE wired 07/28/2026. Hardcoded #2ecc71 replaced with GREEN_COMPLETE constant in card border 08/28/2026. |
 
 ### hub_user URL Passthrough (BUILT 09/03/2026 — master branch only)
@@ -82,7 +82,7 @@ This branch uses OpenEntrySection.jsx instead of the structured To Accomplish sy
 9. quotes — Quote or inspiration that landed today
 10. appointments — Appointments — day, time, what, where
 
-**Day Complete gating:** sections.oneThing must be non-empty (trimmed). No other fields required.
+**Day Complete gating:** Four-field gate — tracking, gratitude, oneThing, and notes must all be non-empty (after trim). Gate enforced in three locations: complete variable, canMarkComplete prop, onMarkDayComplete inline guard. All three must match.
 
 **AI parse on Day Complete:**
 - Combined entry: Object.values(sections).filter(Boolean).join('\n\n')
@@ -238,7 +238,7 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 - HelpPanel required fields: 12 listed (Total Hours Slept auto-calculated, excluded from client list). (locked 08/28/2026)
 - No completed-tasks lookback view. No past-appointments history view. (locked 08/22/2026)
 - PIT Open version port: 5179. Branch: PIT-phase2-open. (locked 09/03/2026)
-- Day Complete gating on Open version: sections.oneThing non-empty only — not all 13 fields. (locked 09/03/2026)
+- Day Complete gating on Open version: four-field gate — tracking, gratitude, oneThing, notes all non-empty (trimmed). Enforced in three locations: complete variable, canMarkComplete prop, onMarkDayComplete inline guard. All three must match. (updated 09/18/2026)
 - AI parse fires once on Day Complete — single consolidated call, all 16 fields. (locked 09/03/2026)
 - Ten separate textareas styled as one continuous box — preserves per-section ghost text. (locked 09/03/2026)
 - PIT DAILY RECORD title bar: black background, GOLD (#B8860B) text, fontWeight 800, uppercase, matches WEEKLY PROGRESS visual weight. (locked 09/03/2026)
@@ -266,4 +266,4 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 
 ---
 
-*JPG-SYS-PIT-CodeLogic-WRK-v1.6 | Jones Performance Group LLC | CONFIDENTIAL | 09/03/2026*
+*JPG-SYS-PIT-CodeLogic-WRK-v3.4 | Jones Performance Group LLC | CONFIDENTIAL | 09/18/2026*
