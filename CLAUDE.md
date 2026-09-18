@@ -1,16 +1,16 @@
 # JPG — PIT CODE LOGIC
 ## Personal Investment Time — Full App Code Logic and Build Reference
-**Document ID:** JPG-SYS-PIT-CodeLogic-WRK-v3.3
-**Date:** 08/28/2026 | **Prepared by:** Claude | **State:** WRK
+**Document ID:** JPG-SYS-PIT-CodeLogic-WRK-v3.6
+**Date:** 09/18/2026 | **Prepared by:** Claude | **State:** WRK
 **Classification:** CLASS 1 — CONFIDENTIAL
-**Supersedes:** JPG-SYS-PIT-CodeLogic-WRK-v3.2
+**Supersedes:** JPG-SYS-PIT-CodeLogic-WRK-v3.5
 
 ---
 
 ## SECTION A — APP IDENTITY
 
 - **App name:** Personal Investment Time (PIT)
-- **Dev port:** 5173
+- **Dev port:** 5173 — strictPort: true in vite.config.js. Vite errors immediately if port is in use rather than bumping to a fallback port.
 - **Repo:** Doug2752/JPG-PIT-App
 - **Local folder:** C:\JPG-PROJECTS\JPG-PIT-App
 - **Framework:** React + Vite, Class 3 modular structure
@@ -49,7 +49,7 @@
 | ArchiveView | components/ArchiveView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
 | BookSection | components/BookSection.jsx | GREEN_COMPLETE wired 07/28/2026. page number min=0. |
 | BooksView | components/BooksView.jsx | backToday prop wired 08/14/2026 — Today button now clears archiveMode correctly. |
-| BrandBar | components/BrandBar.jsx | Three-zone flex layout 08/28/2026 — logo left (flex:1), PIT title center (flex:2), date picker right (flex:1). PIT heading 52px. Subtitle 15px. Bottom border 2px. Never Twice removed from BrandBar. "Structured Version" subtitle added 09/06/2026 — fontSize 12, fontWeight 400, color #555, letterSpacing 0.5, marginTop 2. |
+| BrandBar | components/BrandBar.jsx | Three-zone flex layout 08/28/2026 — logo left (flex:1), PIT title center (flex:2), date picker right (flex:1). PIT heading 52px. Subtitle 15px. Bottom border 2px. Never Twice removed from BrandBar. "Structured Version" subtitle added 09/06/2026 — fontSize 12, fontWeight 400, color #555, letterSpacing 0.5, marginTop 2. Today button: onClick calls backToday() prop. Calendar onChange: calls openArchive(d) if d !== todayStr(), else backToday(). Props: backToday, openArchive, archiveMode. |
 | DailyTrackingSection | components/DailyTrackingSection.jsx | Full restructure 08/14/2026. Two rows of 4 tracking boxes. sleepTime field added. hoursSlept auto-calculated inline from fd.sleepTime and fd.wakeTime. PIT Time Frame removed. Mental Alignment removed. calcHoursSlept() module-level pure function. commitSleep() mirrors commitWake() pattern. Track By hidden for Rest and Recovery. |
 | Header | components/Header.jsx | Flat text nav 08/28/2026 — Today, Archive, Book Log as spans. Active: GOLD underline. Inactive: rgba(255,255,255,0.5). Streak: gold text inline after Book Log with grey separator. Right group: Set-Up and Instructions / Doug / Logout with grey separator bars. PIT Completed Today status div removed. |
 | HelpPanel | components/HelpPanel.jsx | Required field count corrected to 12 08/28/2026. Required fields list rewritten — 8 Daily Tracking + 4 Reflection & Priorities. Additional Tracking section rewritten — PIT Time Frame and Mental Alignment removed. Future Tasks move description updated. Rest and Recovery noted in Fitness section. Lock Appointment paragraph updated 07/28/2026. |
@@ -125,8 +125,9 @@ PITApp.jsx currentUser useState initializer reads hub_user from URL on mount. If
 
 ## SECTION E — APPOINTMENTS
 
-- Real ISO date field, independent storage key pit_appts_{uid}
-- Cap: 5 future-dated appointments
+- Independent storage key pit_appts_{uid}
+- **Appointment date field (UPDATED 09/18/2026):** three controlled select dropdowns — Month, Day, Year. Replaced native ISO date input. Reason: Firefox native date picker fired onChange on month navigation, auto-setting date before user could select. Dropdowns eliminate browser picker inconsistency. Year range 2026–2028. ISO YYYY-MM-DD format preserved in storage. No migration required.
+- Cap: 20 future-dated appointments. Two inline values in PITApp.jsx — addAppt() guard and canAddAppt prop. No named constant.
 - **Lock Appointment (BUILT 07/28/2026):** per-appointment locked boolean. Lock/Unlock button in appointment header row. LOCKED badge in header row. Gold left border on locked card. date/time inputs disabled when locked.
 - **canAddAppt prop (BUILT 08/14/2026):** Add button visibility uses exact same future-dated filter as addAppt() guard.
 - **Design decision (locked 08/22/2026):** no past appointments history view.
@@ -199,8 +200,10 @@ Note: The One Thing is required for day completion and listed in To Accomplish s
 - Outer container: background #fff, borderBottom 2px solid GOLD, padding 10px 20px
 - Inner layout: display flex, justifyContent space-between
 - Left zone (flex:1): JPG logo, width 260px
-- Center zone (flex:2): PIT heading 52px fontWeight 900, "Personal Investment Time" subtitle 15px fontWeight 600
+- Center zone (flex:2): PIT heading 52px fontWeight 900, "Personal Investment Time" subtitle 15px fontWeight 600, "Structured Version" sub-subtitle fontSize 12 fontWeight 400 color #555 letterSpacing 0.5 marginTop 2
 - Right zone (flex:1): date picker only — alignItems flex-end
+- Today button: onClick calls backToday() prop — bypasses upd() to clear archiveMode correctly
+- Calendar onChange: d === todayStr() ? backToday() : openArchive(d) — correct archive navigation
 - Never Twice block: REMOVED from BrandBar
 
 ### Never Twice Bar (BUILT 08/28/2026)
@@ -256,7 +259,7 @@ No new keys added 09/03/2026. fd.oneThingDetail and tasks[].detail ride the exis
 
 - Daily Tracking: 8 required fields in two rows of 4. sleepTime and hoursSlept added. pitTimeFrame and meditation removed. REQUIRED_TOTAL = 13. (locked 08/14/2026)
 - Total Hours Slept: auto-calculated from sleepTime and wakeTime via calcHoursSlept(). Read-only display. Handles midnight crossing. No useEffect — called inline on render. (locked 08/14/2026)
-- Stale closure pattern: write persisted values inside action handlers using e.target.value from onBlur — do not read local state. Applied to commitSleep() and commitWake().
+- Stale closure: all 15 write-path handlers use fdRef.current — stale closure eliminated 09/13/2026. commitSleep() and commitWake() previously used e.target.value from onBlur for the same reason; fdRef.current now covers all handlers uniformly.
 - Coach Transmission: auto-write on every save() and saveAppointments() call to pit_coach_{uid}_{date}. Privacy filter applied. 3-consecutive-day flag thresholds locked. HUB display post-Supabase. (locked 08/14/2026)
 - To Accomplish carryover: BUILT. Unresolved items carry forward. Checked items disappear next day. Archive is the only lookback. (locked 08/12/2026)
 - Persistent Prayer/Silence preference: write directly in action handler, not useEffect (avoids mount-time race condition).
@@ -291,4 +294,4 @@ No new keys added 09/03/2026. fd.oneThingDetail and tasks[].detail ride the exis
 
 ---
 
-*JPG-SYS-PIT-CodeLogic-WRK-v1.6 | Jones Performance Group LLC | CONFIDENTIAL | 09/03/2026*
+*JPG-SYS-PIT-CodeLogic-WRK-v3.6 | Jones Performance Group LLC | CONFIDENTIAL | 09/18/2026*
